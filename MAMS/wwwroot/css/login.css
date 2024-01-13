@@ -1,0 +1,80 @@
+/* Split the screen in half */
+.split {
+    height: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+  }
+  
+  /* Control the left side */
+  .left {
+    left: 0;
+    width: 40%;
+    background-color: rgb(255, 255, 255);
+  }
+
+.left-s {
+    left: 0;
+    width: 60%;
+    background-color: rgb(255, 255, 255);
+}
+  
+  /* Control the right side */
+.right {
+    right: 0;
+    width: 60%;
+    background-color: #0892d0;
+}
+
+.right-r {
+    right: 0;
+    width: 40%;
+    background-color: #0892d0;
+}
+
+  .login-box{
+    height: 500px;
+    width: 350px;
+    position: relative;
+    margin: 8% auto;
+    /*background: rgba(58, 57, 57, 0.8);*/
+    backdrop-filter: saturate(180%) blur(10px);
+    padding: 10% 1% 1% 1%;
+    overflow: hidden;
+}
+
+.signin-box{
+  height: auto;
+  width: auto;
+  position: relative;
+  margin: 8% auto;
+  /*background: rgba(58, 57, 57, 0.8);*/
+  backdrop-filter: saturate(180%) blur(10px);
+  padding: 1% 1% 1% 1%;
+  overflow: hidden;
+}
+
+/* Style progress bars based on strength */
+#strength-bar.weak {
+    background-color: red;
+}
+
+#strength-bar.moderate {
+    background-color: orange;
+}
+
+#strength-bar.strong {
+    background-color: green;
+}
+
+.availability-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-check-inline {
+    margin-right: 10px; /* Adjust the spacing between checkboxes as needed */
+}

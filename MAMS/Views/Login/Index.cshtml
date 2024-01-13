@@ -1,0 +1,151 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@{
+    ViewData["Title"] = "User Details";
+}
+@model IEnumerable<Suser>
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2 class="text-primary">User Details</h2>
+        </div>
+
+        <div class="col text-end">
+            <a asp-controller="Login" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
+        </div>
+    </div>
+</div>
+
+<br />
+
+@*<div>
+    <table class="table table-striped">
+    <thead>
+    <tr>
+    <th scope="col">Category Name</th>
+    <th scope="col" class="text-center">Display Order</th>
+    <th scope="col" class="text-center">Created DateTime</th>
+    <th></th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (var obj in Model)
+    {
+    <tr>
+    <td>@obj.Name</td>
+    <td class="text-center">@obj.DisplayOrder</td>
+    <td class="text-center">@obj.CreatedDateTime.ToString("dd MMM yyyy HH:mm:ss")</td>
+    <td>
+    <div class="btn-group btn-group-justified" role="group">
+    <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
+    <a asp-controller="Category" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-light"> <i class="bi bi-trash3-fill"></i></a>
+    </div>
+    </td>
+    </tr>
+    }
+    </tbody>
+    </table>
+    </div>*@
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col" id="sortName" data-sort-order="asc">
+                    @Html.DisplayName("User Name") &nbsp;
+                    <i class="bi bi-arrow-down-up"></i>
+                </th>
+
+                <th scope="col" class="text-center" id="sortDisplayOrder" data-sort-order="asc">
+                    @Html.DisplayName("Email") &nbsp;
+                    <i class="bi bi-arrow-down-up"></i>
+                </th>
+
+                <th scope="col" class="text-center" id="sortCreatedDateTime" data-sort-order="asc">
+                    @Html.DisplayName("Created Date") &nbsp;
+                    <i class="bi bi-arrow-down-up"></i>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var row in Model)
+            {
+                <tr>
+                    <td>@row.UserName</td>
+                    <td class="text-center">@row.Email</td>
+                    <td class="text-center">@row.CreatedDate.ToString("dd-MMM-yyyy")</td>
+                    <td>
+                        <div class="btn-group btn-group-justified" role="group">
+                            <a asp-controller="Login" asp-action="Edit" asp-route-id=@row.Id class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
+                            <a asp-controller="Login" asp-action="Delete" asp-route-id=@row.Id class="btn btn-light"> <i class="bi bi-trash3-fill"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+<script>
+     $(document).ready(function () {
+
+        $('#sortName').on('click', function () {
+            var rows = $('table tbody tr').get();
+            var sortOrder = $(this).data('sort-order');
+            rows.sort(function (a, b) {
+                var valueA = $(a).find('td:eq(0)').text().toUpperCase();
+                var valueB = $(b).find('td:eq(0)').text().toUpperCase();
+                return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+            });
+            $.each(rows, function (index, row) {
+                $('table tbody').append(row);
+            });
+            $(this).data('sort-order', sortOrder === 'asc' ? 'desc' : 'asc');
+        });
+    });
+
+    $(document).ready(function () {
+        $('#sortDisplayOrder').on('click', function () {
+            var rows = $('table tbody tr').get();
+            var sortOrder = $(this).data('sort-order');
+            rows.sort(function (a, b) {
+                var valueA = parseInt($(a).find('td:eq(1)').text());
+                var valueB = parseInt($(b).find('td:eq(1)').text());
+                return sortOrder === 'asc' ? (valueA - valueB) : (valueB - valueA);
+            });
+            $.each(rows, function (index, row) {
+                $('table tbody').append(row);
+            });
+            $(this).data('sort-order', sortOrder === 'asc' ? 'desc' : 'asc');
+        });
+    });
+
+    $(document).ready(function () {
+        $('#sortCreatedDateTime').on('click', function () {
+            var rows = $('table tbody tr').get();
+            var sortOrder = $(this).data('sort-order');
+            rows.sort(function (a, b) {
+                var valueA = new Date($(a).find('td:eq(2)').text());
+                var valueB = new Date($(b).find('td:eq(2)').text());
+                return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+            });
+            $.each(rows, function (index, row) {
+                $('table tbody').append(row);
+            });
+            $(this).data('sort-order', sortOrder === 'asc' ? 'desc' : 'asc');
+        });
+    });
+
+</script>
+}

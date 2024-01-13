@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "MAMS Login";
+}
+@model Suser
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="split left">
+            <div class="login-box">
+                <p class="h2 mb-3">Log in</p>
+
+                <form asp-controller="Login" asp-action="Enter" method="post" id="loginForm">
+
+                    <div class="mb-4">
+                        <label asp-for="UserName">User Name</label>
+                        <input asp-for="UserName" class="form-control" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" type="password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <button id="loginButton" asp-controller="Login" asp-action="Enter" method="post" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
+                    @*<button class="btn btn-primary" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>*@
+                </form>
+
+                <div class="container" style="padding: 25% 0 0 0;">
+                    Are you New for here?
+                    <a asp-controller="Login" asp-action="SignUp" class="btn btn-outline-secondary rounded-pill" style="width:150px">Sign Up &nbsp; <i class="bi bi-box-arrow-in-right"></i></a>
+                </div>
+            </div>
+
+        </div>
+        <div class="split right"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var loginForm = document.getElementById('loginForm');
+            var loginButton = document.getElementById('loginButton');
+
+            loginForm.addEventListener('submit', function () {
+                loginButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                loginButton.disabled = true;
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAMS", "MAMS\MAMS.csproj", "{E61733F0-410B-4365-BD34-8E7A2478AC40}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MAMS.API", "MAMS.API\MAMS.API.csproj", "{36C093E4-7BCB-4DE7-93F2-626692BBB996}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E61733F0-410B-4365-BD34-8E7A2478AC40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E61733F0-410B-4365-BD34-8E7A2478AC40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E61733F0-410B-4365-BD34-8E7A2478AC40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E61733F0-410B-4365-BD34-8E7A2478AC40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C093E4-7BCB-4DE7-93F2-626692BBB996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C093E4-7BCB-4DE7-93F2-626692BBB996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C093E4-7BCB-4DE7-93F2-626692BBB996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C093E4-7BCB-4DE7-93F2-626692BBB996}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {479E5DCD-4A2E-4F35-9BD0-E88B281AA6FB}
+	EndGlobalSection
+EndGlobal
