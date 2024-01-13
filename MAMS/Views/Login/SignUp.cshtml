@@ -43,7 +43,7 @@
             </div>
 
             <div class="signin-box">
-                <form asp-controller="Login" asp-action="Register" method="post">
+                <form asp-controller="Login" asp-action="Register" method="post" id="signinForm">
                     <div>
 
                         <div class="row gy-1">
@@ -219,12 +219,12 @@
                         <div class="row gy-1">
                             <div class="col mb-4">
                                 <label asp-for="Suser.UserName">Provide User Name</label>
-                                <input asp-for="Suser.UserName" class="form-control rounded-pill" />
+                                <input asp-for="Suser.UserName" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="Suser.UserName" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="Suser.Password">Provide Password</label>
-                                <input asp-for="Suser.Password" class="form-control rounded-pill" type="password" id="password" />
+                                <input asp-for="Suser.Password" class="form-control rounded-pill" type="password" id="password" required/>
                                 <span asp-validation-for="Suser.Password" class="text-danger"></span>
                                 <div>
                                     <label>Password Strength:</label>
@@ -564,6 +564,20 @@
         e.preventDefault(); // Prevent the default form submission
         showConfirmationModal(); // Show the confirmation modal
         });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var loginForm = document.getElementById('signinForm');
+            var loginButton = document.getElementById('signinButton');
+
+            loginForm.addEventListener('input', function () {
+            signinButton.disabled = !loginForm.checkValidity();
+        });
+
+            loginForm.addEventListener('submit', function () {
+                loginButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                loginButton.disabled = true;
+            });
         });
 
     </script>

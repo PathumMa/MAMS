@@ -136,8 +136,15 @@ namespace MAMS.Controllers
                     if (getData.IsSuccessStatusCode)
                     {
                         // User registration successful
-                        return View("SignUp");
                         _notfy.Success("You Registered Succesully !");
+                        return RedirectToAction("SignUp");
+
+                    }
+                    else if (getData.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        _notfy.Warning(errorMessage);
+                        return RedirectToAction("SignUp");
                     }
                     else
                     {
@@ -145,8 +152,8 @@ namespace MAMS.Controllers
                         var errorMessage = await getData.Content.ReadAsStringAsync();
                         ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
                         _notfy.Warning(errorMessage);
-                        return View("SignUp", userRegistrationModel);
-                        
+                        return RedirectToAction("SignUp", userRegistrationModel);
+
                     }
                 }
             }
@@ -154,7 +161,7 @@ namespace MAMS.Controllers
             {
                 // Handle other exceptions (e.g., network issues, etc.)
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                return View("SignUp", userRegistrationModel);
+                return RedirectToAction("SignUp", userRegistrationModel);
             }
         }
 
