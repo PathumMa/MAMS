@@ -69,7 +69,7 @@ namespace MAMS.Controllers
             
             if (user.UserName != null && user.Password != null)
             {
-                SuserDetails dt = new SuserDetails();
+                Suser dt = new Suser();
 
                 using (var client = new HttpClient())
                 {
@@ -83,9 +83,7 @@ namespace MAMS.Controllers
                     {
                         string results = await getData.Content.ReadAsStringAsync();
 
-                        dt = JsonConvert.DeserializeObject<SuserDetails>(results);
-
-                        return RedirectToAction("Index", "Home");
+                        dt = JsonConvert.DeserializeObject<Suser>(results);
                     }
                     else if (getData.StatusCode != HttpStatusCode.OK)
                     {
@@ -98,8 +96,10 @@ namespace MAMS.Controllers
                         _notfy.Error("Error calling web API!", 5);
                         return View("Login");
                     }
-                    //ViewData.Model = dt;
+                    ViewData.Model = dt;
                 }
+
+                return RedirectToAction("Index", "Home", dt);
             }
             else
             {

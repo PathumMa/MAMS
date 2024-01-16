@@ -455,10 +455,12 @@
             var daysUntilBirthday = Math.ceil((day - jan1st) / (1000 * 60 * 60 * 24));
             console.log("Days until birthday:", daysUntilBirthday);
 
-            if(femaleNum === daysUntilBirthday || femaleNumNew === daysUntilBirthday){
+            if(middleNumberAsNumber > 500 || middleNumberAsNumberNew > 500 ){
                 gender = "Female";
+                return gender;
             }else{
                 gender = "Male";
+                return gender;
             }
 
              console.log(gender);
@@ -469,7 +471,7 @@
                 nicValidationMsg.textContent = ``;
 
                 // Check if birth year from NIC matches user-entered birth year
-                if (birthYear !== birthYearInput.value.split("-")[0] || middleNumberAsNumber !== daysUntilBirthday || gender!== genderInput.value )
+                if (birthYear !== birthYearInput.value.split("-")[0] || gender!== genderInput.value )
                 {
                     nicValidationMsg.textContent += `\n NIC Mismatched with the BirthDate and Gender!`;
                 }

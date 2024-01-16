@@ -43,13 +43,13 @@ namespace MAMS.API.Controllers
                 return NotFound("Invalid UserName");
             }
 
-            if (hashedPassword != loginModel.Password)
+            if (hashedPassword != user.Password)
             {
                 return BadRequest("Invalid Password");
             }
 
             // Authentication successful, you can generate a token or perform other actions here
-            return Ok(user.Id);
+            return Ok(user);
         }
 
         [HttpPost("register")]

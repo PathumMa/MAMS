@@ -25,7 +25,7 @@ namespace MAMS.Controllers
             _httpContextAccessor = contextAccessor;
         }
 
-        public async Task<IActionResult> Index(int Id)
+        public async Task<IActionResult> Index(Suser dt)
         {
             UserDetailsViewModel viewModel = new UserDetailsViewModel();
 
@@ -35,7 +35,7 @@ namespace MAMS.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpResponseMessage getData = await client.GetAsync("User/" + Id);
+                HttpResponseMessage getData = await client.GetAsync("User/" + dt.Id);
 
                 if (getData.IsSuccessStatusCode)
                 {
