@@ -43,7 +43,7 @@
             </div>
 
             <div class="signin-box">
-                <form asp-controller="Login" asp-action="Register" method="post" id="signinForm">
+                <form asp-controller="Login" asp-action="Register" method="post" id="signinForm" novalidate>
                     <div>
 
                         <div class="row gy-1">
@@ -94,12 +94,12 @@
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="SuserDetails.First_Name">First Name:</label>
-                                <input asp-for="SuserDetails.First_Name" class="form-control rounded-pill" />
+                                <input asp-for="SuserDetails.First_Name" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="SuserDetails.First_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="SuserDetails.Last_Name">Last Name:</label>
-                                <input asp-for="SuserDetails.Last_Name" class="form-control rounded-pill" />
+                                <input asp-for="SuserDetails.Last_Name" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="SuserDetails.Last_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
@@ -166,7 +166,7 @@
                             </div>
                             <div class="col mb-4">
                                 <label>Blood Group:</label>
-                                <select asp-for="SuserDetails.Blood_Type" class="form-select rounded-pill">
+                                <select asp-for="SuserDetails.Blood_Type" class="form-select rounded-pill" required>
                                     <option value="">--Select your Blood Group--</option>
                                     @foreach (var bloodGroup in Enum.GetValues(typeof(BloodGroupType)))
                                     {
@@ -380,6 +380,7 @@
             // Function to show the relevant input field based on the selected Personal ID Type
             function showPersonalIdInput() {
             var idTypeSelect = document.getElementById("idTypeSelect");
+            console.log(idTypeSelect.value);
             var nicInput = document.getElementById("nic-input");
             var passportInput = document.getElementById("passport-input");
             var dlicenceInput = document.getElementById("dlicence-input");
@@ -394,8 +395,10 @@
             nicInput.style.display = "block";
             } else if (idTypeSelect.value === "Passport") {
             passportInput.style.display = "block";
+            document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
             } else if (idTypeSelect.value === "DLicence") {
             dlicenceInput.style.display = "block";
+            document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
             }
             }
 
@@ -413,18 +416,6 @@
 
             // Initial setup
             showPersonalIdInput();
-
-            // Attach event listener to trigger NIC validation
-        var nicInput = document.getElementById("SuserDetails_Personal_Id");
-        nicInput.addEventListener("blur", function () {
-            validateNIC();
-        });
-
-        // Attach event listener to trigger NIC validation
-        var nicInput = document.getElementById("SuserDetails_Personal_Id");
-        nicInput.addEventListener("blur", function () {
-            validateNIC();
-        });
 
         // Function to validate NIC
         function validateNIC() {
@@ -567,18 +558,37 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            var loginForm = document.getElementById('signinForm');
-            var loginButton = document.getElementById('signinButton');
+    var signinForm = document.getElementById('signinForm');
+    var signinButton = document.getElementById('signinButton');
 
-            loginForm.addEventListener('input', function () {
-            signinButton.disabled = !loginForm.checkValidity();
-        });
+    // Disable the button initially
+    signinButton.disabled = true;
 
-            loginForm.addEventListener('submit', function () {
-                loginButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
-                loginButton.disabled = true;
-            });
-        });
+    // Add an event listener to check form validity on input
+    signinForm.addEventListener('input', function () {
+        signinButton.disabled = !signinForm.checkValidity();
+    });
+
+    // Add an event listener to handle form submission
+    signinForm.addEventListener('submit', function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Check form validity before allowing submission
+        if (signinForm.checkValidity()) {
+            // If the form is valid, you can enable the button and perform any other actions
+            signinButton.disabled = false;
+            signinButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+            // Optionally, you can trigger your confirmation modal or other actions here
+            showConfirmationModal();
+
+            // Now, you can submit the form programmatically if needed
+            // signinForm.submit();
+        }
+    });
+});
+
 
     </script>
 </body>

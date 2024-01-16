@@ -35,7 +35,7 @@ namespace MAMS.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            var hashedPassword = Password.HashPassword(loginModel.Password);
             var user = await _dbContext.Susers.FirstOrDefaultAsync(u => u.UserName == loginModel.UserName);
 
             if (user == null)
@@ -43,7 +43,7 @@ namespace MAMS.API.Controllers
                 return NotFound("Invalid UserName");
             }
 
-            if (user.Password != loginModel.Password)
+            if (hashedPassword != loginModel.Password)
             {
                 return BadRequest("Invalid Password");
             }
@@ -69,12 +69,14 @@ namespace MAMS.API.Controllers
                     return BadRequest(ModelState);
                 }
 
+                var hashedPassword = Password.HashPassword(signUpData.Suser.Password);
+
                 // Create Suser object
                 var newUser = new Suser
                 {
                     RoleId = signUpData.Suser.RoleId,
                     UserName = signUpData.Suser.UserName,
-                    Password = signUpData.Suser.Password,
+                    Password = hashedPassword,
                     Email = signUpData.Suser.Email,
                     PhoneNumber = signUpData.Suser.PhoneNumber,
                     CreatedDate = DateTime.Now,
