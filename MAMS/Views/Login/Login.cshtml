@@ -20,19 +20,15 @@
 
                     <div class="mb-4">
                         <label asp-for="UserName">User Name</label>
-                        <input asp-for="UserName" class="form-control" />
+                        <input asp-for="UserName" class="form-control" required/>
                         <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
                     <div class="mb-4">
                         <label asp-for="Password"></label>
-                        <input asp-for="Password" class="form-control" autocomplete="new-password" type="password" />
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" type="password" required/>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     <button id="loginButton" asp-controller="Login" asp-action="Enter" method="post" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
-                    @*<button class="btn btn-primary" type="button" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Loading...
-                    </button>*@
                 </form>
 
                 <div class="container" style="padding: 25% 0 0 0;">

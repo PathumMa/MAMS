@@ -43,7 +43,7 @@
             </div>
 
             <div class="signin-box">
-                <form asp-controller="Login" asp-action="Register" method="post">
+                <form asp-controller="Login" asp-action="Register" method="post" id="signinForm" novalidate>
                     <div>
 
                         <div class="row gy-1">
@@ -94,12 +94,12 @@
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="SuserDetails.First_Name">First Name:</label>
-                                <input asp-for="SuserDetails.First_Name" class="form-control rounded-pill" />
+                                <input asp-for="SuserDetails.First_Name" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="SuserDetails.First_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="SuserDetails.Last_Name">Last Name:</label>
-                                <input asp-for="SuserDetails.Last_Name" class="form-control rounded-pill" />
+                                <input asp-for="SuserDetails.Last_Name" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="SuserDetails.Last_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
@@ -166,7 +166,7 @@
                             </div>
                             <div class="col mb-4">
                                 <label>Blood Group:</label>
-                                <select asp-for="SuserDetails.Blood_Type" class="form-select rounded-pill">
+                                <select asp-for="SuserDetails.Blood_Type" class="form-select rounded-pill" required>
                                     <option value="">--Select your Blood Group--</option>
                                     @foreach (var bloodGroup in Enum.GetValues(typeof(BloodGroupType)))
                                     {
@@ -219,12 +219,12 @@
                         <div class="row gy-1">
                             <div class="col mb-4">
                                 <label asp-for="Suser.UserName">Provide User Name</label>
-                                <input asp-for="Suser.UserName" class="form-control rounded-pill" />
+                                <input asp-for="Suser.UserName" class="form-control rounded-pill" required/>
                                 <span asp-validation-for="Suser.UserName" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
                                 <label asp-for="Suser.Password">Provide Password</label>
-                                <input asp-for="Suser.Password" class="form-control rounded-pill" type="password" id="password" />
+                                <input asp-for="Suser.Password" class="form-control rounded-pill" type="password" id="password" required/>
                                 <span asp-validation-for="Suser.Password" class="text-danger"></span>
                                 <div>
                                     <label>Password Strength:</label>
@@ -257,6 +257,11 @@
                 </form>
 
             </div>
+            <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - MAMS -
+        </div>
+    </footer>
         </div>
         <div class="split right-r"></div>
     </div>
@@ -380,6 +385,7 @@
             // Function to show the relevant input field based on the selected Personal ID Type
             function showPersonalIdInput() {
             var idTypeSelect = document.getElementById("idTypeSelect");
+            console.log(idTypeSelect.value);
             var nicInput = document.getElementById("nic-input");
             var passportInput = document.getElementById("passport-input");
             var dlicenceInput = document.getElementById("dlicence-input");
@@ -394,8 +400,10 @@
             nicInput.style.display = "block";
             } else if (idTypeSelect.value === "Passport") {
             passportInput.style.display = "block";
+            document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
             } else if (idTypeSelect.value === "DLicence") {
             dlicenceInput.style.display = "block";
+            document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
             }
             }
 
@@ -413,18 +421,6 @@
 
             // Initial setup
             showPersonalIdInput();
-
-            // Attach event listener to trigger NIC validation
-        var nicInput = document.getElementById("SuserDetails_Personal_Id");
-        nicInput.addEventListener("blur", function () {
-            validateNIC();
-        });
-
-        // Attach event listener to trigger NIC validation
-        var nicInput = document.getElementById("SuserDetails_Personal_Id");
-        nicInput.addEventListener("blur", function () {
-            validateNIC();
-        });
 
         // Function to validate NIC
         function validateNIC() {
@@ -459,10 +455,12 @@
             var daysUntilBirthday = Math.ceil((day - jan1st) / (1000 * 60 * 60 * 24));
             console.log("Days until birthday:", daysUntilBirthday);
 
-            if(femaleNum === daysUntilBirthday || femaleNumNew === daysUntilBirthday){
+            if(middleNumberAsNumber > 500 || middleNumberAsNumberNew > 500 ){
                 gender = "Female";
+                return gender;
             }else{
                 gender = "Male";
+                return gender;
             }
 
              console.log(gender);
@@ -473,7 +471,7 @@
                 nicValidationMsg.textContent = ``;
 
                 // Check if birth year from NIC matches user-entered birth year
-                if (birthYear !== birthYearInput.value.split("-")[0] || middleNumberAsNumber !== daysUntilBirthday || gender!== genderInput.value )
+                if (birthYear !== birthYearInput.value.split("-")[0] || gender!== genderInput.value )
                 {
                     nicValidationMsg.textContent += `\n NIC Mismatched with the BirthDate and Gender!`;
                 }
@@ -565,6 +563,39 @@
         showConfirmationModal(); // Show the confirmation modal
         });
         });
+
+        document.addEventListener('DOMContentLoaded', function () {
+    var signinForm = document.getElementById('signinForm');
+    var signinButton = document.getElementById('signinButton');
+
+    // Disable the button initially
+    signinButton.disabled = true;
+
+    // Add an event listener to check form validity on input
+    signinForm.addEventListener('input', function () {
+        signinButton.disabled = !signinForm.checkValidity();
+    });
+
+    // Add an event listener to handle form submission
+    signinForm.addEventListener('submit', function (event) {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // Check form validity before allowing submission
+        if (signinForm.checkValidity()) {
+            // If the form is valid, you can enable the button and perform any other actions
+            signinButton.disabled = false;
+            signinButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+            // Optionally, you can trigger your confirmation modal or other actions here
+            showConfirmationModal();
+
+            // Now, you can submit the form programmatically if needed
+            // signinForm.submit();
+        }
+    });
+});
+
 
     </script>
 </body>

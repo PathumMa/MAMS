@@ -69,7 +69,7 @@ namespace MAMS.Controllers
             
             if (user.UserName != null && user.Password != null)
             {
-                SuserDetails dt = new SuserDetails();
+                Suser dt = new Suser();
 
                 using (var client = new HttpClient())
                 {
@@ -83,9 +83,7 @@ namespace MAMS.Controllers
                     {
                         string results = await getData.Content.ReadAsStringAsync();
 
-                        dt = JsonConvert.DeserializeObject<SuserDetails>(results);
-
-                        return RedirectToAction("Index", "Home");
+                        dt = JsonConvert.DeserializeObject<Suser>(results);
                     }
                     else if (getData.StatusCode != HttpStatusCode.OK)
                     {
@@ -98,8 +96,10 @@ namespace MAMS.Controllers
                         _notfy.Error("Error calling web API!", 5);
                         return View("Login");
                     }
-                    //ViewData.Model = dt;
+                    ViewData.Model = dt;
                 }
+
+                return RedirectToAction("Index", "Home", dt);
             }
             else
             {
@@ -136,8 +136,15 @@ namespace MAMS.Controllers
                     if (getData.IsSuccessStatusCode)
                     {
                         // User registration successful
-                        return View("SignUp");
                         _notfy.Success("You Registered Succesully !");
+                        return RedirectToAction("SignUp");
+
+                    }
+                    else if (getData.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        _notfy.Warning(errorMessage);
+                        return RedirectToAction("SignUp");
                     }
                     else
                     {
@@ -145,8 +152,8 @@ namespace MAMS.Controllers
                         var errorMessage = await getData.Content.ReadAsStringAsync();
                         ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
                         _notfy.Warning(errorMessage);
-                        return View("SignUp", userRegistrationModel);
-                        
+                        return RedirectToAction("SignUp", userRegistrationModel);
+
                     }
                 }
             }
@@ -154,7 +161,7 @@ namespace MAMS.Controllers
             {
                 // Handle other exceptions (e.g., network issues, etc.)
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                return View("SignUp", userRegistrationModel);
+                return RedirectToAction("SignUp", userRegistrationModel);
             }
         }
 
