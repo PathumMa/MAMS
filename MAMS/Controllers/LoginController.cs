@@ -16,13 +16,15 @@ namespace MAMS.Controllers
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
         public readonly string apiUrl;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger)
+        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
             apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            _contextAccessor = httpContextAccessor;
         }
 
         public IActionResult Login()
@@ -66,40 +68,47 @@ namespace MAMS.Controllers
 
         public async Task<ActionResult<LoginViewModel>> Enter(LoginViewModel user)
         {
-            
+            Suser dt = new Suser();
+
             if (user.UserName != null && user.Password != null)
             {
-                Suser dt = new Suser();
-
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
-
-                    if (getData.IsSuccessStatusCode)
+                    try
                     {
-                        string results = await getData.Content.ReadAsStringAsync();
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                        dt = JsonConvert.DeserializeObject<Suser>(results);
+                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
+
+                        if (getData.IsSuccessStatusCode)
+                        {
+                            string results = await getData.Content.ReadAsStringAsync();
+
+                            dt = JsonConvert.DeserializeObject<Suser>(results);
+                            var Id = dt.Id;
+                            return RedirectToAction("Index", "Home", new { Id = Id});
+                        }
+                        else if (getData.StatusCode != HttpStatusCode.OK)
+                        {
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            _notfy.Warning(errorMessage);
+                            return View("Login");
+                        }
+                        else
+                        {
+                            _notfy.Error("Error calling web API!", 5);
+                            return View("Login");
+                        }
                     }
-                    else if (getData.StatusCode != HttpStatusCode.OK)
+                    catch (HttpRequestException ex)
                     {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
-                        _notfy.Warning(errorMessage);
+                        // Log the exception or handle it appropriately
+                        _notfy.Error($"Error calling web API: {ex.Message}", 5);
                         return View("Login");
                     }
-                    else
-                    {
-                        _notfy.Error("Error calling web API!", 5);
-                        return View("Login");
-                    }
-                    ViewData.Model = dt;
                 }
-
-                return RedirectToAction("Index", "Home", dt);
             }
             else
             {
@@ -161,7 +170,8 @@ namespace MAMS.Controllers
             {
                 // Handle other exceptions (e.g., network issues, etc.)
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                return RedirectToAction("SignUp", userRegistrationModel);
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return View("SignUp");
             }
         }
 

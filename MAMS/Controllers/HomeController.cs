@@ -25,7 +25,7 @@ namespace MAMS.Controllers
             _httpContextAccessor = contextAccessor;
         }
 
-        public async Task<IActionResult> Index(Suser dt)
+        public async Task<ActionResult<Suser>> Index(int Id)
         {
             UserDetailsViewModel viewModel = new UserDetailsViewModel();
 
@@ -35,7 +35,7 @@ namespace MAMS.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                HttpResponseMessage getData = await client.GetAsync("User/" + dt.Id);
+                HttpResponseMessage getData = await client.GetAsync("User/" + Id);
 
                 if (getData.IsSuccessStatusCode)
                 {
@@ -48,12 +48,15 @@ namespace MAMS.Controllers
                     return View();
                 }
                 ViewData.Model = viewModel;
+                _httpContextAccessor.HttpContext.Session.SetString("UserName", viewModel.First_Name);
             }
             return View(viewModel);
         }
 
         public IActionResult Privacy()
         {
+            UserDetailsViewModel viewModel = new UserDetailsViewModel();
+            _httpContextAccessor.HttpContext.Session.SetString("UserName", viewModel.First_Name);
             return View();
         }
 

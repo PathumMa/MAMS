@@ -24,37 +24,6 @@
 
 <br />
 
-@*<div>
-    <table class="table table-striped">
-    <thead>
-    <tr>
-    <th scope="col">Category Name</th>
-    <th scope="col" class="text-center">Display Order</th>
-    <th scope="col" class="text-center">Created DateTime</th>
-    <th></th>
-
-    </tr>
-    </thead>
-
-    <tbody>
-    @foreach (var obj in Model)
-    {
-    <tr>
-    <td>@obj.Name</td>
-    <td class="text-center">@obj.DisplayOrder</td>
-    <td class="text-center">@obj.CreatedDateTime.ToString("dd MMM yyyy HH:mm:ss")</td>
-    <td>
-    <div class="btn-group btn-group-justified" role="group">
-    <a asp-controller="Category" asp-action="Edit" asp-route-id="@obj.Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
-    <a asp-controller="Category" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-light"> <i class="bi bi-trash3-fill"></i></a>
-    </div>
-    </td>
-    </tr>
-    }
-    </tbody>
-    </table>
-    </div>*@
-
 <div>
     <table class="table table-striped">
         <thead>
@@ -95,6 +64,12 @@
         </tbody>
     </table>
 </div>
+
+<footer class="border-top footer text-muted">
+                <div class="container">
+                    &copy; 2024 - MAMS v2017.01.17.01-
+                </div>
+            </footer>
 
 @section Scripts {
 <script>

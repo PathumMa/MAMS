@@ -1,6 +1,6 @@
 ﻿@using MAMS.Models
 
-@inject IHttpContextAccessor contextAccessor;
+@inject IHttpContextAccessor _httpContextAccessor;
 
 @model MAMS.Models.UserDetailsViewModel
 
@@ -12,8 +12,6 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 
-    <li>Welcome @Model.First_Name</li>
-    <li> @Model.Last_Name</li>
-    <li>@Model.Address</li>
+    <li>UserName: @_httpContextAccessor.HttpContext.Session.GetString("UserName")</li>
 </div>
 
