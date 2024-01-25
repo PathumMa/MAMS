@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
-using MAMS.ViewModels;
 
 namespace MAMS.Controllers
 {
@@ -16,15 +15,15 @@ namespace MAMS.Controllers
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
         public readonly string apiUrl;
-        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor httpContextAccessor)
+        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
             apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
-            _contextAccessor = httpContextAccessor;
+            _httpContextAccessor = contextAccessor;
         }
 
         public IActionResult Login()
@@ -55,6 +54,7 @@ namespace MAMS.Controllers
                 {
                     string results = getData.Content.ReadAsStringAsync().Result;
                     dt = JsonConvert.DeserializeObject<List<Suser>>(results);
+
                 }
                 else
                 {
@@ -88,7 +88,11 @@ namespace MAMS.Controllers
 
                             dt = JsonConvert.DeserializeObject<Suser>(results);
                             var Id = dt.Id;
+                            _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
+                            _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
+
                             return RedirectToAction("Index", "Home", new { Id = Id});
+                            
                         }
                         else if (getData.StatusCode != HttpStatusCode.OK)
                         {
@@ -131,48 +135,98 @@ namespace MAMS.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(SignUpViewModel userRegistrationModel)
         {
-            try
+            if(userRegistrationModel.RoleId == 30)
             {
-                using (var client = new HttpClient())
+                try
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/register", userRegistrationModel);
-
-                    // Check if the request was successful
-                    if (getData.IsSuccessStatusCode)
+                    using (var client = new HttpClient())
                     {
-                        // User registration successful
-                        _notfy.Success("You Registered Succesully !");
-                        return RedirectToAction("SignUp");
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    }
-                    else if (getData.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
-                        _notfy.Warning(errorMessage);
-                        return RedirectToAction("SignUp");
-                    }
-                    else
-                    {
-                        // Handle API error response
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
-                        ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
-                        _notfy.Warning(errorMessage);
-                        return RedirectToAction("SignUp", userRegistrationModel);
+                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/DoctorReg", userRegistrationModel);
 
+                        // Check if the request was successful
+                        if (getData.IsSuccessStatusCode)
+                        {
+                            // User registration successful
+                            _notfy.Success("You Registered Succesully !");
+                            return RedirectToAction("SignUp");
+
+                        }
+                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            _notfy.Warning(errorMessage);
+                            return RedirectToAction("SignUp");
+                        }
+                        else
+                        {
+                            // Handle API error response
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
+                            _notfy.Warning(errorMessage);
+                            return RedirectToAction("SignUp", userRegistrationModel);
+
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    // Handle other exceptions (e.g., network issues, etc.)
+                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                    _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                    return View("SignUp");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                // Handle other exceptions (e.g., network issues, etc.)
-                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                return View("SignUp");
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/UserReg", userRegistrationModel);
+
+                        // Check if the request was successful
+                        if (getData.IsSuccessStatusCode)
+                        {
+                            // User registration successful
+                            _notfy.Success("You Registered Succesully !");
+                            return RedirectToAction("SignUp");
+
+                        }
+                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            _notfy.Warning(errorMessage);
+                            return RedirectToAction("SignUp");
+                        }
+                        else
+                        {
+                            // Handle API error response
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
+                            _notfy.Warning(errorMessage);
+                            return RedirectToAction("SignUp", userRegistrationModel);
+
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle other exceptions (e.g., network issues, etc.)
+                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                    _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                    return View("SignUp");
+                }
+
             }
+            
         }
 
     }

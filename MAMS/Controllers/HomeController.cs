@@ -25,8 +25,9 @@ namespace MAMS.Controllers
             _httpContextAccessor = contextAccessor;
         }
 
-        public async Task<ActionResult<Suser>> Index(int Id)
+        public async Task<ActionResult<Suser>> Index()
         {
+            int Id = (int)HttpContext.Session.GetInt32("UserId");
             UserDetailsViewModel viewModel = new UserDetailsViewModel();
 
             using (var client = new HttpClient())
@@ -48,15 +49,16 @@ namespace MAMS.Controllers
                     return View();
                 }
                 ViewData.Model = viewModel;
-                _httpContextAccessor.HttpContext.Session.SetString("UserName", viewModel.First_Name);
             }
-            return View(viewModel);
+            _httpContextAccessor.HttpContext.Session.GetString("UserName");
+            return View();
         }
 
         public IActionResult Privacy()
         {
-            UserDetailsViewModel viewModel = new UserDetailsViewModel();
-            _httpContextAccessor.HttpContext.Session.SetString("UserName", viewModel.First_Name);
+            string user = HttpContext.Session.GetString("UserName");
+            ViewData["User"] = user;
+
             return View();
         }
 

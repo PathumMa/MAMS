@@ -2,7 +2,6 @@
 {
     public class UserDetailsViewModel
     {
-        public int SuserId { get; set; }
         public int RoleId { get; set; }
         public string UserName { get; set; }
         public string? Email { get; set; }
@@ -20,8 +19,5 @@
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
-        public string? AvailableDay { get; set; }
-        public string? AvailableTime { get; set; }
-        public string? Speciality { get; set; }
     }
 }

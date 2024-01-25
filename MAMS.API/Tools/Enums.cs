@@ -7,6 +7,22 @@
             Inactive = 0,
             Active = 1
         }
+
+        public enum AuthStatus
+        {
+            Pending = 0,
+            Authorized = 1,
+            Rejected = 2
+        }
+
+        public enum AppoinmentStatus
+        {
+            Scheduled = 1,
+            Completed = 2,
+            canceled = 3,
+            Postponed = 4
+        }
+
         public enum UserRole
         {
             Admin = 10,

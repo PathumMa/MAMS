@@ -22,46 +22,87 @@ namespace MAMS.API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDetailsViewModel>> GetUserDet(int id)
+        public async Task<IActionResult> GetUserDet(int id)
         {
             var user = _dbContext.Susers.Where(u => u.Id == id).FirstOrDefault<Suser>();
-            var userDetails = _dbContext.SuserDetails.Where(u => u.SuserId == id).FirstOrDefault<SuserDetails>();
-            var docDetails = _dbContext.DoctorDetails.Where(x => x.SuserDetailsId == userDetails.Id).FirstOrDefault<DoctorDetails>();
-            var docAvailDetails = _dbContext.DoctorAvailableDetails.Where(y => y.SuserDetailsId == userDetails.Id).FirstOrDefault<DoctorAvailableDetails>();
+            
 
-
-            var userdet = new UserDetailsViewModel
+            if(user.RoleId != 30)
             {
-                RoleId = user.RoleId,
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                UserTitle = userDetails.UserTitle,
-                First_Name = userDetails.First_Name,
-                Last_Name = userDetails.Last_Name,
-                Middle_Name = userDetails.Middle_Name,
-                Address = userDetails.Address,
-                City = userDetails.City,
-                District = userDetails.District,
-                Province = userDetails.Province,
-                Birth_Date = userDetails.Birth_Date,
-                Blood_Type = userDetails.Blood_Type,
-                Gender = userDetails.Gender,
-                PersonalId_Type = userDetails.PersonalId_Type,
-                Personal_Id = userDetails.Personal_Id,
-                AvailableDay = docAvailDetails?.AvailableDay,
-                AvailableTime = docAvailDetails?.AvailableTime,
-                Speciality = docDetails?.Speciality
-            };
+                var userDetails = _dbContext.UserDetails.Where(u => u.SuserId == id).FirstOrDefault<UserDetails>();
+                var userDet = new UserDetailsViewModel
+                {
+                    RoleId = user.RoleId,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    UserTitle = userDetails.UserTitle,
+                    First_Name = userDetails.First_Name,
+                    Last_Name = userDetails.Last_Name,
+                    Middle_Name = userDetails.Middle_Name,
+                    Address = userDetails.Address,
+                    City = userDetails.City,
+                    District = userDetails.District,
+                    Province = userDetails.Province,
+                    Birth_Date = userDetails.Birth_Date,
+                    Blood_Type = userDetails.Blood_Type,
+                    Gender = userDetails.Gender,
+                    PersonalId_Type = userDetails.PersonalId_Type,
+                    Personal_Id = userDetails.Personal_Id
+                };
 
-            if (userDetails == null)
-            {
-                return NotFound("User Details Not Found!");
+                if (userDetails == null)
+                {
+                    return NotFound("User Details Not Found!");
+                }
+                else
+                {
+                    return Ok(userDet);
+                }
             }
+
             else
             {
-                return Ok(userdet);
+
+                var docDetails = _dbContext.DoctorDetails.Where(x => x.SuserId == id).FirstOrDefault<DoctorDetails>();
+                var docAvailDetails = _dbContext.DoctorAvailableDetails.Where(y => y.DoctorId == docDetails.Id).FirstOrDefault<DoctorAvailableDetails>();
+                
+                var doctorDet = new DoctorDetailsViewModel
+                {
+                    RoleId = user.RoleId,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    UserTitle = docDetails.UserTitle,
+                    First_Name = docDetails.First_Name,
+                    Last_Name = docDetails.Last_Name,
+                    Middle_Name = docDetails.Middle_Name,
+                    Address = docDetails.Address,
+                    City = docDetails.City,
+                    District = docDetails.District,
+                    Province = docDetails.Province,
+                    Birth_Date = docDetails.Birth_Date,
+                    Blood_Type = docDetails.Blood_Type,
+                    Gender = docDetails.Gender,
+                    PersonalId_Type = docDetails.PersonalId_Type,
+                    Personal_Id = docDetails.Personal_Id,
+                    MedicalCouncilRegistrationNumber = docDetails?.MedicalCouncilRegistrationNumber,
+                    Specialization = docDetails?.Specialization,
+                    Available_Day = docAvailDetails?.Available_Day,
+                    Available_Time = docAvailDetails?.Available_Time
+                    
+                };
+
+                if (docDetails == null)
+                {
+                    return NotFound("User Details Not Found!");
+                }
+                else
+                {
+                    return Ok(doctorDet);
+                }
             }
+            
         }
 
     }

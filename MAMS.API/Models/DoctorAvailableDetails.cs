@@ -7,11 +7,11 @@ namespace MAMS.API.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public int SuserDetailsId { get; set; }
-        public string? AvailableDay { get; set; }
-        public string? AvailableTime { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public int DoctorId { get; set; }
+        public string? Available_Day { get; set; }
+        public string? Available_Time { get; set; }
+        public DateTime Created_Date { get; set; } = DateTime.Now;
 
-        public SuserDetails SuserDetails { get; set; }
+        public DoctorDetails DoctorDetails { get; set; }
     }
 }

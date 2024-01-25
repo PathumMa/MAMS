@@ -52,8 +52,8 @@ namespace MAMS.API.Controllers
             return Ok(user);
         }
 
-        [HttpPost("register")]
-        public IActionResult SignUp(SignUpViewModel signUpData)
+        [HttpPost("UserReg")]
+        public IActionResult UserReg(UserSignUpViewModel signUpData)
         {
             // Validate the model
             if (!ModelState.IsValid)
@@ -63,66 +63,45 @@ namespace MAMS.API.Controllers
 
             try
             {
-                if (_dbContext.Susers.Any(u => u.UserName == signUpData.Suser.UserName))
+                if (_dbContext.Susers.Any(u => u.UserName == signUpData.UserName))
                 {
                     ModelState.AddModelError("Suser.UserName", "Username is already taken. Please choose a different one.");
                     return BadRequest(ModelState);
                 }
 
-                var hashedPassword = Password.HashPassword(signUpData.Suser.Password);
+                var hashedPassword = Password.HashPassword(signUpData.Password);
 
                 // Create Suser object
                 var newUser = new Suser
                 {
-                    RoleId = signUpData.Suser.RoleId,
-                    UserName = signUpData.Suser.UserName,
+                    RoleId = signUpData.RoleId,
+                    UserName = signUpData.UserName,
                     Password = hashedPassword,
-                    Email = signUpData.Suser.Email,
-                    PhoneNumber = signUpData.Suser.PhoneNumber,
-                    CreatedDate = DateTime.Now,
-                    IsActive = 1
+                    Email = signUpData.Email,
+                    PhoneNumber = signUpData.PhoneNumber
                 };
 
-                // Create SuserDetails object
-                var userDetails = new SuserDetails
+                // Create UserDetails object
+                var userDetails = new UserDetails
                 {
-                    UserTitle = signUpData.SuserDetails.UserTitle,
-                    First_Name = signUpData.SuserDetails.First_Name,
-                    Last_Name = signUpData.SuserDetails.Last_Name,
-                    Middle_Name = signUpData.SuserDetails.Middle_Name,
-                    Address = signUpData.SuserDetails.Address,
-                    City = signUpData.SuserDetails.City,
-                    District = signUpData.SuserDetails.District,
-                    Province = signUpData.SuserDetails.Province,
-                    Birth_Date = signUpData.SuserDetails.Birth_Date,
-                    Gender = signUpData.SuserDetails.Gender,
-                    Blood_Type = signUpData.SuserDetails.Blood_Type,
-                    Personal_Id = signUpData.SuserDetails.Personal_Id,
-                    PersonalId_Type = signUpData.SuserDetails.PersonalId_Type,
-                    CreatedDate = DateTime.Now
+                    UserTitle = signUpData.UserTitle,
+                    First_Name = signUpData.First_Name,
+                    Last_Name = signUpData.Last_Name,
+                    Middle_Name = signUpData.Middle_Name,
+                    Address = signUpData.Address,
+                    City = signUpData.City,
+                    District = signUpData.District,
+                    Province = signUpData.Province,
+                    Birth_Date = signUpData.Birth_Date,
+                    Gender = signUpData.Gender,
+                    Blood_Type = signUpData.Blood_Type,
+                    Personal_Id = signUpData.Personal_Id,
+                    PersonalId_Type = signUpData.PersonalId_Type,
+                    Created_Date = DateTime.Now
                 };
 
-                // Create DoctorDetails object (if applicable)
-                if (signUpData.Suser.RoleId == 30) // Assuming RoleId 30 is for doctors
-                {
-                    var doctorAvailableDetails = new DoctorAvailableDetails
-                    {
-                        AvailableDay = signUpData.DoctorAvailableDetails.AvailableDay,
-                        AvailableTime = signUpData.DoctorAvailableDetails.AvailableTime,
-                        CreatedDate = DateTime.Now
-                    };
-
-                    userDetails.DoctorAvailableDetails = new List<DoctorAvailableDetails> { doctorAvailableDetails };
-
-                    var doctorDetails = new DoctorDetails
-                    {
-                        Speciality = signUpData.DoctorDetails.Speciality,
-                        CreatedDate = DateTime.Now
-                    };
-                }
-
-                // Assign SuserDetails to Suser
-                newUser.SuserDetails = userDetails;
+                // Assign UserDetails to Suser
+                newUser.UserDetails = userDetails;
 
                 // Add entities to the database
                 _dbContext.Susers.Add(newUser);
@@ -135,6 +114,71 @@ namespace MAMS.API.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-     
+
+        [HttpPost("DoctorReg")]
+        public IActionResult DoctorReg(DoctorSignUpViewModel signUpData)
+        {
+            // Validate the model
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                if (_dbContext.Susers.Any(u => u.UserName == signUpData.UserName))
+                {
+                    ModelState.AddModelError("Suser.UserName", "Username is already taken. Please choose a different one.");
+                    return BadRequest(ModelState);
+                }
+
+                var hashedPassword = Password.HashPassword(signUpData.Password);
+
+                // Create Suser object
+                var newUser = new Suser
+                {
+                    RoleId = signUpData.RoleId,
+                    UserName = signUpData.UserName,
+                    Password = hashedPassword,
+                    Email = signUpData.Email,
+                    PhoneNumber = signUpData.PhoneNumber
+                };
+
+                // Create UserDetails object
+                var doctorDetails = new DoctorDetails
+                {
+                    UserTitle = signUpData.UserTitle,
+                    First_Name = signUpData.First_Name,
+                    Last_Name = signUpData.Last_Name,
+                    Middle_Name = signUpData.Middle_Name,
+                    Address = signUpData.Address,
+                    City = signUpData.City,
+                    District = signUpData.District,
+                    Province = signUpData.Province,
+                    Birth_Date = signUpData.Birth_Date,
+                    Gender = signUpData.Gender,
+                    Blood_Type = signUpData.Blood_Type,
+                    Personal_Id = signUpData.Personal_Id,
+                    PersonalId_Type = signUpData.PersonalId_Type,
+                    MedicalCouncilRegistrationNumber = signUpData.MedicalCouncilRegistrationNumber,
+                    Specialization = signUpData.Specialization,
+                    Hospital_Affiliation = signUpData.Hospital_Affiliation
+                };
+
+                // Assign doctorDetails to Suser
+                newUser.DoctorDetails = doctorDetails;
+
+                // Add entities to the database
+                _dbContext.Susers.Add(newUser);
+                _dbContext.SaveChanges();
+
+                return Ok("User registered successfully!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
     }
 }

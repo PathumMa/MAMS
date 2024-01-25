@@ -2,6 +2,7 @@
     ViewData["Title"] = "Sign Up";
 }
 @model SignUpViewModel
+
 @using static MAMS.Tools.Enums
 
 <head>
@@ -48,16 +49,16 @@
 
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="Suser.RoleId">Register As:</label>
-                                <select asp-for="Suser.RoleId" id="roleTypeSelect" class="form-select rounded-pill">
+                                <label asp-for="RoleId">Register As:</label>
+                                <select asp-for="RoleId" id="roleTypeSelect" class="form-select rounded-pill">
                                     <option value="20">Patient</option>
                                     <option value="30">Doctor</option>
                                 </select>
                             </div>
 
                             <div class="col mb-4" id="dTypeInput">
-                                <label asp-for="DoctorDetails.Speciality" style="color:#d63384">Specialization:</label>
-                                <select asp-for="DoctorDetails.Speciality" class="form-select rounded-pill">
+                                <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
+                                <select asp-for="Specialization" class="form-select rounded-pill">
                                     <option value="">--Select--</option>
                                     @foreach (var dtype in Enum.GetValues(typeof(DoctorSpecialty)))
                                     {
@@ -72,7 +73,7 @@
                                     @foreach (var day in Enum.GetValues(typeof(MAMS.Tools.Enums.Days)))
                                     {
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" asp-for="DoctorAvailableDetails.AvailableDay" value="@day" id="@($"chk_{day}")" />
+                                            <input class="form-check-input" type="checkbox" asp-for="Available_Day" value="@day" id="@($"chk_{day}")" />
                                             <label class="form-check-label" id="@($"chk_{day}")">@day</label>
                                         </div>
                                     }
@@ -83,8 +84,8 @@
                         <p class="h5 mb-3">Personal Details</p><hr />
                         <div class="row gy-1">
                             <div class="col-2 mb-4">
-                                <label asp-for="SuserDetails.UserTitle">Title:</label>
-                                <select asp-for="SuserDetails.UserTitle" class="form-select rounded-pill">
+                                <label asp-for="UserTitle">Title:</label>
+                                <select asp-for="UserTitle" class="form-select rounded-pill">
                                     <option value="">--Title--</option>
                                     @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))
                                     {
@@ -93,39 +94,39 @@
                                 </select>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.First_Name">First Name:</label>
-                                <input asp-for="SuserDetails.First_Name" class="form-control rounded-pill" required />
-                                <span asp-validation-for="SuserDetails.First_Name" class="text-danger"></span>
+                                <label asp-for="First_Name">First Name:</label>
+                                <input asp-for="First_Name" class="form-control rounded-pill" required />
+                                <span asp-validation-for="First_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.Last_Name">Last Name:</label>
-                                <input asp-for="SuserDetails.Last_Name" class="form-control rounded-pill" required />
-                                <span asp-validation-for="SuserDetails.Last_Name" class="text-danger"></span>
+                                <label asp-for="Last_Name">Last Name:</label>
+                                <input asp-for="Last_Name" class="form-control rounded-pill" required />
+                                <span asp-validation-for="Last_Name" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.Middle_Name">Middle Name:</label>
-                                <input asp-for="SuserDetails.Middle_Name" class="form-control rounded-pill" placeholder="Optional" />
-                                <span asp-validation-for="SuserDetails.Middle_Name" class="text-danger"></span>
+                                <label asp-for="Middle_Name">Middle Name:</label>
+                                <input asp-for="Middle_Name" class="form-control rounded-pill" placeholder="Optional" />
+                                <span asp-validation-for="Middle_Name" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row gy-1">
                             <div class="mb-4">
-                                <label asp-for="SuserDetails.Address">Address:</label>
-                                <input asp-for="SuserDetails.Address" class="form-control rounded-pill" />
-                                <span asp-validation-for="SuserDetails.Address" class="text-danger"></span>
+                                <label asp-for="Address">Address:</label>
+                                <input asp-for="Address" class="form-control rounded-pill" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.City">City:</label>
-                                <input asp-for="SuserDetails.City" class="form-control rounded-pill" />
-                                <span asp-validation-for="SuserDetails.City" class="text-danger"></span>
+                                <label asp-for="City">City:</label>
+                                <input asp-for="City" class="form-control rounded-pill" />
+                                <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.District">District:</label>
-                                <select asp-for="SuserDetails.District" class="form-select rounded-pill">
+                                <label asp-for="District">District:</label>
+                                <select asp-for="District" class="form-select rounded-pill">
                                     <option value="">--Select Your District--</option>
                                     @foreach (var district in Enum.GetValues(typeof(District)))
                                     {
@@ -134,8 +135,8 @@
                                 </select>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.Province">Province:</label>
-                                <select asp-for="SuserDetails.Province" class="form-select rounded-pill">
+                                <label asp-for="Province">Province:</label>
+                                <select asp-for="Province" class="form-select rounded-pill">
                                     <option value="">--Select Your Province--</option>
                                     @foreach (var province in Enum.GetValues(typeof(Province)))
                                     {
@@ -147,26 +148,26 @@
 
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="Suser.Email">Email:</label>
-                                <input asp-for="Suser.Email" class="form-control rounded-pill" type="email" />
-                                <span asp-validation-for="Suser.Email" class="text-danger"></span>
+                                <label asp-for="Email">Email:</label>
+                                <input asp-for="Email" class="form-control rounded-pill" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="Suser.PhoneNumber">Phone:</label>
-                                <input asp-for="Suser.PhoneNumber" class="form-control rounded-pill" type="tel" oninput="validatePhoneNumber(this)" required />
-                                <span asp-validation-for="Suser.PhoneNumber" class="text-danger"></span>
+                                <label asp-for="PhoneNumber">Phone:</label>
+                                <input asp-for="PhoneNumber" class="form-control rounded-pill" type="tel" oninput="validatePhoneNumber(this)" required />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.Birth_Date">Birth Date:</label>
-                                <input asp-for="SuserDetails.Birth_Date" class="form-control rounded-pill" type="date" asp-format="{0:yyyy-MM-dd}" />
-                                <span asp-validation-for="SuserDetails.Birth_Date" class="text-danger"></span>
+                                <label asp-for="Birth_Date">Birth Date:</label>
+                                <input asp-for="Birth_Date" class="form-control rounded-pill" type="date" asp-format="{0:yyyy-MM-dd}" />
+                                <span asp-validation-for="Birth_Date" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
                                 <label>Blood Group:</label>
-                                <select asp-for="SuserDetails.Blood_Type" class="form-select rounded-pill" required>
+                                <select asp-for="Blood_Type" class="form-select rounded-pill" required>
                                     <option value="">--Select your Blood Group--</option>
                                     @foreach (var bloodGroup in Enum.GetValues(typeof(BloodGroupType)))
                                     {
@@ -175,8 +176,8 @@
                                 </select>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.Gender">Gender:</label>
-                                <select asp-for="SuserDetails.Gender" id="SuserDetails.Gender" class="form-select rounded-pill">
+                                <label asp-for="Gender">Gender:</label>
+                                <select asp-for="Gender" id="SuserDetails.Gender" class="form-select rounded-pill">
                                     <option value="">-- Select your Gender --</option>
                                     @foreach (var gType in Enum.GetValues(typeof(GenderType)))
                                     {
@@ -188,8 +189,8 @@
 
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="SuserDetails.PersonalId_Type">Personal Id:</label>
-                                <select asp-for="SuserDetails.PersonalId_Type" id="idTypeSelect" class="form-select rounded-pill">
+                                <label asp-for="PersonalId_Type">Personal Id:</label>
+                                <select asp-for="PersonalId_Type" id="idTypeSelect" class="form-select rounded-pill">
                                     <option value="">-- Select Personal ID Type --</option>
                                     @foreach (var idType in Enum.GetValues(typeof(PersonalIdType)))
                                     {
@@ -198,19 +199,19 @@
                                 </select>
                             </div>
                             <div class=" col mb-4 nic-validate" id="nic-input" data-type="Nic" style="display: none;" placeholder="Enter NIC number">
-                                <label asp-for="SuserDetails.Personal_Id">NIC:</label>
-                                <input asp-for="SuserDetails.Personal_Id" class="form-control rounded-pill" />
-                                <span asp-validation-for="SuserDetails.Personal_Id" class="text-danger" id="nic-validation-msg"></span>
+                                <label asp-for="Personal_Id">NIC:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger" id="nic-validation-msg"></span>
                             </div>
                             <div class="col mb-4" id="passport-input" data-type="Passport" style="display: none;">
-                                <label asp-for="SuserDetails.Personal_Id">Passport:</label>
-                                <input asp-for="SuserDetails.Personal_Id" class="form-control rounded-pill" />
-                                <span asp-validation-for="SuserDetails.Personal_Id" class="text-danger"></span>
+                                <label asp-for="Personal_Id">Passport:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger"></span>
                             </div>
                             <div class="col mb-4" id="dlicence-input" data-type="DLicence" style="display: none;">
-                                <label asp-for="SuserDetails.Personal_Id">Driving licence Id:</label>
-                                <input asp-for="SuserDetails.Personal_Id" class="form-control rounded-pill" />
-                                <span asp-validation-for="SuserDetails.Personal_Id" class="text-danger"></span>
+                                <label asp-for="Personal_Id">Driving licence Id:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger"></span>
                             </div>
                         </div>
                         <br />
@@ -218,14 +219,14 @@
                         <p class="h5 mb-3">Login Details</p><hr />
                         <div class="row gy-1">
                             <div class="col mb-4">
-                                <label asp-for="Suser.UserName">Provide User Name</label>
-                                <input asp-for="Suser.UserName" class="form-control rounded-pill" required />
-                                <span asp-validation-for="Suser.UserName" class="text-danger"></span>
+                                <label asp-for="UserName">Provide User Name</label>
+                                <input asp-for="UserName" class="form-control rounded-pill" required />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
                             </div>
                             <div class="col mb-4">
-                                <label asp-for="Suser.Password">Provide Password</label>
-                                <input asp-for="Suser.Password" class="form-control rounded-pill" type="password" id="password" required />
-                                <span asp-validation-for="Suser.Password" class="text-danger"></span>
+                                <label asp-for="Password">Provide Password</label>
+                                <input asp-for="Password" class="form-control rounded-pill" type="password" id="password" required />
+                                <span asp-validation-for="Password" class="text-danger"></span>
                                 <div>
                                     <label>Password Strength:</label>
                                     <div class="progress" id="password-strength-meter">
@@ -334,7 +335,7 @@
                     document.addEventListener("DOMContentLoaded", function ()
                     {
                     var emailInput = document.querySelector('input[type="email"]');
-                    var emailSpan = document.querySelector('[data-valmsg-for="Suser.Email"]');
+                    var emailSpan = document.querySelector('[data-valmsg-for="Email"]');
 
                     emailInput.addEventListener('input', function(event)
                     {
@@ -400,15 +401,15 @@
                     nicInput.style.display = "block";
                     } else if (idTypeSelect.value === "Passport") {
                     passportInput.style.display = "block";
-                    document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
+                    document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
                     } else if (idTypeSelect.value === "DLicence") {
                     dlicenceInput.style.display = "block";
-                    document.getElementById("SuserDetails_Personal_Id").setAttribute("data-type", "NIC");
+                    document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
                     }
                     }
 
                     // Attach event listener to trigger NIC validation
-                    var nicInput = document.getElementById("SuserDetails_Personal_Id");
+                    var nicInput = document.getElementById("Personal_Id");
                     nicInput.addEventListener("blur", function () {
                     validateNIC();
                     });
@@ -424,10 +425,10 @@
 
                 // Function to validate NIC
                 function validateNIC() {
-                    var nicInput = document.getElementById("SuserDetails_Personal_Id");
+                    var nicInput = document.getElementById("Personal_Id");
                     var nicValidationMsg = document.getElementById("nic-validation-msg");
-                    var birthYearInput = document.getElementById("SuserDetails_Birth_Date");
-                    var genderInput = document.getElementById("SuserDetails.Gender");
+                    var birthYearInput = document.getElementById("Birth_Date");
+                    var genderInput = document.getElementById("Gender");
                     console.log(birthYearInput.value.split("-")[0])
                     console.log(genderInput.value);
                     // Regular expression pattern for NIC validation
@@ -534,8 +535,10 @@
 
                     document.getElementById('confirmPwd').addEventListener('keyup', function () {
                         var password = document.getElementById('password').value;
+                        console.log("pass:", password);
                         var confirmPassword = this.value;
                         var passwordMatchError = document.getElementById('passwordMatchError');
+                        console.log("ConfirmPass:", confirmPassword);
 
                         if (password !== confirmPassword) {
                             passwordMatchError.style.display = 'block';
