@@ -19,8 +19,5 @@
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
-        public string? AvailableDay { get; set; }
-        public string? AvailableTime { get; set; }
-        public string? Speciality { get; set; }
     }
 }

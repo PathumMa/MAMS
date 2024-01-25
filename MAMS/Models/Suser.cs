@@ -12,9 +12,13 @@ namespace MAMS.Models
         [Required]
         public string Password { get; set; }
         public string? Email { get; set; }
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
+        public string? ProfilePictureURL { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public int IsActive { get; set; } = 1;
 
+        public SuserDetails SuserDetails { get; set; }
+        public UserDetails UserDetails { get; set; }
+        public DoctorDetails DoctorDetails { get; set; }
     }
 }

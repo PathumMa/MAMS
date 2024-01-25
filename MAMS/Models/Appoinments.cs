@@ -2,16 +2,18 @@
 
 namespace MAMS.Models
 {
-    public class DoctorAvailableDetails
+    public class Appoinments
     {
         [Key]
         public int Id { get; set; }
         [Required]
+        public int UserId { get; set; }
+        [Required]
         public int DoctorId { get; set; }
-        public string? Available_Day { get; set; }
-        public string? Available_Time { get; set; }
-        public DateTime Created_Date { get; set; } = DateTime.Now;
+        public DateTime Appoinment_Date { get; set; }
+        public int Status { get; set; } = 1;
 
+        public UserDetails UserDetails { get; set; }
         public DoctorDetails DoctorDetails { get; set; }
     }
 }

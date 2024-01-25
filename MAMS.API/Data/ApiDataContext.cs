@@ -10,27 +10,29 @@ namespace MAMS.API.Data
         }
 
         public DbSet<Suser> Susers { get; set; }
-        public DbSet<SuserDetails> SuserDetails { get; set; }
+        public DbSet<UserDetails> UserDetails { get; set; }
         public DbSet<DoctorAvailableDetails> DoctorAvailableDetails { get; set; }
         public DbSet<DoctorDetails> DoctorDetails { get; set; }
+        public DbSet<Specializations> Specializations { get; set; }
+        public DbSet<MedicalRecords> MedicalRecords { get; set; }
+        public DbSet<Appoinments> Appoinments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Suser>()
-             .HasOne(s => s.SuserDetails)
+             .HasOne(s => s.UserDetails)
              .WithOne(sd => sd.Suser)
-             .HasForeignKey<SuserDetails>(dd => dd.SuserId);
+             .HasForeignKey<UserDetails>(dd => dd.SuserId);
 
-            // One-to-Many relationship between SuserDetails and DoctorAvailableDetails
-            modelBuilder.Entity<SuserDetails>()
+            modelBuilder.Entity<Suser>()
+             .HasOne(s => s.DoctorDetails)
+             .WithOne(sd => sd.Suser)
+             .HasForeignKey<DoctorDetails>(dd => dd.SuserId);
+
+            modelBuilder.Entity<DoctorDetails>()
                 .HasMany(s => s.DoctorAvailableDetails)
-                .WithOne(sd => sd.SuserDetails)
-                .HasForeignKey(dd => dd.SuserDetailsId);
-
-            modelBuilder.Entity<SuserDetails>()
-                .HasOne(s => s.DoctorDetails)
-                .WithOne(sd => sd.SuserDetails)
-                .HasForeignKey<DoctorDetails>(dd => dd.SuserDetailsId);
+                .WithOne(sd => sd.DoctorDetails)
+                .HasForeignKey(dd => dd.DoctorId);
 
             // Additional configurations...
 
