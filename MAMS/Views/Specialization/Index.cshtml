@@ -1,0 +1,107 @@
+﻿@using System.Data
+@using MAMS.Tools
+@{
+    ViewData["Title"] = "Specializations";
+}
+@model IEnumerable<Specializations>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2 class="text-primary">Specialization List</h2>
+        </div>
+
+        <div class="col text-end">
+            <a asp-controller="Specialization" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
+        </div>
+    </div>
+</div>
+
+<br />
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col" class="col">Specialization Name</th>
+                <th scope="col" class="col-5 text-center">Description</th>
+                <th scope="col" class="col text-center">Status</th>
+                <th></th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var obj in Model)
+            {
+                <tr>
+                    <td data-Specializations_Name="@obj.Specializations_Name">@obj.Specializations_Name</td>
+                    <td class="text-start text-break">@obj.Description</td>
+                    <td class="text-center">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input status-switch" type="checkbox" id="statusSwitch_@obj.Specializations_Id"
+                                   data-specializations-id="@obj.Specializations_Id" @(obj.Record_Status == Enums.ActiveStatus.Active ? "checked" : "") aria-label="Toggle Status">
+
+                            <label class="form-check-label" for="statusSwitch_@obj.Specializations_Id">Active/Inactive</label>
+                        </div>
+                    </td>
+                    @if (TempData["RecordStatusUpdateFailed"] != null)
+                    {
+                        // Reset the Record_Status if the update failed
+                        <script>
+                            $(document).ready(function () {
+                                $('#statusSwitch_@obj.Specializations_Id').prop('checked', @obj.Record_Status == 1 ? true : false);
+                            });
+                        </script>
+                    }
+
+                    <td>
+                        <div class="btn-group btn-group-justified" role="group">
+                            <a asp-controller="Specialization" asp-action="Edit" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
+                            <a asp-controller="Specialization" asp-action="Delete" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-trash3-fill"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+            }
+
+        </tbody>
+    </table>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle checkbox toggle event
+            $('.status-switch').change(function () {
+                var specializationId = $(this).data('specializations-id');
+                var isChecked = $(this).prop('checked');
+                console.log(specializationId);
+                console.log(isChecked);
+                updateRecordStatus(specializationId, isChecked);
+            });
+
+            // Function to update Record_Status asynchronously
+            function updateRecordStatus(specializationId, isChecked) {
+                var apiUrl = '@Url.Action("UpdateRec", "Specialization")';
+
+                $.ajax({
+                    url: apiUrl,
+                    type: 'POST', // or 'PUT' depending on your API
+                    data: {
+                        Id: specializationId,
+                        isChecked: isChecked
+                    },
+                    success: function (result) {
+                        // Handle success, if needed
+                    },
+                    error: function (error) {
+                        console.error('Error updating Record_Status:', error);
+                        // Handle error, if needed
+                    }
+                });
+            }
+        });
+    </script>
+}

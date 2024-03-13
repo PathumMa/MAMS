@@ -36,6 +36,13 @@ namespace MAMS.Controllers
             return View();
         }
 
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            _notfy.Warning("Session Cleared! ");
+            return RedirectToAction("Login");
+        }
+
         //view All records
         public async Task<IActionResult> Index()
         {
@@ -90,7 +97,7 @@ namespace MAMS.Controllers
                             var Id = dt.Id;
                             _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
                             _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
-
+                            _notfy.Success("view loaded Successfully.", 5);
                             return RedirectToAction("Index", "Home", new { Id = Id});
                             
                         }
@@ -98,7 +105,7 @@ namespace MAMS.Controllers
                         {
                             var errorMessage = await getData.Content.ReadAsStringAsync();
                             _notfy.Warning(errorMessage);
-                            return View("Login");
+                            return RedirectToAction("Login");
                         }
                         else
                         {
