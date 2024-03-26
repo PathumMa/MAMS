@@ -1,73 +1,106 @@
 ﻿@using System.Data
-@using MAMS.Tools
+@using MAMS.Services
 @{
     ViewData["Title"] = "Specializations";
 }
 @model IEnumerable<Specializations>
 
+<div class="content-header">
 
-<div class="container">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col">
+                <h1 class="m-0">Specializations</h1>
+            </div><!-- /.col -->
+            <div class="col text-end">
+                <a asp-controller="Specialization" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+
+
+    <br />
+
     <div class="row">
-        <div class="col">
-            <h2 class="text-primary">Specialization List</h2>
-        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Responsive Hover Table</h3>
 
-        <div class="col text-end">
-            <a asp-controller="Specialization" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Specialization</th>
+                                <th class="text-center">Description</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var obj in Model)
+                            {
+                                <tr>
+                                    <input asp-for="@obj.Specializations_Id" hidden />
+                                    <td data-Specializations_Name="@obj.Specializations_Name">@obj.Specializations_Name</td>
+                                    <td class="text-start text-break">@obj.Description</td>
+                                    <td class="text-center">
+
+                                        @if (obj.Record_Status == Enums.ActiveStatus.Active)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else if (obj.Record_Status == Enums.ActiveStatus.Inactive)
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+                                        <div class="btn-group btn-group-justified" role="group">
+                                            <a asp-controller="Specialization" asp-action="Edit" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
+                                            <a href="#" class="delete-button btn btn-light" data-id="@obj.Specializations_Id"> <i class="bi bi-trash3-fill"></i></a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
         </div>
     </div>
 </div>
 
-<br />
-
-<div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col" class="col">Specialization Name</th>
-                <th scope="col" class="col-5 text-center">Description</th>
-                <th scope="col" class="col text-center">Status</th>
-                <th></th>
-
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var obj in Model)
-            {
-                <tr>
-                    <td data-Specializations_Name="@obj.Specializations_Name">@obj.Specializations_Name</td>
-                    <td class="text-start text-break">@obj.Description</td>
-                    <td class="text-center">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input status-switch" type="checkbox" id="statusSwitch_@obj.Specializations_Id"
-                                   data-specializations-id="@obj.Specializations_Id" @(obj.Record_Status == Enums.ActiveStatus.Active ? "checked" : "") aria-label="Toggle Status">
-
-                            <label class="form-check-label" for="statusSwitch_@obj.Specializations_Id">Active/Inactive</label>
-                        </div>
-                    </td>
-                    @if (TempData["RecordStatusUpdateFailed"] != null)
-                    {
-                        // Reset the Record_Status if the update failed
-                        <script>
-                            $(document).ready(function () {
-                                $('#statusSwitch_@obj.Specializations_Id').prop('checked', @obj.Record_Status == 1 ? true : false);
-                            });
-                        </script>
-                    }
-
-                    <td>
-                        <div class="btn-group btn-group-justified" role="group">
-                            <a asp-controller="Specialization" asp-action="Edit" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
-                            <a asp-controller="Specialization" asp-action="Delete" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-trash3-fill"></i></a>
-                        </div>
-                    </td>
-                </tr>
-
-            }
-
-        </tbody>
-    </table>
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="showDeleteConfirmationModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Delete this Specialization?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmYes" data-id="">Yes</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section scripts {
@@ -102,6 +135,36 @@
                     }
                 });
             }
+        });
+    </script>
+
+     @{
+        <partial name="_ValidationScriptspartial" />
+    }
+    <script>
+        //Function to show the delete confirmation modal
+        function showDeleteConfirmationModal(id) {
+            $('#deleteConfirmationModal').modal('show');
+            var id = $('#confirmYes').data('id', id);
+        }
+
+        // Attach the delete confirmation dialog to the Delete button
+        $(document).ready(function () {
+            $('.delete-button').click(function (e) {
+                e.preventDefault(); // Prevent the default link behavior
+                // Extract the id from the delete button's data-id attribute
+                var id = $(this).data('id');
+                showDeleteConfirmationModal(id); // Show the delete confirmation modal
+            });
+
+            // Handle form submission when "Yes" is clicked
+            $('#confirmYes').click(function () {
+                var id = $(this).data('id');
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal
+                // Redirect to the delete action with the id parameter
+                console.log("Deletion ID:", id);
+                window.location.href = '@Url.Action("Delete", "Specialization")' + '?id=' + id;
+            });
         });
     </script>
 }

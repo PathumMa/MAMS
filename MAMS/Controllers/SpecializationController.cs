@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
-using MAMS.Tools;
+using MAMS.Services;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MAMS.Controllers
 {
@@ -17,6 +18,9 @@ namespace MAMS.Controllers
         private readonly IConfiguration _config;
         public readonly string apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly AppSettings _appSettings;
+        public SpecializationService specializationService = new SpecializationService();
+
 
         public SpecializationController(IConfiguration config, INotyfService notfy, ILogger<SpecializationController> logger, IHttpContextAccessor contextAccessor)
         {
@@ -25,6 +29,7 @@ namespace MAMS.Controllers
             _notfy = notfy;
             apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
             _httpContextAccessor = contextAccessor;
+            //_specializationService = specializationService;
 
         }
 
@@ -49,7 +54,6 @@ namespace MAMS.Controllers
                     {
                         string results = getData.Content.ReadAsStringAsync().Result;
                         dt = JsonConvert.DeserializeObject<List<Specializations>>(results);
-                        _notfy.Success("view loaded Successfully.", 5);
                     }
                     else
                     {
@@ -85,83 +89,39 @@ namespace MAMS.Controllers
             }
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
 
-        public async Task<IActionResult> Create(Specializations NewSpec)
+        public async Task<IActionResult> CreateNew(Specializations newSpec)
         {
 
 
             Specializations specializations = new Specializations()
             {
-                Specializations_Name = NewSpec.Specializations_Name,
-                Description = NewSpec.Description,
+                Specializations_Name = newSpec.Specializations_Name,
+                Description = newSpec.Description,
             };
 
             try
             {
-                if (ModelState.IsValid && NewSpec.Specializations_Name != null)
+                if (ModelState.IsValid && newSpec.Specializations_Name != null)
                 {
-                    using (var client = new HttpClient())
+
+                    (bool success, string errorMessage) = await specializationService.AddSpecializationAsync(specializations, apiUrl);
+
+                    if (success)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync<Specializations>("Specialization/addSpec", specializations);
-
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            _notfy.Success($"New Specialization added Successfully!. {NewSpec.Specializations_Name}");
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            _notfy.Error("Creation Fail!.", 5);
-                            return RedirectToAction("Index");
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
-
-        public async Task<IActionResult> Update(Specializations specialization)
-        {
-            if (!ModelState.IsValid)
-            {
-                // Handle validation errors before making the API call
-                // You may choose to display error messages to the user or take other actions
-                return View(specialization); // Assuming you have a corresponding Update view
-            }
-
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.PutAsJsonAsync<Specializations>("specialization/updateSpec/{specializations.Specializations_Id}", specialization);
-
-                    if (getData.IsSuccessStatusCode)
-                    {
-                        _notfy.Success($"{specialization.Specializations_Name} Updated successfully.");
+                        _notfy.Success($"{newSpec.Specializations_Name} Added Successfully as a new Specialization!. ");
                         return RedirectToAction("Index");
                     }
                     else
                     {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        _notfy.Error("Creation Fail!", 5);
                         _notfy.Warning(errorMessage);
-                        _notfy.Error("update Fail!.", 5);
-                        return RedirectToAction("Index");
+                        ModelState.AddModelError(string.Empty, errorMessage);
+                        return View("Create");
                     }
                 }
             }
@@ -169,8 +129,68 @@ namespace MAMS.Controllers
             {
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
                 _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                return RedirectToAction("Index");
+                return View("Create");
             }
+            return View();
+        }
+
+        public async Task<IActionResult> Edit(int Id)
+        {
+            Specializations dt = new Specializations();
+
+            var result = await specializationService.GetSpecialization(Id, apiUrl);
+
+            try
+            {
+                if (result.Item1 != null)
+                {
+                    dt = result.Item1;
+                }
+                else
+                {
+                    _notfy.Error(result.Item2);
+                    RedirectToAction("Index");
+                }
+                ViewData.Model = dt;
+            }
+            catch (Exception ex)
+            {
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                RedirectToAction("Index");
+            }
+            return View();
+
+        }
+
+        public async Task<IActionResult> Update(Specializations currentSpec)
+        {
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    (bool success, string errorMessage) = await specializationService.UpdateSpecializationAsync(currentSpec, apiUrl);
+
+                    if (success)
+                    {
+                        _notfy.Success($"{currentSpec.Specializations_Name} Updated successfully.");
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        _notfy.Warning(errorMessage);
+                        _notfy.Error("update Fail!.", 5);
+                        return View("Edit");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return View("Edit");
+            }
+            return View();
         }
 
         public async Task<IActionResult> UpdateRec(int Id, bool isChecked)
@@ -213,6 +233,28 @@ namespace MAMS.Controllers
                 return RedirectToAction("Index");
             }
         }
-    }
 
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var result = await specializationService.DeleteRecordAsync(id, apiUrl);
+
+                if (result.Success)
+                {
+                    _notfy.Success("Delete Successfully!");
+                }
+                else
+                {
+                    _notfy.Warning(result.ErrorMessage);
+                    _notfy.Error("Deletion Fail!.", 5);
+                }
+            }
+            catch (Exception ex)
+            {
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+            }
+            return RedirectToAction("Index");
+        }
+    }
 }

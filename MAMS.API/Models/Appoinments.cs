@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Models
 {
@@ -11,6 +12,6 @@ namespace MAMS.API.Models
         [Required]
         public int Doctor_PersonalId { get; set; }
         public DateTime Appoinment_Date { get; set; }
-        public int Status { get; set; } = 1;
+        public ActiveStatus Status { get; set; } = ActiveStatus.Active;
     }
 }

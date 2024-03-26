@@ -35,7 +35,7 @@
                         <input asp-for="Password" class="form-control rounded-pill" autocomplete="new-password" type="password" required/>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-                    <button id="loginButton" asp-controller="Login" asp-action="Enter" method="post" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
+                    <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
                 </form>
 
                 <div class="container" style="padding: 25% 0 0 0;">
@@ -53,6 +53,11 @@
         
         <div class="split right"></div>
     </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Component.InvokeAsync("Notyf")
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

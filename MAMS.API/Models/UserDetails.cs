@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Models
 {
@@ -17,7 +18,7 @@ namespace MAMS.API.Models
         public string District { get; set; }
         public string Province { get; set; }
         public DateTime Birth_Date { get; set; }
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
         public string Blood_Type { get; set; }
         [Required]
         public string Personal_Id { get; set; }

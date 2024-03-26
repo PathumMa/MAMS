@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static MAMS.Tools.Enums;
+using static MAMS.Services.Enums;
 
 namespace MAMS.Models
 {

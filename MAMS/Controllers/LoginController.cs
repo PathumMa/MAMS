@@ -26,9 +26,75 @@ namespace MAMS.Controllers
             _httpContextAccessor = contextAccessor;
         }
 
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Enter(LoginViewModel user)
+        {
+            Suser dt = new Suser();
+
+            if (user.UserName != null && user.Password != null)
+            {
+                using (var client = new HttpClient())
+                {
+                    try
+                    {
+                        client.BaseAddress = new Uri(apiUrl);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
+
+                        if (getData.IsSuccessStatusCode)
+                        {
+                            string results = await getData.Content.ReadAsStringAsync();
+
+                            dt = JsonConvert.DeserializeObject<Suser>(results);
+                            var Id = dt.Id;
+                            _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
+                            _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
+                            _notfy.Success("view loaded Successfully.", 5);
+                            return RedirectToAction("Index", "Home", new { Id = Id });
+
+                        }
+                        else if (getData.StatusCode != HttpStatusCode.OK)
+                        {
+                            var errorMessage = await getData.Content.ReadAsStringAsync();
+                            _notfy.Warning(errorMessage);
+                            return View("Login");
+                        }
+                        else
+                        {
+                            _notfy.Error("Error calling web API!", 5);
+                            return View("Login");
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        // Log the exception or handle it appropriately
+                        _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                        return View("Login");
+                    }
+                }
+            }
+            else
+            {
+                if (user.UserName == null && user.Password == null)
+                {
+                    _notfy.Warning("User Name and Password required");
+                }
+                else if (user.UserName == null)
+                {
+                    _notfy.Warning("User Name required");
+                }
+                else // suser.Password == null
+                {
+                    _notfy.Warning("Password required");
+                }
+            }
+            return View("Login");
         }
 
         public IActionResult SignUp()
@@ -73,71 +139,6 @@ namespace MAMS.Controllers
             return View();
         }
 
-        public async Task<ActionResult<LoginViewModel>> Enter(LoginViewModel user)
-        {
-            Suser dt = new Suser();
-
-            if (user.UserName != null && user.Password != null)
-            {
-                using (var client = new HttpClient())
-                {
-                    try
-                    {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
-
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            string results = await getData.Content.ReadAsStringAsync();
-
-                            dt = JsonConvert.DeserializeObject<Suser>(results);
-                            var Id = dt.Id;
-                            _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
-                            _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
-                            _notfy.Success("view loaded Successfully.", 5);
-                            return RedirectToAction("Index", "Home", new { Id = Id});
-                            
-                        }
-                        else if (getData.StatusCode != HttpStatusCode.OK)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("Login");
-                        }
-                        else
-                        {
-                            _notfy.Error("Error calling web API!", 5);
-                            return View("Login");
-                        }
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        // Log the exception or handle it appropriately
-                        _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                        return View("Login");
-                    }
-                }
-            }
-            else
-            {
-                if (user.UserName == null && user.Password == null)
-                {
-                    _notfy.Warning("User Name and Password required");
-                }
-                else if (user.UserName == null)
-                {
-                    _notfy.Warning("User Name required");
-                }
-                else // suser.Password == null
-                {
-                    _notfy.Warning("Password required");
-                }
-            }
-            return View("Login");
-        }
 
         [HttpPost]
         public async Task<IActionResult> Register(SignUpViewModel userRegistrationModel)

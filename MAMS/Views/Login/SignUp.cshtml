@@ -5,7 +5,7 @@
 }
 @model SignUpViewModel
 
-@using static MAMS.Tools.Enums
+@using static MAMS.Services.Enums
 
 <head>
     <meta charset='utf-8'>
@@ -77,7 +77,7 @@
                             <div class="col mb-4" id="availability">
                                 <label style="color:#d63384">Available Days:</label>
                                 <div class="availability-checkboxes">
-                                    @foreach (var day in Enum.GetValues(typeof(MAMS.Tools.Enums.Days)))
+                                    @foreach (var day in Enum.GetValues(typeof(MAMS.Services.Enums.Days)))
                                     {
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="checkbox" asp-for="Available_Day" value="@day" id="@($"chk_{day}")" />
