@@ -127,5 +127,12 @@
             Oncologist
         }
 
+        public enum PaymentMethod
+        {
+            Cash,
+            Card,
+            Insurance
+        }
+
     }
 }

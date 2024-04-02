@@ -21,7 +21,7 @@
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
         public string? MedicalCouncilRegistrationNumber { get; set; }
-        public string Specialization { get; set; }
+        public List<Specializations>? Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
         public string? Available_Day { get; set; }
         public string? Available_Time { get; set; }

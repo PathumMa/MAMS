@@ -21,24 +21,34 @@
     <div class="container">
         <div class="split left">
             <div class="login-box">
-                <p class="h2 mb-3">Log in</p>
+                <figure>
+                    <blockquote class="h2">
+                        <p>Log in</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Streamline your access to <cite title="Source Title">MedEase&#8482;</cite> platform.
+                    </figcaption>
+                </figure>
+                <hr />
 
-                <form asp-controller="Login" asp-action="Enter" method="post" id="loginForm">
+                <div class="container" style="padding: 5% 0 10% 0;">
+                    <form asp-controller="Login" asp-action="Enter" method="post" id="loginForm">
 
-                    <div class="mb-4">
-                        <label asp-for="UserName">User Name</label>
-                        <input asp-for="UserName" class="form-control rounded-pill" required/>
-                        <span asp-validation-for="UserName" class="text-danger"></span>
-                    </div>
-                    <div class="mb-4">
-                        <label asp-for="Password"></label>
-                        <input asp-for="Password" class="form-control rounded-pill" autocomplete="new-password" type="password" required/>
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-                    <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
-                </form>
+                        <div class="mb-4">
+                            <label asp-for="UserName">User Name</label>
+                            <input asp-for="UserName" class="form-control rounded-pill" required />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" class="form-control rounded-pill" autocomplete="new-password" type="password" required />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
+                    </form>
+                </div>
 
-                <div class="container" style="padding: 25% 0 0 0;">
+                <div class="container">
                     Are you New for here?
                     <a asp-controller="Login" asp-action="SignUp" class="btn btn-outline-secondary rounded-pill" style="width:150px">Sign Up &nbsp; <i class="bi bi-box-arrow-in-right"></i></a>
                 </div>
@@ -46,12 +56,22 @@
             <br />
             <footer class="border-top footer text-muted text-center">
                 <div class="container">
-                    &copy; 2024 - MAMS v2017.01.17.01-
+                    &copy; 2024 - MAMS v2024.04.01.01-
                 </div>
             </footer>
         </div>
         
-        <div class="split right"></div>
+        <div class="split right">
+                <div class="text-center">
+                <img src="img/Login.png" class="img-fluid" alt="Login img">
+                </div>
+                <div class="row text-center">
+                <h2 style="color:aliceblue">MedEase&#8482;</h2>
+                <div class="row text-center">
+                    <h2 style="color:aliceblue">Appointment & Management System</h2>
+                </div>
+                </div>
+        </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

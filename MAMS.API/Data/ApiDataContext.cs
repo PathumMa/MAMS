@@ -16,6 +16,7 @@ namespace MAMS.API.Data
         public DbSet<Specializations> Specializations { get; set; }
         public DbSet<MedicalRecords> MedicalRecords { get; set; }
         public DbSet<Appoinments> Appoinments { get; set; }
+        public DbSet<Transactions> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +34,16 @@ namespace MAMS.API.Data
                 .HasMany(s => s.DoctorAvailableDetails)
                 .WithOne(sd => sd.DoctorDetails)
                 .HasForeignKey(dd => dd.DoctorId);
+
+            modelBuilder.Entity<Transactions>()
+                .HasOne(s => s.UserDetails)
+                .WithOne(sd => sd.Transactions)
+                .HasForeignKey<Transactions>(dd => dd.UserDetailsId);
+
+            modelBuilder.Entity<Transactions>()
+                .HasOne(s => s.appoinments)
+                .WithOne(sd => sd.Transactions)
+                .HasForeignKey<Transactions>(dd => dd.AppointmentId);
 
             // Additional configurations...
 

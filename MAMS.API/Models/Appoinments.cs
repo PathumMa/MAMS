@@ -13,5 +13,7 @@ namespace MAMS.API.Models
         public int Doctor_PersonalId { get; set; }
         public DateTime Appoinment_Date { get; set; }
         public ActiveStatus Status { get; set; } = ActiveStatus.Active;
+
+        public Transactions? Transactions { get; set; }
     }
 }

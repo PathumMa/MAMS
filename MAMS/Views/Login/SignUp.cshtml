@@ -46,24 +46,31 @@
     <div class="container">
         <div class="split left-s">
             <div class="row px-4">
-                <p class="h2">Sign Up</p>
-                <small class="h5 text-muted">Get Registered with MedEase Appointment & Management System.</small><hr />
+                <figure>
+                    <blockquote class="h2">
+                        <p>Sign Up</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer">
+                        Get Registered with <cite title="Source Title">MedEase&#8482;</cite> platform.
+                    </figcaption>
+                </figure>
+                <hr />
             </div>
-
+            
             <div class="signin-box">
                 <form asp-controller="Login" asp-action="Register" method="post" id="signinForm" novalidate>
                     <div>
 
-                        <div class="row gy-1">
+                        <div class="row gy-3">
                             <div class="col mb-4">
-                                <label asp-for="RoleId">Register As:</label>
+                                <label asp-for="RoleId">Register As*:</label>
                                 <select asp-for="RoleId" id="roleTypeSelect" class="form-select rounded-pill">
                                     <option value="20">Patient</option>
                                     <option value="30">Doctor</option>
                                 </select>
                             </div>
 
-                            <div class="col mb-4" id="dTypeInput">
+                            @* <div class="col mb-4" id="dTypeInput">
                                 <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
                                 <select asp-for="Specialization" class="form-select rounded-pill">
                                     <option value="">--Select--</option>
@@ -72,6 +79,10 @@
                                         <option value="@dtype">@dtype</option>
                                     }
                                 </select>
+                            </div> *@
+                            <div class="col mb-4" id="dTypeInput">
+                                <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
+                                @Html.DropDownListFor(model => model.Specialization, new SelectList(@ViewBag.ListSpecs, "Value", "Text" ))
                             </div>
 
                             <div class="col mb-4" id="availability">

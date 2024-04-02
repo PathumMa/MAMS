@@ -10,8 +10,7 @@ builder.Services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDi
 //builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 builder.Services.AddControllersWithViews();
 
-var appSettings = new AppSettings();
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 builder.Services.AddSingleton(appSettings);
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

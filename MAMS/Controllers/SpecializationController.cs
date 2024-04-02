@@ -16,20 +16,18 @@ namespace MAMS.Controllers
         private readonly ILogger<SpecializationController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string apiUrl;
+        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly AppSettings _appSettings;
-        public SpecializationService specializationService = new SpecializationService();
+        public SpecializationService _specializationService;
 
-
-        public SpecializationController(IConfiguration config, INotyfService notfy, ILogger<SpecializationController> logger, IHttpContextAccessor contextAccessor)
+        public SpecializationController(IConfiguration config, INotyfService notfy, ILogger<SpecializationController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            _apiUrl = appSettings.ApiUrl;
             _httpContextAccessor = contextAccessor;
-            //_specializationService = specializationService;
+            _specializationService = new SpecializationService(_apiUrl);
 
         }
 
@@ -40,53 +38,39 @@ namespace MAMS.Controllers
             IList<Specializations> dt = new List<Specializations>();
             try
             {
-                _httpContextAccessor.HttpContext.Session.GetString("UserName");
-
-                using (var client = new HttpClient())
+                if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    var result = await _specializationService.GetAllSpecializationsAsync();
 
-                    HttpResponseMessage getData = await client.GetAsync("Specialization");
 
-                    if (getData.IsSuccessStatusCode)
+                    if (result.Item1 != null)
                     {
-                        string results = getData.Content.ReadAsStringAsync().Result;
-                        dt = JsonConvert.DeserializeObject<List<Specializations>>(results);
+                        dt = result.Item1;
                     }
                     else
                     {
-                        _notfy.Error("Error clling web API!", 5);
+                        _notfy.Error(result.Item2);
                         return View();
                     }
                 }
-                string successMessage = TempData["SuccessMessage"] as string;
-                string warningMessage = TempData["WarningMessage"] as string;
-                string errorMessage = TempData["ErrorMessage"] as string;
-
-                // Display TempData messages using INotyfService
-                if (!string.IsNullOrEmpty(successMessage))
+                else
                 {
-                    _notfy.Success(successMessage);
+                    _notfy.Warning("Session Timeout!:", 5);
+                    return View("TimedOut");
                 }
-                if (!string.IsNullOrEmpty(warningMessage))
-                {
-                    _notfy.Warning(warningMessage);
-                }
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    _notfy.Error(errorMessage);
-                }
-
-                return View(dt);
+                ViewData.Model = dt;
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                _notfy.Warning("Session Timeout!:", 5);
-                return View("TimedOut");
+                _notfy.Warning($"{ex.Message}", 5);
             }
+            return View();
+        }
+
+        public async Task<IActionResult> Status()
+        {
+            return View();
         }
 
         public IActionResult Create()
@@ -109,7 +93,7 @@ namespace MAMS.Controllers
                 if (ModelState.IsValid && newSpec.Specializations_Name != null)
                 {
 
-                    (bool success, string errorMessage) = await specializationService.AddSpecializationAsync(specializations, apiUrl);
+                    (bool success, string errorMessage) = await _specializationService.AddSpecializationAsync(specializations);
 
                     if (success)
                     {
@@ -138,10 +122,10 @@ namespace MAMS.Controllers
         {
             Specializations dt = new Specializations();
 
-            var result = await specializationService.GetSpecialization(Id, apiUrl);
-
             try
             {
+                var result = await _specializationService.GetSpecialization(Id);
+
                 if (result.Item1 != null)
                 {
                     dt = result.Item1;
@@ -155,7 +139,7 @@ namespace MAMS.Controllers
             }
             catch (Exception ex)
             {
-                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                _notfy.Error($"Error calling service: {ex.Message}", 5);
                 RedirectToAction("Index");
             }
             return View();
@@ -169,7 +153,7 @@ namespace MAMS.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    (bool success, string errorMessage) = await specializationService.UpdateSpecializationAsync(currentSpec, apiUrl);
+                    (bool success, string errorMessage) = await _specializationService.UpdateSpecializationAsync(currentSpec);
 
                     if (success)
                     {
@@ -197,33 +181,29 @@ namespace MAMS.Controllers
         {
             try
             {
-                using (var client = new HttpClient())
+                if (HttpContext.Session.GetString("UserName") != null)
                 {
-                    client.BaseAddress = new Uri(apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    var updatedRec = new Specializations
+                    if (ModelState.IsValid) 
                     {
-                        Specializations_Id = Id,
-                        Record_Status = (Enums.ActiveStatus)(int)(isChecked ? Enums.ActiveStatus.Active : Enums.ActiveStatus.Inactive)
-                    };
+                        (bool success, string errorMessage) = await _specializationService.UpdateRecordStatusAsync(Id, isChecked);
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync<Specializations>("specialization/UpdateRecordStatus", updatedRec);
-
-                    if (getData.IsSuccessStatusCode)
-                    {
-                        TempData["SuccessMessage"] = "Updated Successfully.";
-                        return RedirectToAction("Index");
+                        if (success)
+                        {
+                            _notfy.Success($"Updated successfully.");
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            _notfy.Warning(errorMessage);
+                            _notfy.Error("update Fail!.", 5);
+                            return View("Edit");
+                        }
                     }
-                    else
-                    {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
-                        TempData["WarningMessage"] = errorMessage;
-                        TempData["ErrorMessage"] = "update Fail!.";
-                        TempData.Keep();
-                        return RedirectToAction("Index", "Home");
-                    }
+                }
+                else
+                {
+                    _notfy.Warning("Session Timeout!:", 5);
+                    return View("TimedOut");
                 }
             }
             catch (Exception ex)
@@ -232,13 +212,14 @@ namespace MAMS.Controllers
                 _notfy.Error($"Error calling web API: {ex.Message}", 5);
                 return RedirectToAction("Index");
             }
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var result = await specializationService.DeleteRecordAsync(id, apiUrl);
+                var result = await _specializationService.DeleteRecordAsync(id);
 
                 if (result.Success)
                 {

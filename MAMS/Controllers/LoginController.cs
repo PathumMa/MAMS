@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
+using MAMS.Services;
 
 namespace MAMS.Controllers
 {
@@ -14,15 +15,15 @@ namespace MAMS.Controllers
         private readonly ILogger<LoginController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string apiUrl;
+        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor)
+        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            _apiUrl = appSettings.ApiUrl;
             _httpContextAccessor = contextAccessor;
         }
 
@@ -41,7 +42,7 @@ namespace MAMS.Controllers
                 {
                     try
                     {
-                        client.BaseAddress = new Uri(apiUrl);
+                        client.BaseAddress = new Uri(_apiUrl);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -99,7 +100,7 @@ namespace MAMS.Controllers
 
         public IActionResult SignUp()
         {
-            return View();
+            return RedirectToAction();
         }
 
         public IActionResult Logout()
@@ -117,7 +118,7 @@ namespace MAMS.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(apiUrl);
+                client.BaseAddress = new Uri(_apiUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -149,7 +150,7 @@ namespace MAMS.Controllers
                 {
                     using (var client = new HttpClient())
                     {
-                        client.BaseAddress = new Uri(apiUrl);
+                        client.BaseAddress = new Uri(_apiUrl);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -194,7 +195,7 @@ namespace MAMS.Controllers
                 {
                     using (var client = new HttpClient())
                     {
-                        client.BaseAddress = new Uri(apiUrl);
+                        client.BaseAddress = new Uri(_apiUrl);
                         client.DefaultRequestHeaders.Accept.Clear();
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
