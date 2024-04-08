@@ -2,6 +2,7 @@ using AspNetCoreHero.ToastNotification;
 using MAMS.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(option =>
 {
     option.IdleTimeout = TimeSpan.FromSeconds(30);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
 });
 
 builder.Services.AddRazorPages();

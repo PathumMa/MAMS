@@ -17,7 +17,7 @@
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    
+
     <partial name="_Navbar" />
     <partial name="_Sidebar" />
 
@@ -25,23 +25,24 @@
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-        
+
     </div>
 
     <partial name="_Footer" />
 
-    
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await Component.InvokeAsync("Notyf")
-    @await RenderSectionAsync("Scripts", required: false)
     <!-- jQuery -->
     <script src="~/adminlte/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="~/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="~/adminlte/dist/js/adminlte.min.js"></script>
-    
+    @await Component.InvokeAsync("Notyf")
+    @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 </html>

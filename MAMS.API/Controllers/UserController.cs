@@ -21,15 +21,19 @@ namespace MAMS.API.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserDet(int id)
+        [HttpGet("{userName}")]
+        public IActionResult GetUserDet(string userName)
         {
-            var user = _dbContext.Susers.Where(u => u.Id == id).FirstOrDefault<Suser>();
-            
+            var user = _dbContext.Susers.Where(u => u.UserName == userName).FirstOrDefault<Suser>();
 
-            if(user.RoleId != 30)
+            if (user == null)
             {
-                var userDetails = _dbContext.UserDetails.Where(u => u.SuserId == id).FirstOrDefault<UserDetails>();
+                return NotFound("User Not Found!");
+            }
+
+            if (user.RoleId != 30)
+            {
+                var userDetails = _dbContext.UserDetails.Where(u => u.SuserId == user.Id).FirstOrDefault<UserDetails>();
                 var userDet = new UserDetailsViewModel
                 {
                     RoleId = user.RoleId,
@@ -64,9 +68,9 @@ namespace MAMS.API.Controllers
             else
             {
 
-                var docDetails = _dbContext.DoctorDetails.Where(x => x.SuserId == id).FirstOrDefault<DoctorDetails>();
+                var docDetails = _dbContext.DoctorDetails.Where(x => x.SuserId == user.Id).FirstOrDefault<DoctorDetails>();
                 var docAvailDetails = _dbContext.DoctorAvailableDetails.Where(y => y.DoctorId == docDetails.Id).FirstOrDefault<DoctorAvailableDetails>();
-                
+
                 var doctorDet = new DoctorDetailsViewModel
                 {
                     RoleId = user.RoleId,
@@ -90,7 +94,7 @@ namespace MAMS.API.Controllers
                     Specialization = docDetails?.Specialization,
                     Available_Day = docAvailDetails?.Available_Day,
                     Available_Time = docAvailDetails?.Available_Time
-                    
+
                 };
 
                 if (docDetails == null)
@@ -102,7 +106,7 @@ namespace MAMS.API.Controllers
                     return Ok(doctorDet);
                 }
             }
-            
+
         }
 
     }

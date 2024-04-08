@@ -17,6 +17,9 @@ namespace MAMS.Controllers
         private readonly IConfiguration _config;
         public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        public SpecializationService _specializationService;
+        public LoginService _loginService;
+        public UserService _userService;
 
         public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
@@ -25,6 +28,9 @@ namespace MAMS.Controllers
             _notfy = notfy;
             _apiUrl = appSettings.ApiUrl;
             _httpContextAccessor = contextAccessor;
+            _specializationService = new SpecializationService(_apiUrl);
+            _loginService = new LoginService(_apiUrl);
+            _userService = new UserService(_apiUrl);
         }
 
         public async Task<IActionResult> Login()
@@ -34,79 +40,64 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> Enter(LoginViewModel user)
         {
-            Suser dt = new Suser();
-
-            if (user.UserName != null && user.Password != null)
+            try
             {
-                using (var client = new HttpClient())
+                if (ModelState.IsValid)
                 {
-                    try
+                    var (success, errorMessage) = await _loginService.LoginAsync(user);
+
+                    if(success)
                     {
-                        client.BaseAddress = new Uri(_apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        UserDetailsViewModel dt = new UserDetailsViewModel();
+                        (dt, errorMessage) = await _userService.GetUserDetailsAsync(user.UserName);
 
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
+                        _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
 
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            string results = await getData.Content.ReadAsStringAsync();
-
-                            dt = JsonConvert.DeserializeObject<Suser>(results);
-                            var Id = dt.Id;
-                            _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
-                            _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
-                            _notfy.Success("view loaded Successfully.", 5);
-                            return RedirectToAction("Index", "Home", new { Id = Id });
-
-                        }
-                        else if (getData.StatusCode != HttpStatusCode.OK)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return View("Login");
-                        }
-                        else
-                        {
-                            _notfy.Error("Error calling web API!", 5);
-                            return View("Login");
-                        }
+                        _notfy.Success("view loaded Successfully.", 5);
+                        return RedirectToAction("Index", "Home", new { dt.UserName });
+                        
                     }
-                    catch (HttpRequestException ex)
+                    else
                     {
-                        // Log the exception or handle it appropriately
-                        _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                        return View("Login");
+                        _notfy.Warning(errorMessage);
+                        return RedirectToAction("Login");
+                    }
+                }
+                else
+                {
+                    if (user.UserName == null && user.Password == null)
+                    {
+                        _notfy.Warning("User Name and Password required");
+                    }
+                    else if (user.UserName == null)
+                    {
+                        _notfy.Warning("User Name required");
+                    }
+                    else // suser.Password == null
+                    {
+                        _notfy.Warning("Password required");
                     }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                if (user.UserName == null && user.Password == null)
-                {
-                    _notfy.Warning("User Name and Password required");
-                }
-                else if (user.UserName == null)
-                {
-                    _notfy.Warning("User Name required");
-                }
-                else // suser.Password == null
-                {
-                    _notfy.Warning("Password required");
-                }
+                _notfy.Information($"{ex.Message}");
+                return RedirectToAction("Login");
             }
             return View("Login");
         }
 
-        public IActionResult SignUp()
+        public async Task<IActionResult> SignUp()
         {
-            return RedirectToAction();
+            var (specializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
+            ViewBag.Specializaions = specializations;
+            return View();
         }
 
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            _notfy.Warning("Session Cleared! ");
+            _notfy.Information("Session Cleared! ");
             return RedirectToAction("Login");
         }
 

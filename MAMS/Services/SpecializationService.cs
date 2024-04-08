@@ -48,7 +48,7 @@ namespace MAMS.Services
         public async Task<(Specializations, string)> GetSpecialization(int Id)
         {
             Specializations dt = new Specializations();
-            string errorMessage = null;
+            string? errorMessage = null;
 
             try
             {

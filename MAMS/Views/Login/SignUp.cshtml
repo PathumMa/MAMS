@@ -1,4 +1,5 @@
-﻿@{
+﻿@using MAMS.Services
+@{
     ViewData["Title"] = "Sign Up";
 
     Layout = null;
@@ -51,7 +52,7 @@
                         <p>Sign Up</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">
-                        Get Registered with <cite title="Source Title">MedEase&#8482;</cite> platform.
+                        Get Registered with the<cite title="Source Title">MedEase&#8482;</cite>
                     </figcaption>
                 </figure>
                 <hr />
@@ -70,19 +71,18 @@
                                 </select>
                             </div>
 
-                            @* <div class="col mb-4" id="dTypeInput">
-                                <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
-                                <select asp-for="Specialization" class="form-select rounded-pill">
-                                    <option value="">--Select--</option>
-                                    @foreach (var dtype in Enum.GetValues(typeof(DoctorSpecialty)))
-                                    {
-                                        <option value="@dtype">@dtype</option>
-                                    }
-                                </select>
-                            </div> *@
                             <div class="col mb-4" id="dTypeInput">
                                 <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
-                                @Html.DropDownListFor(model => model.Specialization, new SelectList(@ViewBag.ListSpecs, "Value", "Text" ))
+                                <select class="form-select rounded-pill" id="specializationDropdown" name="specializationDropdown">
+                                    <option value="">--Select Specialization--</option>
+                                    @foreach (var specializations in ViewBag.Specializaions)
+                                    {
+                                        @if (specializations.Record_Status == Enums.ActiveStatus.Active)
+                                        {
+                                            <option value="@specializations.Specializations_Id">@specializations.Specializations_Name</option>
+                                        }  
+                                    }
+                                </select>
                             </div>
 
                             <div class="col mb-4" id="availability">

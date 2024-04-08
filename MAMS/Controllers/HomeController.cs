@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
+using MAMS.Services;
 
 namespace MAMS.Controllers
 {
@@ -13,44 +14,53 @@ namespace MAMS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string apiUrl;
+        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserService _userService;
 
         public HomeController(IConfiguration config, INotyfService notfy, ILogger<HomeController> logger, IHttpContextAccessor contextAccessor)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            _apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
             _httpContextAccessor = contextAccessor;
+            _userService = new UserService(_apiUrl);
+
         }
 
-        public async Task<ActionResult<Suser>> Index()
+        public async Task<IActionResult> Index()
         {
-            int Id = (int)HttpContext.Session.GetInt32("UserId");
-            UserDetailsViewModel viewModel = new UserDetailsViewModel();
+            string user =  HttpContext.Session.GetString("UserName");
 
-            using (var client = new HttpClient())
+            try
             {
-                client.BaseAddress = new Uri(apiUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                UserDetailsViewModel viewModel = new UserDetailsViewModel();
 
-                HttpResponseMessage getData = await client.GetAsync("User/" + Id);
-
-                if (getData.IsSuccessStatusCode)
+                if (user == null)
                 {
-                    string results = getData.Content.ReadAsStringAsync().Result;
-                    viewModel = JsonConvert.DeserializeObject<UserDetailsViewModel>(results);
+                    return RedirectToAction("TimeOut", "Home");
                 }
                 else
                 {
-                    _notfy.Error("Error clling web API!", 5);
-                    return View();
+                    var result = await _userService.GetUserDetailsAsync(user);
+
+                    if (result.Item1 != null)
+                    {
+                        viewModel = result.Item1;
+                    }
+                    else
+                    {
+                        _notfy.Error(result.Item2);
+                        return RedirectToAction("Index");
+                    }
                 }
                 ViewData.Model = viewModel;
             }
-            _httpContextAccessor.HttpContext.Session.GetString("UserName");
+            catch (Exception ex)
+            {
+                _notfy.Error(ex.Message);
+            }
             return View();
         }
 

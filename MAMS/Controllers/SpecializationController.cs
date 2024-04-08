@@ -38,7 +38,9 @@ namespace MAMS.Controllers
             IList<Specializations> dt = new List<Specializations>();
             try
             {
-                if (HttpContext.Session.GetString("UserName") != null)
+                string user = HttpContext.Session.GetString("UserName");
+
+                if (user != null)
                 {
                     var result = await _specializationService.GetAllSpecializationsAsync();
 
@@ -56,7 +58,7 @@ namespace MAMS.Controllers
                 else
                 {
                     _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut");
+                    return View("TimedOut", "Home");
                 }
                 ViewData.Model = dt;
             }
@@ -90,24 +92,34 @@ namespace MAMS.Controllers
 
             try
             {
-                if (ModelState.IsValid && newSpec.Specializations_Name != null)
+
+                if (HttpContext.Session.GetString("UserName") != null)
                 {
-
-                    (bool success, string errorMessage) = await _specializationService.AddSpecializationAsync(specializations);
-
-                    if (success)
+                    if (ModelState.IsValid && newSpec.Specializations_Name != null)
                     {
-                        _notfy.Success($"{newSpec.Specializations_Name} Added Successfully as a new Specialization!. ");
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        _notfy.Error("Creation Fail!", 5);
-                        _notfy.Warning(errorMessage);
-                        ModelState.AddModelError(string.Empty, errorMessage);
-                        return View("Create");
+
+                        (bool success, string errorMessage) = await _specializationService.AddSpecializationAsync(specializations);
+
+                        if (success)
+                        {
+                            _notfy.Success($"{newSpec.Specializations_Name}, Successfully Added  as a new Specialization!. ");
+                            return RedirectToAction("Index");
+                        }
+                        else
+                        {
+                            _notfy.Error("Creation Fail!", 5);
+                            _notfy.Warning(errorMessage);
+                            ModelState.AddModelError(string.Empty, errorMessage);
+                            return View("Create");
+                        }
                     }
                 }
+                else
+                {
+                    _notfy.Warning("Session Timeout!:", 5);
+                    return View("TimedOut");
+                }
+                
             }
             catch (Exception ex)
             {
@@ -133,14 +145,14 @@ namespace MAMS.Controllers
                 else
                 {
                     _notfy.Error(result.Item2);
-                    RedirectToAction("Index");
+                    return RedirectToAction("Index");
                 }
                 ViewData.Model = dt;
             }
             catch (Exception ex)
             {
                 _notfy.Error($"Error calling service: {ex.Message}", 5);
-                RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
             return View();
 
@@ -157,7 +169,7 @@ namespace MAMS.Controllers
 
                     if (success)
                     {
-                        _notfy.Success($"{currentSpec.Specializations_Name} Updated successfully.");
+                        _notfy.Success($"{currentSpec.Specializations_Name}, Updated successfully.");
                         return RedirectToAction("Index");
                     }
                     else
