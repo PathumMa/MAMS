@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MAMS.API.Tools;
+using MAMS.API.DTOs;
 
 namespace MAMS.API.Controllers
 {

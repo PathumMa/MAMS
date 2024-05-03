@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
 using MAMS.Services;
+using MAMS.Models.ViewModels;
 
 namespace MAMS.Controllers
 {
@@ -89,8 +90,12 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> SignUp()
         {
-            var (specializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
-            ViewBag.Specializaions = specializations;
+            var (activeSpecializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
+
+            ViewBag.Specializaions = activeSpecializations
+                .Where(s => s.Record_Status == Enums.ActiveStatus.Active)
+                .ToList();
+
             return View();
         }
 
@@ -139,37 +144,15 @@ namespace MAMS.Controllers
             {
                 try
                 {
-                    using (var client = new HttpClient())
+                    (bool success, string errorMessage) = await _loginService.DoctorRegister(userRegistrationModel);
+
+                    if(success)
                     {
-                        client.BaseAddress = new Uri(_apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/DoctorReg", userRegistrationModel);
-
-                        // Check if the request was successful
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            // User registration successful
-                            _notfy.Success("You Registered Succesully !");
-                            return RedirectToAction("SignUp");
-
-                        }
-                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp");
-                        }
-                        else
-                        {
-                            // Handle API error response
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp", userRegistrationModel);
-
-                        }
+                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
+                    }
+                    else
+                    {
+                        _notfy.Error(errorMessage, 5);
                     }
                 }
                 catch (Exception ex)
@@ -179,42 +162,22 @@ namespace MAMS.Controllers
                     _notfy.Error($"Error calling web API: {ex.Message}", 5);
                     return View("SignUp");
                 }
+
+                return RedirectToAction("SignUp");
             }
             else
             {
                 try
                 {
-                    using (var client = new HttpClient())
+                    (bool success, string errorMessage) = await _loginService.UserRegister(userRegistrationModel);
+
+                    if (success)
                     {
-                        client.BaseAddress = new Uri(_apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/UserReg", userRegistrationModel);
-
-                        // Check if the request was successful
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            // User registration successful
-                            _notfy.Success("You Registered Succesully !");
-                            return RedirectToAction("SignUp");
-
-                        }
-                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp");
-                        }
-                        else
-                        {
-                            // Handle API error response
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp", userRegistrationModel);
-
-                        }
+                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
+                    }
+                    else
+                    {
+                        _notfy.Error(errorMessage, 5);
                     }
                 }
                 catch (Exception ex)
@@ -226,7 +189,8 @@ namespace MAMS.Controllers
                 }
 
             }
-            
+
+            return RedirectToAction("SignUp");
         }
 
     }

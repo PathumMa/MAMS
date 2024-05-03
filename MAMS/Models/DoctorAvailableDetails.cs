@@ -4,14 +4,12 @@ namespace MAMS.Models
 {
     public class DoctorAvailableDetails
     {
-        [Key]
-        public int Id { get; set; }
-        [Required]
-        public int DoctorId { get; set; }
-        public string? Available_Day { get; set; }
-        public string? Available_Time { get; set; }
-        public DateTime Created_Date { get; set; } = DateTime.Now;
+        public DayOfWeek Day { get; set; }
 
-        public DoctorDetails DoctorDetails { get; set; }
+        [DataType(DataType.Time)]
+        public TimeSpan? StartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        public TimeSpan? EndTime { get; set; }
     }
 }

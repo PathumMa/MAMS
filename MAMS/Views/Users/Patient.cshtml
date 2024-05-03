@@ -1,0 +1,589 @@
+﻿@using MAMS.Services
+@using MAMS.Models.ViewModels
+@{
+    ViewData["Title"] = "Create User";
+}
+@model SignUpViewModel
+
+@using static MAMS.Services.Enums
+
+
+<div class="container">
+    <div class="content-header">
+        <h2 class="text-primary">Create User</h2>
+        <hr />
+    </div>
+
+
+    <div class="content">
+        <form asp-controller="Login" asp-action="Register" method="post" id="userForm" novalidate>
+            <div>
+                <div class="card card-primary card-outline p-3 mt-4">
+                    <div class="card-header h6">
+                        User Type :
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-3">
+                            <div class="col mb-4">
+                                <label asp-for="RoleId">Register As*:</label>
+                                <select asp-for="RoleId" id="roleTypeSelect" class="form-select rounded-pill">
+                                    <option value="20">Patient</option>
+                                    <option value="30">Doctor</option>
+                                </select>
+                            </div>
+
+                            <div class="col mb-4" id="dTypeInput">
+                                <label asp-for="Specialization" style="color:#d63384">Specialization:</label>
+                                <select class="form-select rounded-pill" id="specializationDropdown" name="specializationDropdown">
+                                    <option value="">--Select Specialization--</option>
+                                    @foreach (var specializations in ViewBag.Specializaions)
+                                    {
+                                        @if (specializations.Record_Status == Enums.ActiveStatus.Active)
+                                        {
+                                            <option value="@specializations.Specializations_Id">@specializations.Specializations_Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            @* <div class="col mb-4" id="availability">
+                                <label style="color:#d63384">Available Days:</label>
+                                <div class="availability-checkboxes">
+                                    @foreach (var day in Enum.GetValues(typeof(MAMS.Services.Enums.Days)))
+                                    {
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" asp-for="Availabilities" value="@day" id="@($"chk_{day}")" />
+                                            <label class="form-check-label" id="@($"chk_{day}")">@day</label>
+                                        </div>
+                                    }
+                                </div>
+                            </div> *@
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+
+                <div class="card card-primary card-outline p-3 mt-4">
+                    <div class="card-header h6">
+                        Personal Details :
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-1">
+                            <div class="col-2 mb-4">
+                                <label asp-for="UserTitle">Title:</label>
+                                <select asp-for="UserTitle" class="form-select rounded-pill">
+                                    <option value="">--Title--</option>
+                                    @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))
+                                    {
+                                        <option value="@uTitle">@uTitle</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="First_Name">First Name:</label>
+                                <input asp-for="First_Name" class="form-control rounded-pill" required />
+                                <span asp-validation-for="First_Name" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="Last_Name">Last Name:</label>
+                                <input asp-for="Last_Name" class="form-control rounded-pill" required />
+                                <span asp-validation-for="Last_Name" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="Middle_Name">Middle Name:</label>
+                                <input asp-for="Middle_Name" class="form-control rounded-pill" placeholder="-Optional-" />
+                                <span asp-validation-for="Middle_Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row gy-1">
+                            <div class="mb-4">
+                                <label asp-for="Address">Address:</label>
+                                <input asp-for="Address" class="form-control rounded-pill" />
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row gy-1">
+                            <div class="col mb-4">
+                                <label asp-for="City">City:</label>
+                                <input asp-for="City" class="form-control rounded-pill" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="District">District:</label>
+                                <select asp-for="District" class="form-select rounded-pill">
+                                    <option value="">--Select Your District--</option>
+                                    @foreach (var district in Enum.GetValues(typeof(District)))
+                                    {
+                                        <option value="@district">@district</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="Province">Province:</label>
+                                <select asp-for="Province" class="form-select rounded-pill">
+                                    <option value="">--Select Your Province--</option>
+                                    @foreach (var province in Enum.GetValues(typeof(Province)))
+                                    {
+                                        <option value="@province">@province</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row gy-1">
+                            <div class="col mb-4">
+                                <label asp-for="Email">Email:</label>
+                                <input asp-for="Email" class="form-control rounded-pill" type="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="PhoneNumber">Phone:</label>
+                                <input asp-for="PhoneNumber" class="form-control rounded-pill" type="tel" oninput="validatePhoneNumber(this)" required />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row gy-1">
+                            <div class="col mb-4">
+                                <label asp-for="Birth_Date">Birth Date:</label>
+                                <input asp-for="Birth_Date" class="form-control rounded-pill" type="date" asp-format="{0:yyyy-MM-dd}" />
+                                <span asp-validation-for="Birth_Date" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label>Blood Group:</label>
+                                <select asp-for="Blood_Type" class="form-select rounded-pill" required>
+                                    <option value="">--Select your Blood Group--</option>
+                                    @foreach (var bloodGroup in Enum.GetValues(typeof(BloodGroupType)))
+                                    {
+                                        <option value="@bloodGroup">@GetBloodGroupDisplayName((BloodGroupType)bloodGroup)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="Gender">Gender:</label>
+                                <select asp-for="Gender" id="SuserDetails.Gender" class="form-select rounded-pill">
+                                    <option value="">-- Select your Gender --</option>
+                                    @foreach (var gType in Enum.GetValues(typeof(GenderType)))
+                                    {
+                                        <option value="@gType">@gType</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row gy-1">
+                            <div class="col mb-4">
+                                <label asp-for="PersonalId_Type">Personal Id:</label>
+                                <select asp-for="PersonalId_Type" id="idTypeSelect" class="form-select rounded-pill">
+                                    <option value="">-- Select Personal ID Type --</option>
+                                    @foreach (var idType in Enum.GetValues(typeof(PersonalIdType)))
+                                    {
+                                        <option value="@idType">@idType</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class=" col mb-4 nic-validate" id="nic-input" data-type="Nic" style="display: none;" placeholder="Enter NIC number">
+                                <label asp-for="Personal_Id">NIC:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger" id="nic-validation-msg"></span>
+                            </div>
+                            <div class="col mb-4" id="passport-input" data-type="Passport" style="display: none;">
+                                <label asp-for="Personal_Id">Passport:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4" id="dlicence-input" data-type="DLicence" style="display: none;">
+                                <label asp-for="Personal_Id">Driving licence Id:</label>
+                                <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                                <span asp-validation-for="Personal_Id" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="card card-primary card-outline p-3 mt-4">
+                    <div class="card-header h6">
+                        Login Details :
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-1">
+                            <div class="col mb-4">
+                                <label asp-for="UserName">Provide User Name:</label>
+                                <input asp-for="UserName" class="form-control rounded-pill" required />
+                                <span asp-validation-for="UserName" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-4">
+                                <label asp-for="Password">Provide Password:</label>
+                                <input asp-for="Password" class="form-control rounded-pill" type="password" id="password" required />
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                                <div>
+                                    <label>Password Strength:</label>
+                                    <div class="progress" id="password-strength-meter">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%;" id="strength-bar"></div>
+                                    </div>
+                                    <span id="strength-text"></span>
+                                </div>
+                            </div>
+                            <div class="col mb-4">
+                                <label>Re-enter Password:</label>
+                                <input class="form-control rounded-pill" type="password" id="confirmPwd" required>
+                                <span id="passwordMatchError" class="text-danger" style="display: none;">Passwords do not match</span>
+                            </div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1" required>
+                                <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
+                            </div>
+                        </div>
+
+                        <br />
+                        <div class="form-group row gy-1">
+                            <hr />
+                            <div class="col mb-4">
+                                <input id="ClearButton" type="button" value="Clear" class="btn btn-secondary rounded-pill" />
+                            </div>
+
+                            <div class="col mb-4 text-end">
+                                <button id="createButton" type="submit" class="btn btn-primary rounded-pill" onclick=showConfirmationModal()>Create &nbsp; <i class="bi bi-box-arrow-in-up-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Create this User?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // Get the elements
+    var roleTypeSelect = document.getElementById("roleTypeSelect");
+    var dTypeInput = document.getElementById("dTypeInput");
+    var availability = document.getElementById("availability");
+
+    // Initial setup
+    toggleSpecializationField();
+
+    // Attach an event listener to the "Register As" dropdown
+    roleTypeSelect.addEventListener("change", function () {
+        toggleSpecializationField();
+    });
+
+    // Function to toggle the visibility of the "Specialization" field
+    function toggleSpecializationField() {
+        var selectedRole = roleTypeSelect.value;
+        if (selectedRole === "30") { // Show the "Specialization" field for Doctor
+            dTypeInput.style.display = "block";
+            availability.style.display = "block";
+        } else {
+            dTypeInput.style.display = "none";
+            availability.style.display = "none";
+        }
+    }
+
+    //phoneNumber and Email Validation
+    function validatePhoneNumber(input) {
+        var phoneNumber = input.value.trim();
+        var spanElement = input.nextElementSibling; // Get the next element, which is the <span> for validation
+
+        // Regular expression pattern for Sri Lankan phone number (supports various formats)
+        var phonePattern = /^(?:\+?94|0)(?:7\d|2\d)(?:\d{7}|\d{8}|\d{9})$/;
+
+        if (phonePattern.test(phoneNumber)) {
+            // Valid phone number format
+            input.setCustomValidity('');
+            spanElement.textContent = ''; // Clear any previous validation message
+        }
+        else {
+            // Invalid phone number format
+            input.setCustomValidity('Please enter a valid Sri Lankan phone number');
+            spanElement.textContent = 'Please enter a valid Sri Lankan phone number'; // Show error message in the <span>
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var emailInput = document.querySelector('input[type="email"]');
+        var emailSpan = document.querySelector('[data-valmsg-for="Email"]');
+
+        emailInput.addEventListener('input', function (event) {
+            var email = event.target.value.trim();
+
+            // Regular expression pattern for email validation
+            var emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+            if (!emailPattern.test(email)) {
+                emailSpan.textContent = 'Please enter a valid email address';
+            }
+            else {
+                emailSpan.textContent = '';
+            }
+        });
+    });
+
+    @functions {
+        // Helper method to get display name for blood group
+        public string GetBloodGroupDisplayName(BloodGroupType bloodGroup)
+        {
+            switch (bloodGroup)
+            {
+                case BloodGroupType.A_Positive:
+                    return "A+";
+                case BloodGroupType.A_Negative:
+                    return "A-";
+                case BloodGroupType.B_Positive:
+                    return "B+";
+                case BloodGroupType.B_Negative:
+                    return "B-";
+                case BloodGroupType.AB_Positive:
+                    return "AB+";
+                case BloodGroupType.AB_Negative:
+                    return "AB-";
+                case BloodGroupType.O_Positive:
+                    return "O+";
+                case BloodGroupType.O_Negative:
+                    return "O-";
+                default:
+                    return string.Empty;
+            }
+        }
+    }
+
+        // Function to show the relevant input field based on the selected Personal ID Type
+        function showPersonalIdInput() {
+            var idTypeSelect = document.getElementById("idTypeSelect");
+            console.log(idTypeSelect.value);
+            var nicInput = document.getElementById("nic-input");
+            var passportInput = document.getElementById("passport-input");
+            var dlicenceInput = document.getElementById("dlicence-input");
+
+            // Hide all input fields initially
+            nicInput.style.display = "none";
+            passportInput.style.display = "none";
+            dlicenceInput.style.display = "none";
+
+            // Show the relevant input field based on the selected type
+            if (idTypeSelect.value === "NIC") {
+                nicInput.style.display = "block";
+            } else if (idTypeSelect.value === "Passport") {
+                passportInput.style.display = "block";
+                document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
+            } else if (idTypeSelect.value === "DLicence") {
+                dlicenceInput.style.display = "block";
+                document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
+            }
+        }
+
+    // Attach event listener to trigger NIC validation
+    var nicInput = document.getElementById("Personal_Id");
+    nicInput.addEventListener("blur", function () {
+        validateNIC();
+    });
+
+    // Attach event listener to trigger the display of the relevant input field
+    var idTypeSelect = document.getElementById("idTypeSelect");
+    idTypeSelect.addEventListener("change", function () {
+        showPersonalIdInput();
+    });
+
+    // Initial setup
+    showPersonalIdInput();
+
+    // Function to validate NIC
+    function validateNIC() {
+        var nicInput = document.getElementById("Personal_Id");
+        var nicValidationMsg = document.getElementById("nic-validation-msg");
+        var birthYearInput = document.getElementById("Birth_Date");
+        var genderInput = document.getElementById("Gender");
+        console.log(birthYearInput.value.split("-")[0])
+        console.log(genderInput.value);
+        // Regular expression pattern for NIC validation
+        var nicPattern = /^\d{9}[VXvx]$/; // Old NIC pattern
+        var newNicPattern = /^\d{12}$/; // New NIC pattern
+
+        var nicNumber = nicInput.value.trim();
+        var middleNumberAsNumber = parseInt(nicNumber.substring(2, 5), 10);
+        var middleNumberAsNumberNew = parseInt(nicNumber.substring(4, 7), 10);
+        var femaleNum = middleNumberAsNumber + 500;
+        var femaleNumNew = middleNumberAsNumberNew + 500;
+        console.log("Middle Number:", middleNumberAsNumber);
+        console.log("Middle Number New:", middleNumberAsNumberNew);
+        console.log("Female Number:", femaleNum);
+        console.log("Female Number New:", femaleNumNew);
+
+
+        var gender;
+
+        // Get the birth year
+        var ubirthYear = birthYearInput.value.split("-")[0];
+        var day = new Date(birthYearInput.value);
+        // Calculate the count of days from January 1st of the birth year to the birthday
+        var jan1st = new Date(ubirthYear, 0, 1);
+        var daysUntilBirthday = Math.ceil((day - jan1st) / (1000 * 60 * 60 * 24));
+        console.log("Days until birthday:", daysUntilBirthday);
+
+        if (middleNumberAsNumber > 500 || middleNumberAsNumberNew > 500) {
+            gender = "Female";
+            return gender;
+        } else {
+            gender = "Male";
+            return gender;
+        }
+
+        console.log(gender);
+
+        if (nicPattern.test(nicNumber)) {
+            var birthYear = "19" + nicNumber.substring(0, 2);
+            var lastChar = nicNumber.charAt(9);
+            nicValidationMsg.textContent = ``;
+
+            // Check if birth year from NIC matches user-entered birth year
+            if (birthYear !== birthYearInput.value.split("-")[0] || gender !== genderInput.value) {
+                nicValidationMsg.textContent += `\n NIC Mismatched with the BirthDate and Gender!`;
+            }
+        } else if (newNicPattern.test(nicNumber)) {
+            var birthYearNew = nicNumber.substring(0, 4);
+            nicValidationMsg.textContent = ``;
+
+            // Check if birth year from NIC matches user-entered birth year
+            if (birthYearNew !== birthYearInput.value.split("-")[0] || middleNumberAsNumberNew !== daysUntilBirthday || gender !== genderInput.value) {
+                nicValidationMsg.textContent += `\nNIC Mismatched with the BirthDate and Gender!`;
+            }
+        } else {
+            nicValidationMsg.textContent = 'Invalid NIC number';
+        }
+    }
+
+    // Call the function when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        const changeText = function (el, text, color) {
+            el.textContent = text;
+            el.style.color = color;
+        };
+
+        document.getElementById('password').addEventListener('keyup', function () {
+            var password = this.value;
+            var strengthMeter = document.getElementById('strength-bar');
+            var strengthText = document.getElementById('strength-text');
+
+            var strength = 0;
+            if (password.length >= 8) {
+                strength += 20;
+            }
+            if (password.match(/[a-z]+/)) {
+                strength += 20;
+            }
+            if (password.match(/[A-Z]+/)) {
+                strength += 20;
+            }
+            if (password.match(/[0-9]+/)) {
+                strength += 20;
+            }
+            if (password.match(/[!@@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/)) {
+                strength += 20;
+            }
+
+            strengthMeter.style.width = strength + '%';
+
+            if (strength <= 40) {
+                changeText(strengthText, 'Weak', 'red');
+                strengthMeter.className = 'progress-bar bg-danger'; // Add a class to style weak progress bar in Bootstrap
+            } else if (strength <= 80) {
+                changeText(strengthText, 'Moderate', 'orange');
+                strengthMeter.className = 'progress-bar bg-warning'; // Add a class to style moderate progress bar in Bootstrap
+            } else {
+                changeText(strengthText, 'Strong', 'green');
+                strengthMeter.className = 'progress-bar bg-success'; // Add a class to style strong progress bar in Bootstrap
+            }
+        });
+
+        document.getElementById('confirmPwd').addEventListener('keyup', function () {
+            var password = document.getElementById('password').value;
+            console.log("pass:", password);
+            var confirmPassword = this.value;
+            var passwordMatchError = document.getElementById('passwordMatchError');
+            console.log("ConfirmPass:", confirmPassword);
+
+            if (password !== confirmPassword) {
+                passwordMatchError.style.display = 'block';
+            } else {
+                passwordMatchError.style.display = 'none';
+            }
+        });
+    });
+
+    function showConfirmationModal() {
+        $('#confirmationModal').modal('show');
+    }
+
+    $('#confirmYes').click(function () {
+        $('#confirmationModal').modal('hide');
+        $('#userForm').submit();
+    });
+
+    // Attach the confirmation dialog to the Create button
+    $(document).ready(function () {
+        $('button[type="submit"]').click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            showConfirmationModal(); // Show the confirmation modal
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var userForm = document.getElementById('userForm');
+        var ClearButton = document.getElementById('ClearButton');
+
+        // Disable the button initially
+        ClearButton.disabled = true;
+
+        // Add an event listener to check form validity on input
+        userForm.addEventListener('input', function () {
+            ClearButton.disabled = !userForm.checkValidity();
+        });
+
+        // Add an event listener to handle form submission
+        userForm.addEventListener('submit', function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Check form validity before allowing submission
+            if (userForm.checkValidity()) {
+                // If the form is valid, you can enable the button and perform any other actions
+                ClearButton.disabled = false;
+                ClearButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+                // Optionally, you can trigger your confirmation modal or other actions here
+                showConfirmationModal();
+            }
+        });
+    });
+
+    $('#ClearButton').click(function () {
+        var userForm = document.getElementById('userForm');
+        userForm.reset(); // Proper form reset
+    });
+
+</script>
+

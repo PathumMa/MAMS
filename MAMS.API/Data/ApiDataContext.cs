@@ -31,7 +31,7 @@ namespace MAMS.API.Data
              .HasForeignKey<DoctorDetails>(dd => dd.SuserId);
 
             modelBuilder.Entity<DoctorDetails>()
-                .HasMany(s => s.DoctorAvailableDetails)
+                .HasMany(s => s.AvailableDetails)
                 .WithOne(sd => sd.DoctorDetails)
                 .HasForeignKey(dd => dd.DoctorId);
 

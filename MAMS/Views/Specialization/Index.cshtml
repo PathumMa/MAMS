@@ -4,98 +4,100 @@
     ViewData["Title"] = "Specializations";
 }
 @model IEnumerable<Specializations>
+<div class="container">
+    <div class="content-header">
 
-<div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col">
+                    <h2 class="text-primary">Specializations</h2>
+                </div><!-- /.col -->
+                <div class="col text-end">
+                    <a asp-controller="Specialization" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+            <hr />
+        </div><!-- /.container-fluid -->
 
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col">
-                <h1 class="m-0">Specializations</h1>
-            </div><!-- /.col -->
-            <div class="col text-end">
-                <a asp-controller="Specialization" asp-action="Create" class="btn btn-warning rounded-pill"><i class="bi bi-plus-circle"></i>&nbsp; Create New </a>
-            </div><!-- /.col -->
-        </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
 
+        <br />
 
-    <br />
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">--</h3>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">--</h3>
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
 
-                    <div class="card-tools">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- /.card-header -->
+                    <!-- /.card-header -->
 
-                <div class="card-body table-responsive p-0">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Specialization</th>
-                                <th class="text-center">Description</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if(Model == null)
-                            {
-                                <div class="alert alert-danger" role="alert">
-                                    Error: Failed to load data. Please try again later. or Please Log in again..
-                                </div>
-                            }
-
-                            else
-                            {
-                                @foreach (var obj in Model)
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Specialization</th>
+                                    <th class="text-center">Description</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model == null)
                                 {
-                                    <tr>
-                                        <input asp-for="@obj.Specializations_Id" hidden />
-                                        <td data-Specializations_Name="@obj.Specializations_Name">@obj.Specializations_Name</td>
-                                        <td class="text-start text-break">@obj.Description</td>
-                                        <td class="text-center">
-
-                                            @if (obj.Record_Status == Enums.ActiveStatus.Active)
-                                            {
-                                                <span class="badge bg-success">Active</span>
-                                            }
-                                            else if (obj.Record_Status == Enums.ActiveStatus.Inactive)
-                                            {
-                                                <span class="badge bg-danger">Inactive</span>
-                                            }
-
-                                        </td>
-
-                                        <td>
-                                            <div class="btn-group btn-group-justified" role="group">
-                                                <a asp-controller="Specialization" asp-action="Edit" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
-                                                <a href="#" class="delete-button btn btn-light" data-id="@obj.Specializations_Id"> <i class="bi bi-trash3-fill"></i></a>
-
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <div class="alert alert-danger" role="alert">
+                                        Error: Failed to load data. Please try again later. or Please Log in again..
+                                    </div>
                                 }
-                            }
-                            
-                        </tbody>
-                    </table>
+
+                                else
+                                {
+                                    @foreach (var obj in Model)
+                                    {
+                                        <tr>
+                                            <input asp-for="@obj.Specializations_Id" hidden />
+                                            <td data-Specializations_Name="@obj.Specializations_Name">@obj.Specializations_Name</td>
+                                            <td class="text-start text-break">@obj.Description</td>
+                                            <td class="text-center">
+
+                                                @if (obj.Record_Status == Enums.ActiveStatus.Active)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else if (obj.Record_Status == Enums.ActiveStatus.Inactive)
+                                                {
+                                                    <span class="badge bg-danger">Inactive</span>
+                                                }
+
+                                            </td>
+
+                                            <td>
+                                                <div class="btn-group btn-group-justified" role="group">
+                                                    <a asp-controller="Specialization" asp-action="Edit" asp-route-id="@obj.Specializations_Id" class="btn btn-light"> <i class="bi bi-pencil-square"></i></a>
+                                                    <a href="#" class="delete-button btn btn-light" data-id="@obj.Specializations_Id"> <i class="bi bi-trash3-fill"></i></a>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
-                <!-- /.card-body -->
+                <!-- /.card -->
             </div>
-            <!-- /.card -->
         </div>
     </div>
 </div>

@@ -1,12 +1,9 @@
-﻿using static MAMS.API.Tools.Enums;
-
-namespace MAMS.API.ViewModels
+﻿namespace MAMS.Models.ViewModels
 {
-    public class UserSignUpViewModel
+    public class DoctorDetailsViewModel
     {
         public int RoleId { get; set; }
         public string UserName { get; set; }
-        public string Password { get; set; }
         public string? Email { get; set; }
         public string PhoneNumber { get; set; }
         public string UserTitle { get; set; }
@@ -18,10 +15,14 @@ namespace MAMS.API.ViewModels
         public string District { get; set; }
         public string Province { get; set; }
         public DateTime Birth_Date { get; set; }
-        public GenderType Gender { get; set; }
+        public string Gender { get; set; }
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
+        public string? MedicalCouncilRegistrationNumber { get; set; }
+        public string Specialization { get; set; }
+        public string? Hospital_Affiliation { get; set; }
+        public List<string>? Available_Day { get; set; }
+        public string? Available_Time { get; set; }
     }
-
 }

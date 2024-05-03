@@ -26,14 +26,14 @@
     right: 0;
     width: 60%;
     backdrop-filter: blur(40px);
-    background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5);
+    background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5, #08d087);
 }
 
 .right-r {
     right: 0;
     width: 40%;
     backdrop-filter: blur(10px);
-    background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5);
+    background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5, #08d087);
 }
 
   .login-box{

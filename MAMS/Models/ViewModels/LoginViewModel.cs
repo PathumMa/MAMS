@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MAMS.API.ViewModels
+namespace MAMS.Models.ViewModels
 {
     public class LoginViewModel
     {

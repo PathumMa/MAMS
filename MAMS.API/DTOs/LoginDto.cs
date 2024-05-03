@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MAMS.Models
+namespace MAMS.API.DTOs
 {
-    public class LoginViewModel
+    public class LoginDto
     {
         [Required]
         public string UserName { get; set; }

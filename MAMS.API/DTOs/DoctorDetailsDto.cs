@@ -1,6 +1,6 @@
-﻿namespace MAMS.Models
+﻿namespace MAMS.API.DTOs
 {
-    public class UserDetailsViewModel
+    public class DoctorDetailsDto
     {
         public int RoleId { get; set; }
         public string UserName { get; set; }
@@ -19,5 +19,9 @@
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
+        public string? MedicalCouncilRegistrationNumber { get; set; }
+        public string Specialization { get; set; }
+        public string? Hospital_Affiliation { get; set; }
+        public List<DoctorAvailabilityDto> Availabilities { get; set; }
     }
 }

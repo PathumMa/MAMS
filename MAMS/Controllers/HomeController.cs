@@ -1,11 +1,12 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
-using MAMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
 using MAMS.Services;
+using MAMS.Models;
+using MAMS.Models.ViewModels;
 
 namespace MAMS.Controllers
 {

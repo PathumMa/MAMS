@@ -1,15 +1,13 @@
-﻿@using MAMS.Models
+﻿@using MAMS.Models.ViewModels
 
 @inject IHttpContextAccessor _httpContextAccessor;
 
-@model MAMS.Models.UserDetailsViewModel
+@model UserDetailsViewModel
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<!-- Content Wrapper. Contains page content -->
-@* <div class="content-wrapper"> *@
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -94,5 +92,3 @@
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
-@* </div> *@
-<!-- /.content-wrapper -->
