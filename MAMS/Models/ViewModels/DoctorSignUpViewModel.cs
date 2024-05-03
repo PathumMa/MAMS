@@ -1,6 +1,6 @@
-﻿namespace MAMS.Models
+﻿namespace MAMS.Models.ViewModels
 {
-    public class SignUpViewModel
+    public class DoctorSignUpViewModel
     {
         public int RoleId { get; set; }
         public string UserName { get; set; }
@@ -23,7 +23,7 @@
         public string? MedicalCouncilRegistrationNumber { get; set; }
         public string Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
-        public string? Available_Day { get; set; }
+        public List<string>? Available_Day { get; set; }
         public string? Available_Time { get; set; }
     }
 }

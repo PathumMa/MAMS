@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MAMS.Tools
+namespace MAMS.Services
 {
     public static class Password
     {

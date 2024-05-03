@@ -1,6 +1,6 @@
 ﻿using MAMS.API.Data;
 using MAMS.API.Models;
-using MAMS.API.ViewModels;
+using MAMS.API.DTOs;
 using MAMS.API.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -29,7 +29,7 @@ namespace MAMS.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginModel)
         {
             if (!ModelState.IsValid)
             {
@@ -53,7 +53,7 @@ namespace MAMS.API.Controllers
         }
 
         [HttpPost("UserReg")]
-        public IActionResult UserReg(UserSignUpViewModel signUpData)
+        public IActionResult UserReg(UserSignUpDto signUpData)
         {
             // Validate the model
             if (!ModelState.IsValid)
@@ -116,7 +116,7 @@ namespace MAMS.API.Controllers
         }
 
         [HttpPost("DoctorReg")]
-        public IActionResult DoctorReg(DoctorSignUpViewModel signUpData)
+        public IActionResult DoctorReg([FromBody] DoctorSignUpDto signUpData)
         {
             // Validate the model
             if (!ModelState.IsValid)
@@ -144,7 +144,7 @@ namespace MAMS.API.Controllers
                     PhoneNumber = signUpData.PhoneNumber
                 };
 
-                // Create UserDetails object
+                // Create DoctorDetails object
                 var doctorDetails = new DoctorDetails
                 {
                     UserTitle = signUpData.UserTitle,
@@ -165,14 +165,29 @@ namespace MAMS.API.Controllers
                     Hospital_Affiliation = signUpData.Hospital_Affiliation
                 };
 
+                // Add available details for the doctor
+                //var availabilityDetails = signUpData.Availabilities.Select(a => new DoctorAvailableDetails
+                //{
+                //    Available_Day = a.Available_Day,
+                //    StartTime = a.StartTime ?? TimeSpan.Zero,
+                //    EndTime = a.EndTime ?? TimeSpan.Zero,
+                //    Created_Date = DateTime.Now
+                //}).ToList();
+
                 // Assign doctorDetails to Suser
                 newUser.DoctorDetails = doctorDetails;
 
+                // Link the availability to the doctor
+                //doctorDetails.AvailableDetails = availabilityDetails;
+
                 // Add entities to the database
                 _dbContext.Susers.Add(newUser);
+                // Add the new user to the context
+                _dbContext.DoctorDetails.Add(doctorDetails);
+
                 _dbContext.SaveChanges();
 
-                return Ok("User registered successfully!");
+                return Ok("Doctor registered successfully!");
             }
             catch (Exception ex)
             {

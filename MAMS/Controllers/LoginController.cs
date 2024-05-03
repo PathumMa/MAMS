@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
+using MAMS.Services;
+using MAMS.Models.ViewModels;
 
 namespace MAMS.Controllers
 {
@@ -14,26 +16,94 @@ namespace MAMS.Controllers
         private readonly ILogger<LoginController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string apiUrl;
+        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        public SpecializationService _specializationService;
+        public LoginService _loginService;
+        public UserService _userService;
 
-        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor)
+        public LoginController(IConfiguration config, INotyfService notfy, ILogger<LoginController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            _apiUrl = appSettings.ApiUrl;
             _httpContextAccessor = contextAccessor;
+            _specializationService = new SpecializationService(_apiUrl);
+            _loginService = new LoginService(_apiUrl);
+            _userService = new UserService(_apiUrl);
         }
 
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             return View();
         }
 
-        public IActionResult SignUp()
+        public async Task<IActionResult> Enter(LoginViewModel user)
         {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var (success, errorMessage) = await _loginService.LoginAsync(user);
+
+                    if(success)
+                    {
+                        UserDetailsViewModel dt = new UserDetailsViewModel();
+                        (dt, errorMessage) = await _userService.GetUserDetailsAsync(user.UserName);
+
+                        _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
+
+                        _notfy.Success("view loaded Successfully.", 5);
+                        return RedirectToAction("Index", "Home", new { dt.UserName });
+                        
+                    }
+                    else
+                    {
+                        _notfy.Warning(errorMessage);
+                        return RedirectToAction("Login");
+                    }
+                }
+                else
+                {
+                    if (user.UserName == null && user.Password == null)
+                    {
+                        _notfy.Warning("User Name and Password required");
+                    }
+                    else if (user.UserName == null)
+                    {
+                        _notfy.Warning("User Name required");
+                    }
+                    else // suser.Password == null
+                    {
+                        _notfy.Warning("Password required");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _notfy.Information($"{ex.Message}");
+                return RedirectToAction("Login");
+            }
+            return View("Login");
+        }
+
+        public async Task<IActionResult> SignUp()
+        {
+            var (activeSpecializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
+
+            ViewBag.Specializaions = activeSpecializations
+                .Where(s => s.Record_Status == Enums.ActiveStatus.Active)
+                .ToList();
+
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            _notfy.Information("Session Cleared! ");
+            return RedirectToAction("Login");
         }
 
         //view All records
@@ -44,7 +114,7 @@ namespace MAMS.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(apiUrl);
+                client.BaseAddress = new Uri(_apiUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -66,71 +136,6 @@ namespace MAMS.Controllers
             return View();
         }
 
-        public async Task<ActionResult<LoginViewModel>> Enter(LoginViewModel user)
-        {
-            Suser dt = new Suser();
-
-            if (user.UserName != null && user.Password != null)
-            {
-                using (var client = new HttpClient())
-                {
-                    try
-                    {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
-
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            string results = await getData.Content.ReadAsStringAsync();
-
-                            dt = JsonConvert.DeserializeObject<Suser>(results);
-                            var Id = dt.Id;
-                            _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
-                            _httpContextAccessor.HttpContext.Session.SetInt32("UserId", dt.Id);
-
-                            return RedirectToAction("Index", "Home", new { Id = Id});
-                            
-                        }
-                        else if (getData.StatusCode != HttpStatusCode.OK)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return View("Login");
-                        }
-                        else
-                        {
-                            _notfy.Error("Error calling web API!", 5);
-                            return View("Login");
-                        }
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        // Log the exception or handle it appropriately
-                        _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                        return View("Login");
-                    }
-                }
-            }
-            else
-            {
-                if (user.UserName == null && user.Password == null)
-                {
-                    _notfy.Warning("User Name and Password required");
-                }
-                else if (user.UserName == null)
-                {
-                    _notfy.Warning("User Name required");
-                }
-                else // suser.Password == null
-                {
-                    _notfy.Warning("Password required");
-                }
-            }
-            return View("Login");
-        }
 
         [HttpPost]
         public async Task<IActionResult> Register(SignUpViewModel userRegistrationModel)
@@ -139,37 +144,15 @@ namespace MAMS.Controllers
             {
                 try
                 {
-                    using (var client = new HttpClient())
+                    (bool success, string errorMessage) = await _loginService.DoctorRegister(userRegistrationModel);
+
+                    if(success)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/DoctorReg", userRegistrationModel);
-
-                        // Check if the request was successful
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            // User registration successful
-                            _notfy.Success("You Registered Succesully !");
-                            return RedirectToAction("SignUp");
-
-                        }
-                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp");
-                        }
-                        else
-                        {
-                            // Handle API error response
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp", userRegistrationModel);
-
-                        }
+                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
+                    }
+                    else
+                    {
+                        _notfy.Error(errorMessage, 5);
                     }
                 }
                 catch (Exception ex)
@@ -179,42 +162,22 @@ namespace MAMS.Controllers
                     _notfy.Error($"Error calling web API: {ex.Message}", 5);
                     return View("SignUp");
                 }
+
+                return RedirectToAction("SignUp");
             }
             else
             {
                 try
                 {
-                    using (var client = new HttpClient())
+                    (bool success, string errorMessage) = await _loginService.UserRegister(userRegistrationModel);
+
+                    if (success)
                     {
-                        client.BaseAddress = new Uri(apiUrl);
-                        client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                        HttpResponseMessage getData = await client.PostAsJsonAsync("Login/UserReg", userRegistrationModel);
-
-                        // Check if the request was successful
-                        if (getData.IsSuccessStatusCode)
-                        {
-                            // User registration successful
-                            _notfy.Success("You Registered Succesully !");
-                            return RedirectToAction("SignUp");
-
-                        }
-                        else if (getData.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp");
-                        }
-                        else
-                        {
-                            // Handle API error response
-                            var errorMessage = await getData.Content.ReadAsStringAsync();
-                            ModelState.AddModelError(string.Empty, $"API Error: {errorMessage}");
-                            _notfy.Warning(errorMessage);
-                            return RedirectToAction("SignUp", userRegistrationModel);
-
-                        }
+                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
+                    }
+                    else
+                    {
+                        _notfy.Error(errorMessage, 5);
                     }
                 }
                 catch (Exception ex)
@@ -226,7 +189,8 @@ namespace MAMS.Controllers
                 }
 
             }
-            
+
+            return RedirectToAction("SignUp");
         }
 
     }

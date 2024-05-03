@@ -1,10 +1,9 @@
-﻿namespace MAMS.Models
+﻿namespace MAMS.API.DTOs
 {
-    public class DoctorSignUpViewModel
+    public class DoctorDetailsDto
     {
         public int RoleId { get; set; }
         public string UserName { get; set; }
-        public string Password { get; set; }
         public string? Email { get; set; }
         public string PhoneNumber { get; set; }
         public string UserTitle { get; set; }
@@ -23,7 +22,6 @@
         public string? MedicalCouncilRegistrationNumber { get; set; }
         public string Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
-        public string? Available_Day { get; set; }
-        public string? Available_Time { get; set; }
+        public List<DoctorAvailabilityDto> Availabilities { get; set; }
     }
 }

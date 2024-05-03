@@ -1,4 +1,4 @@
-﻿namespace MAMS.Models
+﻿namespace MAMS.Models.ViewModels
 {
     public class UserSignUpViewModel
     {

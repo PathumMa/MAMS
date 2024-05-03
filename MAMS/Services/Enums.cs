@@ -1,4 +1,4 @@
-﻿namespace MAMS.Tools
+﻿namespace MAMS.Services
 {
     public class Enums
     {

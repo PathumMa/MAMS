@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Models
 {
@@ -7,6 +7,7 @@ namespace MAMS.API.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public int SuserId { get; set; }
         public string UserTitle { get; set; }
         public string First_Name { get; set; }
@@ -17,7 +18,7 @@ namespace MAMS.API.Models
         public string District { get; set; }
         public string Province { get; set; }
         public DateTime Birth_Date { get; set; }
-        public string Gender { get; set; }
+        public GenderType Gender { get; set; }
         public string Blood_Type { get; set; }
         [Required]
         public string Personal_Id { get; set; }
@@ -28,7 +29,8 @@ namespace MAMS.API.Models
         public string? Modified_By { get; set; }
 
         public Suser Suser { get; set; }
-        public List<Appoinments> Appoinments { get; set; }
-        public List<MedicalRecords> MedicalRecords { get; set; }
+        public List<Appoinments>? Appoinments { get; set; }
+        public List<MedicalRecords>? MedicalRecords { get; set; }
+        public Transactions? Transactions { get; set; }
     }
 }

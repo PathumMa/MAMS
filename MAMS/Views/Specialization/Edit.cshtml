@@ -1,0 +1,78 @@
+﻿@model Specializations
+
+<form method="post" asp-action="Update">
+    <input asp-for="Specializations_Id" hidden />
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Edit Specialization</h2>
+            <hr />
+        </div>
+
+        @* <div asp-validation-summary="All" class="text-danger"></div>*@
+
+        <div class="mb-3">
+            <label asp-for="Specializations_Name"></label>
+            <input asp-for="Specializations_Name" class="form-control" />
+            <span asp-validation-for="Specializations_Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Record_Status">Status</label><br>
+            <div>
+                <input type="radio" asp-for="Record_Status" value="Active" /> Active
+                <input type="radio" asp-for="Record_Status" value="Inactive" /> Inactive
+            </div>
+            <span asp-validation-for="Record_Status" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-pill" style="width:150px"><i class="bi bi-arrow-clockwise" onclick=showConfirmationModal()></i> &nbsp; Update</button>
+        <a asp-controller="Specialization" asp-action="Index" class="btn btn-secondary rounded-pill" style="width:150px"><i class="bi bi-backspace"></i> &nbsp; Back To List</a>
+    </div>
+</form>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Update/Modify this Specialization?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptspartial" />
+    }
+    <script>
+        //Function to show the confirmation modal
+        function showConfirmationModal() {
+            $('#confirmationModal').modal('show');
+        }
+
+        // Handle form submission when "Yes" is clicked
+        $('#confirmYes').click(function () {
+            $('#confirmationModal').modal('hide'); // Hide the modal
+            $('form').submit(); // Submit the form
+        });
+
+        // Attach the confirmation dialog to the Create button
+        $(document).ready(function () {
+            $('button[type="submit"]').click(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                showConfirmationModal(); // Show the confirmation modal
+            });
+        });
+    </script>
+}
+

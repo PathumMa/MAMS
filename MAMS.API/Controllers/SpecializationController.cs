@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MAMS.API.Tools;
+using MAMS.API.DTOs;
 
 namespace MAMS.API.Controllers
 {
@@ -47,14 +48,13 @@ namespace MAMS.API.Controllers
             {
                 if (_dbContext.Specializations.Any(u => u.Specializations_Name == newSpec.Specializations_Name))
                 {
-                    ModelState.AddModelError("specializations.Specializations_Name", "Specialization is already exists!.");
-                    return BadRequest(ModelState);
+                    return BadRequest($"{newSpec.Specializations_Name} is already exists!.");
                 }
 
                 _dbContext.Specializations.Add(newSpec);
                 await _dbContext.SaveChangesAsync();
 
-                return Ok("Specialization Added successfully!.");
+                return Ok($"{newSpec.Specializations_Name} Added successfully!.");
             }
             catch (Exception ex)
             {
@@ -79,8 +79,7 @@ namespace MAMS.API.Controllers
             {
                 if (_dbContext.Specializations.Any(s => s.Specializations_Id != id && s.Specializations_Name == updateSpec.Specializations_Name))
                 {
-                    ModelState.AddModelError("Specializations_Name", "Specialization name is already in use");
-                    return BadRequest(ModelState);
+                    return BadRequest($"{updateSpec.Specializations_Name} is already in use!");
                 }
 
                 _dbContext.Entry(updateSpec).State = EntityState.Modified;
@@ -113,7 +112,7 @@ namespace MAMS.API.Controllers
                 var specialization = await _dbContext.Specializations.FindAsync(specializationId);
                 if (specialization != null)
                 {
-                    specialization.Record_Status = (int)(isChecked ? Enums.ActiveStatus.Active : Enums.ActiveStatus.Inactive);
+                    specialization.Record_Status = (Enums.ActiveStatus)(int)(isChecked ? Enums.ActiveStatus.Active : Enums.ActiveStatus.Inactive);
                     await _dbContext.SaveChangesAsync();
                     return Ok();
                 }

@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace MAMS.API.Models
 {
     public class DoctorDetails
@@ -33,8 +31,9 @@ namespace MAMS.API.Models
         public string? Modified_By { get; set; }
 
         public Suser Suser { get; set; }
-        public List<DoctorAvailableDetails> DoctorAvailableDetails { get; set; }
+        public ICollection<DoctorAvailableDetails> AvailableDetails { get; set; }
         public List<Appoinments> Appoinments { get; set; }
         public List<MedicalRecords> MedicalRecords { get; set; }
+        
     }
 }

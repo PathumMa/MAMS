@@ -1,17 +1,26 @@
 using AspNetCoreHero.ToastNotification;
+using MAMS.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDismissable = true; config.Position = NotyfPosition.BottomRight; });
+//builder.Services.AddScoped<ISpecializationService, SpecializationService>();
 builder.Services.AddControllersWithViews();
+
+var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
+builder.Services.AddSingleton(appSettings);
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(option =>
 {
-    option.IdleTimeout = TimeSpan.FromSeconds(30);
+    option.IdleTimeout = TimeSpan.FromSeconds(300);
+    option.Cookie.HttpOnly = true;
+    option.Cookie.IsEssential = true;
 });
 
 builder.Services.AddRazorPages();

@@ -65,17 +65,20 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Available_Day")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Available_Time")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Available_Day")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 
@@ -230,6 +233,9 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Specializations_Id"));
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Record_Status")
                         .HasColumnType("int");
 
@@ -256,9 +262,6 @@ namespace MAMS.API.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IsActive")
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -273,6 +276,9 @@ namespace MAMS.API.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -280,6 +286,49 @@ namespace MAMS.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Susers");
+                });
+
+            modelBuilder.Entity("MAMS.API.Models.Transactions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserDetailsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.HasIndex("UserDetailsId")
+                        .IsUnique();
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
@@ -319,9 +368,8 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<string>("Last_Name")
                         .IsRequired()
@@ -377,7 +425,7 @@ namespace MAMS.API.Migrations
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
                 {
                     b.HasOne("MAMS.API.Models.DoctorDetails", "DoctorDetails")
-                        .WithMany("DoctorAvailableDetails")
+                        .WithMany("AvailableDetails")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -407,6 +455,25 @@ namespace MAMS.API.Migrations
                         .HasForeignKey("UserDetailsId");
                 });
 
+            modelBuilder.Entity("MAMS.API.Models.Transactions", b =>
+                {
+                    b.HasOne("MAMS.API.Models.Appoinments", "appoinments")
+                        .WithOne("Transactions")
+                        .HasForeignKey("MAMS.API.Models.Transactions", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MAMS.API.Models.UserDetails", "UserDetails")
+                        .WithOne("Transactions")
+                        .HasForeignKey("MAMS.API.Models.Transactions", "UserDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserDetails");
+
+                    b.Navigation("appoinments");
+                });
+
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
                 {
                     b.HasOne("MAMS.API.Models.Suser", "Suser")
@@ -418,11 +485,16 @@ namespace MAMS.API.Migrations
                     b.Navigation("Suser");
                 });
 
+            modelBuilder.Entity("MAMS.API.Models.Appoinments", b =>
+                {
+                    b.Navigation("Transactions");
+                });
+
             modelBuilder.Entity("MAMS.API.Models.DoctorDetails", b =>
                 {
                     b.Navigation("Appoinments");
 
-                    b.Navigation("DoctorAvailableDetails");
+                    b.Navigation("AvailableDetails");
 
                     b.Navigation("MedicalRecords");
                 });
@@ -441,6 +513,8 @@ namespace MAMS.API.Migrations
                     b.Navigation("Appoinments");
 
                     b.Navigation("MedicalRecords");
+
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
