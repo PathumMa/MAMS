@@ -7,10 +7,19 @@ namespace MAMS.Services
     public class UserService
     {
         private readonly string _apiUrl;
+        private readonly HttpClient _client;
 
         public UserService(string apiUrl)
         {
             _apiUrl = apiUrl;
+
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(_apiUrl)
+
+            };
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<(UserDetailsViewModel, string)> GetUserDetailsAsync(string user)
@@ -20,13 +29,7 @@ namespace MAMS.Services
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.GetAsync("User/" + user);
+                HttpResponseMessage getData = await _client.GetAsync("User/" + user);
 
                     if (getData.IsSuccessStatusCode)
                     {
@@ -37,7 +40,6 @@ namespace MAMS.Services
                     {
                         errorMessage = await getData.Content.ReadAsStringAsync();
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -54,13 +56,7 @@ namespace MAMS.Services
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.GetAsync("User/doctors");
+                HttpResponseMessage getData = await _client.GetAsync("User/doctors");
 
                     if (getData.IsSuccessStatusCode)
                     {
@@ -71,7 +67,6 @@ namespace MAMS.Services
                     {
                         errorMessage = await getData.Content.ReadAsStringAsync();
                     }
-                }
             }
             catch (Exception ex)
             {

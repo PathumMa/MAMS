@@ -11,33 +11,37 @@ namespace MAMS.Services
     public class SpecializationService
     {
         private readonly string _apiUrl;
+        private readonly HttpClient _client;
 
         public SpecializationService(string apiUrl)
         {
             _apiUrl = apiUrl;
+
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(_apiUrl)
+
+            };
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<(bool Success, string ErrorMessage)> AddSpecializationAsync(Specializations specialization)
         {
             try
             {
-                using (var client = new HttpClient())
+
+
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Specialization/addSpec", specialization);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Specialization/addSpec", specialization);
-
-                    if (getData.IsSuccessStatusCode)
-                    {
-                        return (true, null);
-                    }
-                    else
-                    {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
-                        return (false, errorMessage);
-                    }
+                    return (true, null);
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
                 }
             }
             catch (Exception ex)
@@ -52,24 +56,18 @@ namespace MAMS.Services
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    HttpResponseMessage getData = await client.GetAsync("Specialization/" + Id);
+                    HttpResponseMessage response = await _client.GetAsync("Specialization/" + Id);
 
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        string result = getData.Content.ReadAsStringAsync().Result;
+                        string result = await response.Content.ReadAsStringAsync();
                         dt = JsonConvert.DeserializeObject<Specializations>(result);
                     }
                     else
                     {
-                        errorMessage = await getData.Content.ReadAsStringAsync();
+                        errorMessage = await response.Content.ReadAsStringAsync();
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -84,24 +82,17 @@ namespace MAMS.Services
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response = await _client.GetAsync("Specialization");
 
-                    HttpResponseMessage getData = await client.GetAsync("Specialization");
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
-                        string results = getData.Content.ReadAsStringAsync().Result;
+                        string results = await response.Content.ReadAsStringAsync();
                         dt = JsonConvert.DeserializeObject<List<Specializations>>(results);
                     }
                     else
                     {
-                        errorMessage = await getData.Content.ReadAsStringAsync();
+                        errorMessage = await response.Content.ReadAsStringAsync();
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -114,34 +105,27 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
                     var updatedRec = new Specializations
                     {
                         Specializations_Id = Id,
                         Record_Status = (Enums.ActiveStatus)(int)(isChecked ? Enums.ActiveStatus.Active : Enums.ActiveStatus.Inactive)
                     };
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync<Specializations>("specialization/UpdateRecordStatus", updatedRec);
+                    HttpResponseMessage response = await _client.PostAsJsonAsync<Specializations>("specialization/UpdateRecordStatus", updatedRec);
 
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        var errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {
-                return (false,  ex.Message);
+                return (false, ex.Message);
             }
         }
 
@@ -149,24 +133,17 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response = await _client.PutAsJsonAsync($"Specialization/updateSpec/{specialization.Specializations_Id}", specialization);
 
-                    HttpResponseMessage getData = await client.PutAsJsonAsync($"Specialization/updateSpec/{specialization.Specializations_Id}", specialization);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        var errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -178,24 +155,17 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl); 
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response = await _client.DeleteAsync("Specialization/deleteSpec/" + id);
 
-                    HttpResponseMessage getData = await client.DeleteAsync("Specialization/deleteSpec/" + id);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        var errorMessage = await getData.Content.ReadAsStringAsync();
+                        var errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {

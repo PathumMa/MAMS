@@ -8,10 +8,19 @@ namespace MAMS.Services
     public class LoginService
     {
         private readonly string _apiUrl;
+        private readonly HttpClient _client;
 
         public LoginService(string apiUrl)
         {
             _apiUrl = apiUrl;
+
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(_apiUrl)
+
+            };
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         public async Task<(bool, string)> LoginAsync(LoginViewModel user)
@@ -19,25 +28,18 @@ namespace MAMS.Services
 
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("Login/login", user);
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
 
                     }
                     else
                     {
-                        string errorMessage = await getData.Content.ReadAsStringAsync();
+                        string errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -50,24 +52,17 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Login/login", user);
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/login", user);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        string errorMessage = await getData.Content.ReadAsStringAsync();
+                        string errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -80,24 +75,17 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("Login/DoctorReg", model);
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/DoctorReg", model);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        string errorMessage = await getData.Content.ReadAsStringAsync();
+                        string errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -110,24 +98,17 @@ namespace MAMS.Services
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri(_apiUrl);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Login/UserReg", model);
 
-                    HttpResponseMessage getData = await client.PostAsJsonAsync("Login/UserReg", model);
-
-                    if (getData.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
                     {
                         return (true, null);
                     }
                     else
                     {
-                        string errorMessage = await getData.Content.ReadAsStringAsync();
+                        string errorMessage = await response.Content.ReadAsStringAsync();
                         return (false, errorMessage);
                     }
-                }
             }
             catch (Exception ex)
             {

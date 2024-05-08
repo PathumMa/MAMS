@@ -4,6 +4,8 @@ namespace MAMS.Models
 {
     public class DoctorAvailableDetails
     {
+        [Required]
+        public int DoctorId { get; set; }
         public DayOfWeek Day { get; set; }
 
         [DataType(DataType.Time)]

@@ -1,21 +1,24 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
-using MAMS.Services;    
-using Microsoft.AspNetCore.Mvc;
+using MAMS.Models;
 using MAMS.Models.ViewModels;
+using MAMS.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace MAMS.Controllers
 {
-    public class UsersController : Controller
+    public class DoctorController : Controller
     {
-        private readonly ILogger<UsersController> _logger;
+        private readonly ILogger<DoctorController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public SpecializationService _specializationService;
         public LoginService _loginService;
         public UserService _userService;
+        public AvailabilityService _availabilityService;
 
-        public UsersController(IConfiguration config, INotyfService notfy, ILogger<UsersController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
+        public DoctorController(IConfiguration config, INotyfService notfy, ILogger<DoctorController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
@@ -24,21 +27,10 @@ namespace MAMS.Controllers
             _specializationService = new SpecializationService(appSettings.ApiUrl);
             _loginService = new LoginService(appSettings.ApiUrl);
             _userService = new UserService(appSettings.ApiUrl);
+            //_availabilityService = availabilityService;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> Patient()
-        {
-            var (specializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
-            ViewBag.Specializaions = specializations;
-            return View();
-        }
-
-        public async Task<IActionResult> Doctors()
+        public async Task<IActionResult> Index()
         {
             IList<DoctorDetailsViewModel> doctors = new List<DoctorDetailsViewModel>();
 
@@ -46,7 +38,7 @@ namespace MAMS.Controllers
             {
                 string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
 
-                if(user != null)
+                if (user != null)
                 {
                     var result = await _userService.GetDoctorsAsync();
 
@@ -74,5 +66,42 @@ namespace MAMS.Controllers
             }
             return View();
         }
+
+        //public async Task<IActionResult> Availabilities()
+        //{
+        //    IEnumerable<DoctorAvailableDetails> availabilities = new List<DoctorAvailableDetails>();
+
+        //    try
+        //    {
+        //        string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
+
+        //        if (user != null)
+        //        {
+        //            var result = await _availabilityService.GetAllAvailabilities();
+
+        //            if (result.Item1 != null)
+        //            {
+        //               availabilities = result.Item1;
+        //            }
+        //            else
+        //            {
+        //                _notfy.Error(result.Item2);
+        //                return View();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            _notfy.Warning("Session Timeout!:", 5);
+        //            return View("TimedOut", "Home");
+        //        }
+        //        ViewData.Model = availabilities;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+        //        _notfy.Warning($"{ex.Message}", 5);
+        //    }
+        //    return View();
+        //}
     }
 }

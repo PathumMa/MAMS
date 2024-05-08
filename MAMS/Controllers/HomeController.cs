@@ -15,18 +15,17 @@ namespace MAMS.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public UserService _userService;
 
-        public HomeController(IConfiguration config, INotyfService notfy, ILogger<HomeController> logger, IHttpContextAccessor contextAccessor)
+        public HomeController(IConfiguration config, INotyfService notfy, ILogger<HomeController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            _apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
+            //_apiUrl = _config.GetSection("AppSettings")["ApiUrl"];
             _httpContextAccessor = contextAccessor;
-            _userService = new UserService(_apiUrl);
+            _userService = new UserService(appSettings.ApiUrl);
 
         }
 

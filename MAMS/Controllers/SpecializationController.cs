@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
 using MAMS.Services;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MAMS.Controllers
 {
@@ -16,7 +15,6 @@ namespace MAMS.Controllers
         private readonly ILogger<SpecializationController> _logger;
         private readonly INotyfService _notfy;
         private readonly IConfiguration _config;
-        public readonly string _apiUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public SpecializationService _specializationService;
 
@@ -25,9 +23,8 @@ namespace MAMS.Controllers
             _logger = logger;
             _config = config;
             _notfy = notfy;
-            _apiUrl = appSettings.ApiUrl;
             _httpContextAccessor = contextAccessor;
-            _specializationService = new SpecializationService(_apiUrl);
+            _specializationService = new SpecializationService(appSettings.ApiUrl);
 
         }
 
