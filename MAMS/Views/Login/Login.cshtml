@@ -1,6 +1,5 @@
 ﻿@{
     ViewData["Title"] = "MAMS Login";
-
     Layout = null;
 }
 @model Suser
@@ -15,62 +14,58 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/bootstrap-icons-1.11.1/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MAMS.styles.css" asp-append-version="true" />
-
 </head>
 <body>
     <div class="container">
         <div class="split left">
+            <img src="~/img/MedEase.png" class="logo" alt="MedEase logo TM" />
             <div class="login-box">
+                
                 <figure>
                     <blockquote class="h2">
                         <p>Log in</p>
                     </blockquote>
                     <figcaption class="blockquote-footer">
-                        Streamline your access to the<cite title="Source Title"> MedEase&#8482;</cite> platform.
+                        Streamline your access to the <cite title="Source Title">MedEase&#8482;</cite> platform.
                     </figcaption>
                 </figure>
                 <hr />
-
                 <div class="container" style="padding: 5% 0 10% 0;">
                     <form asp-controller="Login" asp-action="Enter" method="post" id="loginForm">
-
                         <div class="mb-4">
                             <label asp-for="UserName">User Name</label>
                             <input asp-for="UserName" class="form-control rounded-pill" required />
                             <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
                         <div class="mb-4">
-                            <label asp-for="Password"></label>
+                            <label asp-for="Password">Password</label>
                             <input asp-for="Password" class="form-control rounded-pill" autocomplete="new-password" type="password" required />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
                         <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
                     </form>
                 </div>
-
                 <div class="container">
-                    Are you New for here?
+                    Are you new here?
                     <a asp-controller="Login" asp-action="SignUp" class="btn btn-outline-secondary rounded-pill" style="width:150px">Sign Up &nbsp; <i class="bi bi-box-arrow-in-right"></i></a>
                 </div>
             </div>
-            <br />
             <footer class="border-top footer text-muted text-center">
                 <div class="container">
-                    &copy; 2024 - MAMS v2024.04.01.01-
+                    &copy; 2024 - MAMS v2024.04.01.01
                 </div>
             </footer>
         </div>
-        
         <div class="split right">
-                <div class="text-center">
-                <img src="~/img/Login.png" class="img-fluid" alt="Login img">
-                </div>
+            <div class="text-center">
+                <img src="~/img/Login.png" class="img-fluid" alt="Login image">
+            </div>
+            <div class="row text-center">
+                <h2 style="color: aliceblue;"><i>MedEase&#8482;</i></h2>
                 <div class="row text-center">
-                <h2 style="color:aliceblue"><i>MedEase&#8482;</i></h2>
-                <div class="row text-center">
-                    <h2 style="color:aliceblue">Appointment & Management System</h2>
+                    <h2 style="color: aliceblue;">Appointment & Management System</h2>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 
@@ -90,6 +85,5 @@
             });
         });
     </script>
-
 </body>
 </html>

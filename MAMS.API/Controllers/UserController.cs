@@ -120,6 +120,7 @@ namespace MAMS.API.Controllers
                 .Where(dd => dd.Suser.RoleId == 30)
                 .Select(d => new DoctorDetailsDto
                 {
+                    Id = d.Id,
                     RoleId = d.Suser.RoleId,
                     UserName = d.Suser.UserName,
                     Email = d.Suser.Email,

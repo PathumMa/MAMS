@@ -1,6 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Sign Up";
-
+    ViewData["Title"] = "Session TimedOut";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -13,33 +12,29 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/bootstrap-icons-1.11.1/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MAMS.styles.css" asp-append-version="true" />
-
 </head>
-
 <body style="background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5, #08d087)">
-
     <div class="container">
-        <div>
-            <div class="text-center">
-                <img src="~/img/time.png" class="img-fluid rounded-start" alt="timedOut">
+        <div class="logo-container">
+            <img src="~/img/MedEase.png" class="logo" alt="MedEase logo TM" />
+        </div>
+        <div class="text-center">
+            <img src="~/img/time.png" class="img-fluid rounded-start" alt="timedOut">
+        </div>
+        <div class="row">
+            <div class="col"></div>
+            <div class="col">
+                <figure style="color:aliceblue">
+                    <blockquote class="blockquote">
+                        <p>Session Expired!</p>
+                    </blockquote>
+                    <figcaption class="blockquote-footer" style="color:aliceblue">
+                        Your session has expired. Please <a href="/" class="text-warning">click here</a> to login again with <cite title="MedEase">MedEase&#8482;</cite>
+                    </figcaption>
+                </figure>
             </div>
-            <div class="row">
-                <div class="col"></div>
-                <div class="col">
-                    <figure style="color:aliceblue">
-                        <blockquote class="blockquote">
-                            <p>Session Expired! </p>
-                        </blockquote>
-                        <figcaption class="blockquote-footer" style="color:aliceblue">
-                            Your session has expired. Please <a href="/">click here</a> to login again with <cite title="MedEase">MedEase&#8482;</cite>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col"></div>
-            </div>
-        </div> 
+            <div class="col"></div>
+        </div>
     </div>
-
 </body>
-
 </html>

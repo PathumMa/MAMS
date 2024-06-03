@@ -33,13 +33,40 @@ namespace MAMS.Services
 
                     if (getData.IsSuccessStatusCode)
                     {
-                        string results = getData.Content.ReadAsStringAsync().Result;
+                        string results = await getData.Content.ReadAsStringAsync();
                         viewModel = JsonConvert.DeserializeObject<UserDetailsViewModel>(results);
                     }
                     else
                     {
                         errorMessage = await getData.Content.ReadAsStringAsync();
                     }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return (viewModel, errorMessage);
+        }
+
+        public async Task<(DoctorDetailsViewModel, string)> GetDoctorDetailsAsync(string user)
+        {
+            DoctorDetailsViewModel? viewModel = new DoctorDetailsViewModel();
+            string? errorMessage = null;
+
+            try
+            {
+                HttpResponseMessage getData = await _client.GetAsync("User/" + user);
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = await getData.Content.ReadAsStringAsync();
+                    viewModel = JsonConvert.DeserializeObject<DoctorDetailsViewModel>(results);
+                }
+                else
+                {
+                    errorMessage = await getData.Content.ReadAsStringAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -60,7 +87,7 @@ namespace MAMS.Services
 
                     if (getData.IsSuccessStatusCode)
                     {
-                        string results = getData.Content.ReadAsStringAsync().Result;
+                        string results = await getData.Content.ReadAsStringAsync();
                         viewModel = JsonConvert.DeserializeObject<List<DoctorDetailsViewModel>>(results);
                     }
                     else

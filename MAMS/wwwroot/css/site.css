@@ -16,3 +16,13 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.logo-container {
+    position: absolute;
+    top: 20px; /* Adjust as needed */
+    left: 20px; /* Adjust as needed */
+}
+
+.logo {
+    max-width: 150px;
+}

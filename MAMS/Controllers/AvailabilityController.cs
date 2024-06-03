@@ -1,13 +1,11 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using MAMS.Models;
-using MAMS.Models.ViewModels;
 using MAMS.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace MAMS.Controllers
 {
-    public class DoctorController : Controller
+    public class AvailabilityController : Controller
     {
         private readonly ILogger<DoctorController> _logger;
         private readonly INotyfService _notfy;
@@ -18,7 +16,7 @@ namespace MAMS.Controllers
         public UserService _userService;
         public AvailabilityService _availabilityService;
 
-        public DoctorController(IConfiguration config, INotyfService notfy, ILogger<DoctorController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
+        public AvailabilityController(IConfiguration config, INotyfService notfy, ILogger<DoctorController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
             _logger = logger;
             _config = config;
@@ -30,9 +28,9 @@ namespace MAMS.Controllers
             _availabilityService = new AvailabilityService(appSettings.ApiUrl);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Availabilities(int id)
         {
-            IList<DoctorDetailsViewModel> doctors = new List<DoctorDetailsViewModel>();
+            IEnumerable<DoctorAvailableDetails> availabilities = new List<DoctorAvailableDetails>();
 
             try
             {
@@ -40,11 +38,11 @@ namespace MAMS.Controllers
 
                 if (user != null)
                 {
-                    var result = await _userService.GetDoctorsAsync();
+                    var result = await _availabilityService.AvailabilityAsync(id);
 
                     if (result.Item1 != null)
                     {
-                        doctors = result.Item1;
+                        availabilities = result.Item1;
                     }
                     else
                     {
@@ -57,12 +55,43 @@ namespace MAMS.Controllers
                     _notfy.Warning("Session Timeout!:", 5);
                     return View("TimedOut", "Home");
                 }
-                ViewData.Model = doctors;
+                ViewData.Model = availabilities;
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
                 _notfy.Warning($"{ex.Message}", 5);
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> Update(DoctorAvailableDetails doctorAvailableDetails)
+        {
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    (bool success, string errorMessage) = await _availabilityService.UpdateAvailabilityAsync(doctorAvailableDetails);
+
+                    if (success)
+                    {
+                        _notfy.Success($"{doctorAvailableDetails.Day}, Updated successfully.");
+                        return RedirectToAction("Availabilities");
+                    }
+                    else
+                    {
+                        _notfy.Warning(errorMessage);
+                        _notfy.Error("update Fail!.", 5);
+                        return View("Availabilities");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return View("Availabilities");
             }
             return View();
         }
