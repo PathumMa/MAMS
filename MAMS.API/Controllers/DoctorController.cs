@@ -24,7 +24,7 @@ namespace MAMS.API.Controllers
             return await _dbContext.DoctorAvailableDetails.ToListAsync();
         }
 
-        [HttpGet("availability")]
+        [HttpGet("availability/{id}")]
         public async Task<IActionResult> GetAvailablility(int id)
         {
             var doctorAvailabilities = _dbContext.DoctorAvailableDetails.Where(u => u.DoctorId == id)
