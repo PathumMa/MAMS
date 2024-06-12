@@ -1,4 +1,6 @@
-﻿<!-- Main Sidebar Container -->
+﻿@inject IHttpContextAccessor _httpContextAccessor;
+
+<!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-warning elevation-4" style="backdrop-filter: blur(40px);
     background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5, #08d087);">
     <!-- Brand Logo -->
@@ -15,7 +17,7 @@
                 <img src="~/adminlte/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="#" class="d-block">@_httpContextAccessor.HttpContext.Session.GetString("UserName")</a>
             </div>
         </div>
 
@@ -52,9 +54,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Availabilities">
+                            <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SignUp">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Availabilities</p>
+                                <p>New Users</p>
                             </a>
                         </li>
                         <li class="nav-item">

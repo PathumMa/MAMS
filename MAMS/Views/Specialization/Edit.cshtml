@@ -1,15 +1,34 @@
 ﻿@model Specializations
 
+@{
+    ViewData["Title"] = "Edit Specialization";
+}
+
 <div class="container">
     <div class="content-header">
-        <h2 class="text-primary">Specializations</h2>
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Edit Specialization</h1>
+                    <a asp-controller="Specialization" asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back To List
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Specializations</a></li>
+                        <li class="breadcrumb-item active">update</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
     </div>
 
     <div class="content">
         <div class="container-fluid">
             <div class="card card-info card-outline">
                 <div class="card-header">
-                    <h4 class="card-title text-info">Edit Specialization: </h4>
+                    <h4 class="card-title text-info">Edit Details: </h4>
                 </div>
                 <form method="post" asp-action="Update">
                     <div class="card-body">
@@ -55,8 +74,8 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button type="submit" class="btn btn-info rounded-pill" style="width:150px"><i class="bi bi-arrow-clockwise" onclick=showConfirmationModal()></i> &nbsp; Update</button>
-                        <a asp-controller="Specialization" asp-action="Index" class="btn btn-secondary rounded-pill float-right" style="width:150px"><i class="bi bi-backspace"></i> &nbsp; Back To List</a>
+                        <button type="submit" class="btn bg-gradient-info rounded-pill float-right" style="width:150px"><i class="bi bi-arrow-clockwise" onclick=showConfirmationModal()></i> &nbsp; Update</button>
+                        
                     </div>
                 </form>
             </div>

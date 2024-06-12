@@ -37,6 +37,7 @@ namespace MAMS.Controllers
             try
             {
                 string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
+                ViewData.Model = _userService.GetUserDetailsAsync(user);
 
                 if (user != null)
                 {

@@ -98,5 +98,49 @@ namespace MAMS.Services
                 return (false, ex.Message);
             }
         }
+
+        public async Task<(bool Success, string ErrorMessage)> AddAvailabilityAsync(DoctorAvailableDetails newAvailability)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Doctor/AddAvailability", newAvailability);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool success, string ErrorMessage)> DeleteAvailabilityAsync(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.DeleteAsync("Doctor/DeleteAvailability/" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
+            }
+            catch(Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
     }
 }

@@ -1,0 +1,192 @@
+﻿@using System.Data
+@using MAMS.Services
+@using MAMS.Models
+
+@{
+    ViewData["Title"] = "Availabilities";
+    var doctorId = ViewData["DoctorId"] as int?;
+}
+
+@model IEnumerable<DoctorAvailableDetails>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Availabilities</h1>
+                    <a asp-controller="Doctor" asp-action="Index" class="btn bg-gradient-secondary rounded-pill float-right" style="width:150px"><i class="bi bi-backspace"></i> &nbsp; Back</a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Doctors</a></li>
+                        <li class="breadcrumb-item active">All Availabilities</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-info card-outline">
+                    <div class="card-header card-header d-flex justify-content-between align-items-center">
+                        <form method="get" asp-controller="Specialization" asp-action="Index" class="d-flex ml-auto">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" name="searchString" class="form-control float-left" placeholder="Search by Day or Time" value="@ViewData["CurrentFilter"]">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body table-responsive p-0">
+
+                        @if (Model == null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                Error: Failed to load data. Please try again later. or Please Log in again.
+                            </div>
+                        }
+                        else if (!Model.Any())
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                NO Availability Found!
+                            </div>
+                        }
+
+                        else
+                        {
+                            <table id="Availability" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Available Day</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var obj in Model)
+                                    {
+                                        <tr>
+                                            <input asp-for="@obj.Id" hidden />
+                                            <input asp-for="@obj.DoctorId" hidden />
+                                            <td data-Available_day="@obj.Available_Day">@obj.Available_Day</td>
+                                            <td class="text-start">@(obj.StartTime.HasValue ? new DateTime(obj.StartTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+                                            <td class="text-Start">@(obj.EndTime.HasValue ? new DateTime(obj.EndTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+
+                                            <td>
+                                                <div class="btn-group btn-group-justified" role="group">
+                                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#editModal-@obj.Id" title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button type="button" class="delete-button btn btn-light" data-id="@obj.Id" data-doctor-id="@obj.DoctorId" title="Delete">
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        @await Html.PartialAsync("_EditAvailability", obj)
+
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                        <button type="button" class="btn bg-gradient-success rounded-pill float-right" data-bs-toggle="modal" data-bs-target="#addNewModal" data-doctor-id="@doctorId" style="width:150px">
+                            <i class="bi bi-plus-circle"></i>&ensp; Add New
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="showDeleteConfirmationModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Delete this Day?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn bg-gradient-danger" id="confirmYes">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_AddAvailability", new DoctorAvailableDetails())
+
+<!-- DataTables  & Plugins -->
+<script src="~/adminlte/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/adminlte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/adminlte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/adminlte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/adminlte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/adminlte/plugins/jszip/jszip.min.js"></script>
+<script src="~/adminlte/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/adminlte/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/adminlte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/adminlte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/adminlte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+@section Scripts {
+    <script>
+        function showDeleteConfirmationModal(id, doctorId) {
+            $('#confirmYes').data('id', id).data('doctor-id', doctorId);
+            $('#deleteConfirmationModal').modal('show');
+        }
+
+        $(document).ready(function () {
+
+            $('.delete-button').click(function () {
+                var id = $(this).data('id');
+                var doctorId = $(this).data('doctor-id');
+                console.log("1Confirm clicked - ID:", id, "1Doctor ID:", doctorId);
+                showDeleteConfirmationModal(id, doctorId);
+            });
+
+            $('#confirmYes').click(function () {
+                var id = $(this).data('id');
+                var doctorId = $(this).data('doctor-id');
+                $('#deleteConfirmationModal').modal('hide');
+                console.log("Confirm clicked - ID:", id, "Doctor ID:", doctorId);
+                window.location.href = '@Url.Action("Delete", "Availability")' + '?id=' + id + '&doctorId=' + doctorId;
+            });
+
+            $("#Availability").DataTable({
+                    "responsive": true,
+                    "lengthChange": false,
+                    "autoWidth": false,
+                    "ordering": true,
+                    "paging": true,
+                    "info": true,
+                    "searching": true,
+                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+                }).buttons().container().appendTo('#Availability_wrapper .col-md-6:eq(0)');
+        });
+
+        
+    </script>
+}

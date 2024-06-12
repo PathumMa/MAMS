@@ -14,6 +14,6 @@ namespace MAMS.API.Models
         public TimeSpan? EndTime { get; set; }
         public DateTime Created_Date { get; set; } = DateTime.Now;
 
-        //public DoctorDetails DoctorDetails { get; set; }
+        ///public DoctorDetails DoctorDetails { get; set; }
     }
 }

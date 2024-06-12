@@ -8,7 +8,7 @@ namespace MAMS.Models
         [Required]
         public int Id { get; set; }
         public int DoctorId { get; set; }
-        public string Day { get; set; }
+        public string Available_Day { get; set; }
 
         [DataType(DataType.Time)]
         public TimeSpan? StartTime { get; set; }

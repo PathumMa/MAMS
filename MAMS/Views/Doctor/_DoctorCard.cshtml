@@ -1,7 +1,8 @@
 ﻿@model MAMS.Models.ViewModels.DoctorDetailsViewModel
 
 <div class="g-col-6">
-    <div class="card-header text-muted border-bottom-0">
+    <div class="card card-info card-outline">
+        <div class="card-header text-muted border-bottom-0 card-outline">
         @Model.UserName
         <input asp-for="@Model.Id" hidden />
     </div>
@@ -20,18 +21,19 @@
                 </ul> *@
             </div>
             <div class="col-5 text-center">
-                <img src="../../dist/img/user1-128x128.jpg" alt="user-avatar" class="img-circle img-fluid">
+                <img src="~/adminlte/dist/img/user1-128x128.jpg" alt="user-avatar" class="img-circle img-fluid">
             </div>
         </div>
     </div>
     <div class="card-footer">
         <div class="text-right">
-            <a asp-controller="Availability" asp-action="Availabilities" asp-route-id="@Model.Id" class="btn btn-sm bg-teal">
+                <a asp-controller="Availability" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-sm bg-gradient-teal">
                 <i class="bi bi-calendar-check"></i> &nbsp; Availability
             </a>
-            <a href="#" class="btn btn-sm btn-primary">
+            <a href="#" class="btn btn-sm bg-gradient-primary">
                 <i class="fas fa-user"></i> View Profile
             </a>
         </div>
+    </div>
     </div>
 </div>

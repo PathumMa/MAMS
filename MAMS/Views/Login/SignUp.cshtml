@@ -1,4 +1,4 @@
-﻿@using MAMS.Services
+﻿﻿@using MAMS.Services
 @using MAMS.Models.ViewModels
 @{
     ViewData["Title"] = "Sign Up";
@@ -45,15 +45,15 @@
 <body>
     <div class="container">
         <div class="split left-s px-4">
-                <figure>
-                    <blockquote class="h2">
-                        <p>Sign Up</p>
-                    </blockquote>
-                    <figcaption class="blockquote-footer">
-                        Get Registered with the<cite title="Source Title">MedEase&#8482;</cite>
-                    </figcaption>
-                    <hr />
-                </figure>
+            <figure>
+                <blockquote class="h2">
+                    <p>Sign Up</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Get Registered with the<cite title="Source Title">MedEase&#8482;</cite>
+                </figcaption>
+                <hr />
+            </figure>
 
             <div>
                 <form asp-controller="Login" asp-action="Register" method="post" id="signinForm" novalidate>
@@ -617,4 +617,3 @@
 
     </script>
 </body>
-

@@ -45,7 +45,7 @@ namespace MAMS.API.Controllers
             {
                 return Ok(doctorAvailabilities);
             }
-            
+
         }
 
         [HttpPut("UpdateAvailability/{id}")]
@@ -63,11 +63,6 @@ namespace MAMS.API.Controllers
 
             try
             {
-                if (_dbContext.DoctorAvailableDetails.Any(d => d.Id != id && d.Available_Day == updateAvailability.Available_Day))
-                {
-                    return BadRequest($"{updateAvailability.Available_Day} is already in List!");
-                }
-
                 _dbContext.Entry(updateAvailability).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
@@ -81,6 +76,69 @@ namespace MAMS.API.Controllers
                 }
 
                 throw;
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("AddAvailability")]
+        public async Task<IActionResult> AddAvailability([FromBody] DoctorAvailableDetails addAvailability)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (addAvailability.DoctorId == 0)
+            {
+                return BadRequest("Doctor Id Required.");
+            }
+
+            try
+            {
+
+                if (_dbContext.DoctorAvailableDetails.Any(d =>
+                            d.DoctorId == addAvailability.DoctorId &&
+                            d.Available_Day == addAvailability.Available_Day &&
+                            (
+                                (d.StartTime <= addAvailability.StartTime && addAvailability.StartTime < d.EndTime) ||
+                                (d.StartTime < addAvailability.EndTime && addAvailability.EndTime <= d.EndTime) ||
+                                (addAvailability.StartTime <= d.StartTime && d.EndTime <= addAvailability.EndTime)
+                            )))
+                {
+                    return BadRequest($"{addAvailability.Available_Day} and {addAvailability.StartTime} is already in List!");
+                }
+
+                _dbContext.DoctorAvailableDetails.Add(addAvailability);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok("Availability Added Successfully!.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("DeleteAvailability/{id}")]
+        public async Task<IActionResult> DeleteAvaialbility(int id)
+        {
+            try
+            {
+                var availability = await _dbContext.DoctorAvailableDetails.FindAsync(id);
+
+                if (availability == null)
+                {
+                    return BadRequest("Availability not found that try to Delete!.");
+                }
+
+                _dbContext.DoctorAvailableDetails.Remove(availability);
+                await _dbContext.SaveChangesAsync();
+
+                return Ok("Specialization deleted successfully.");
             }
 
             catch (Exception ex)
