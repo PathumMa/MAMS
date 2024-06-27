@@ -153,6 +153,7 @@ namespace MAMS.Controllers
                     else
                     {
                         _notfy.Error(errorMessage, 5);
+                        return View("SignUp");
                     }
                 }
                 catch (Exception ex)
@@ -178,6 +179,7 @@ namespace MAMS.Controllers
                     else
                     {
                         _notfy.Error(errorMessage, 5);
+                        return View("SignUp");
                     }
                 }
                 catch (Exception ex)

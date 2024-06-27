@@ -73,7 +73,8 @@
                                         <th>Available Day</th>
                                         <th>From</th>
                                         <th>To</th>
-                                        <th>Actions</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,8 +86,18 @@
                                             <td data-Available_day="@obj.Available_Day">@obj.Available_Day</td>
                                             <td class="text-start">@(obj.StartTime.HasValue ? new DateTime(obj.StartTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
                                             <td class="text-Start">@(obj.EndTime.HasValue ? new DateTime(obj.EndTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
-
                                             <td>
+                                                @if (obj.ActiveStatus == Enums.ActiveStatus.Active)
+                                                {
+                                                    <span class="badge bg-gradient-success">Active</span>
+                                                }
+                                                else if (obj.ActiveStatus == Enums.ActiveStatus.Inactive)
+                                                {
+                                                    <span class="badge bg-gradient-danger">Inactive</span>
+                                                }
+                                            </td>
+
+                                            <td class ="text-center">
                                                 <div class="btn-group btn-group-justified" role="group">
                                                     <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#editModal-@obj.Id" title="Edit">
                                                         <i class="bi bi-pencil-square"></i>

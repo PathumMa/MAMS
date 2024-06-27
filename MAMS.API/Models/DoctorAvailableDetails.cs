@@ -12,8 +12,9 @@ namespace MAMS.API.Models
         public string Available_Day { get; set; }
         public TimeSpan? StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
+        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
         public DateTime Created_Date { get; set; } = DateTime.Now;
 
-        ///public DoctorDetails DoctorDetails { get; set; }
+        public DoctorDetails DoctorDetails { get; set; }
     }
 }

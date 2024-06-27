@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    [Migration("20240606041812_InitialUpdate")]
-    partial class InitialUpdate
+    [Migration("20240613050023_ReDoctorDetails_withInitial")]
+    partial class ReDoctorDetails_withInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,15 +68,15 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ActiveStatus")
+                        .HasColumnType("int");
+
                     b.Property<string>("Available_Day")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created_Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("DoctorDetailsId")
-                        .HasColumnType("int");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -89,7 +89,7 @@ namespace MAMS.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorDetailsId");
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("DoctorAvailableDetails");
                 });
@@ -375,8 +375,9 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Last_Name")
                         .IsRequired()
@@ -431,9 +432,13 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
                 {
-                    b.HasOne("MAMS.API.Models.DoctorDetails", null)
+                    b.HasOne("MAMS.API.Models.DoctorDetails", "DoctorDetails")
                         .WithMany("AvailableDetails")
-                        .HasForeignKey("DoctorDetailsId");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DoctorDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorDetails", b =>

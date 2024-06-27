@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MAMS.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialUpdate : Migration
+    public partial class ReDoctorDetails_withInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -102,7 +102,7 @@ namespace MAMS.API.Migrations
                     District = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Province = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Birth_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Blood_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Personal_Id = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PersonalId_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -132,17 +132,18 @@ namespace MAMS.API.Migrations
                     Available_Day = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartTime = table.Column<TimeSpan>(type: "time", nullable: true),
                     EndTime = table.Column<TimeSpan>(type: "time", nullable: true),
-                    Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DoctorDetailsId = table.Column<int>(type: "int", nullable: true)
+                    ActiveStatus = table.Column<int>(type: "int", nullable: false),
+                    Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DoctorAvailableDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DoctorAvailableDetails_DoctorDetails_DoctorDetailsId",
-                        column: x => x.DoctorDetailsId,
+                        name: "FK_DoctorAvailableDetails_DoctorDetails_DoctorId",
+                        column: x => x.DoctorId,
                         principalTable: "DoctorDetails",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,9 +248,9 @@ namespace MAMS.API.Migrations
                 column: "UserDetailsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DoctorAvailableDetails_DoctorDetailsId",
+                name: "IX_DoctorAvailableDetails_DoctorId",
                 table: "DoctorAvailableDetails",
-                column: "DoctorDetailsId");
+                column: "DoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DoctorDetails_SuserId",

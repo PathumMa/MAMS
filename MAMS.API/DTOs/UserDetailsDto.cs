@@ -17,7 +17,7 @@ namespace MAMS.API.DTOs
         public string District { get; set; }
         public string Province { get; set; }
         public DateTime Birth_Date { get; set; }
-        public GenderType Gender { get; set; }
+        public string Gender { get; set; }
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }

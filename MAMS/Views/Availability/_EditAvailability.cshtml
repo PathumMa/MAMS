@@ -34,6 +34,25 @@
                         <label asp-for="@Model.EndTime">To</label>
                         <input type="time" asp-for="@Model.EndTime" class="form-control" />
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status :</label>
+                        <div class="row">
+                            <div class="col">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input custom-control-input-success" asp-for="ActiveStatus" type="radio" id="customRadio1-@Model.Id" value="Active">
+                                    <label for="customRadio1-@Model.Id" class="custom-control-label">Active</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input custom-control-input-danger" asp-for="ActiveStatus" type="radio" id="customRadio2-@Model.Id" value="Inactive">
+                                    <label for="customRadio2-@Model.Id" class="custom-control-label">Inactive</label>
+                                </div>
+                            </div>
+                            <div class="col-10"></div>
+                        </div>
+
+                    </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn bg-gradient-info">Save changes</button>
                     </div>

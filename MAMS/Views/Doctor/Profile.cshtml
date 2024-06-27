@@ -1,0 +1,100 @@
+﻿@model MAMS.Models.ViewModels.DoctorDetailsViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Doctors</a></li>
+                        <li class="breadcrumb-item active">Profile View</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-info card-outline">
+                <div class="card-header card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="text-info"><b>@Model.UserTitle</b>&nbsp; @Model.First_Name @Model.Middle_Name @Model.Last_Name</h4>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-hover table-striped">
+                        <tr>
+                            <th class="col-sm-2 ">Username</th>
+                            <td class="col-sm-10">@Model.UserName</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Email</th>
+                            <td class="col-sm-10">@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <th class="col-sm-2 ">Phone Number</th>
+                            <td class="col-sm-10">@Model.PhoneNumber</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Address</th>
+                            <td class="col-sm-10">@Model.Address, @Model.City, @Model.District, @Model.Province</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Birth Date</th>
+                            <td class="col-sm-10">@Model.Birth_Date.ToString("d")</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Gender</th>
+                            <td class="col-sm-10">@Model.Gender</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Blood Type</th>
+                            <td class="col-sm-10">@Model.Blood_Type</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Personal ID</th>
+                            <td class="col-sm-10">@Model.Personal_Id (@Model.PersonalId_Type)</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Medical Council Registration Number</th>
+                            <td class="col-sm-10">@Model.MedicalCouncilRegistrationNumber</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Specialization</th>
+                            <td class="col-sm-10">@Model.Specialization</td>
+                        </tr>
+
+                        <tr>
+                            <th class="col-sm-2">Hospital Affiliation</th>
+                            <td class="col-sm-10">@Model.Hospital_Affiliation</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+                    <a asp-action="Index">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

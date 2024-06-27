@@ -35,6 +35,7 @@ namespace MAMS.API.Controllers
                     Available_Day = d.Available_Day,
                     StartTime = d.StartTime,
                     EndTime = d.EndTime,
+                    ActiveStatus = d.ActiveStatus,
                 }).ToList();
 
             if (doctorAvailabilities.Count == 0)
@@ -49,7 +50,7 @@ namespace MAMS.API.Controllers
         }
 
         [HttpPut("UpdateAvailability/{id}")]
-        public async Task<IActionResult> UpdateAvailability(int id, [FromBody] DoctorAvailableDetails updateAvailability)
+        public async Task<IActionResult> UpdateAvailability(int id, [FromBody] DoctorAvailabilityDto updateAvailability)
         {
             if (!ModelState.IsValid)
             {
@@ -63,7 +64,20 @@ namespace MAMS.API.Controllers
 
             try
             {
-                _dbContext.Entry(updateAvailability).State = EntityState.Modified;
+                var availabilityEntity = await _dbContext.DoctorAvailableDetails.FindAsync(id);
+                if (availabilityEntity == null)
+                {
+                    return NotFound();
+                }
+
+                // Update the entity's properties with values from the DTO
+                availabilityEntity.DoctorId = updateAvailability.DoctorId;
+                availabilityEntity.Available_Day = updateAvailability.Available_Day;
+                availabilityEntity.StartTime = updateAvailability.StartTime;
+                availabilityEntity.EndTime = updateAvailability.EndTime;
+                availabilityEntity.ActiveStatus = updateAvailability.ActiveStatus;
+
+                _dbContext.Entry(availabilityEntity).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
 
                 return Ok("Availability Updated successfully.");
@@ -85,7 +99,7 @@ namespace MAMS.API.Controllers
         }
 
         [HttpPost("AddAvailability")]
-        public async Task<IActionResult> AddAvailability([FromBody] DoctorAvailableDetails addAvailability)
+        public async Task<IActionResult> AddAvailability([FromBody] DoctorAvailabilityDto addAvailability)
         {
             if (!ModelState.IsValid)
             {
@@ -112,7 +126,16 @@ namespace MAMS.API.Controllers
                     return BadRequest($"{addAvailability.Available_Day} and {addAvailability.StartTime} is already in List!");
                 }
 
-                _dbContext.DoctorAvailableDetails.Add(addAvailability);
+                var availabilityEntity = new DoctorAvailableDetails
+                {
+                    DoctorId = addAvailability.DoctorId,
+                    Available_Day = addAvailability.Available_Day,
+                    StartTime = addAvailability.StartTime,
+                    EndTime = addAvailability.EndTime,
+                    ActiveStatus = addAvailability.ActiveStatus
+                };
+
+                _dbContext.DoctorAvailableDetails.Add(availabilityEntity);
                 await _dbContext.SaveChangesAsync();
 
                 return Ok("Availability Added Successfully!.");

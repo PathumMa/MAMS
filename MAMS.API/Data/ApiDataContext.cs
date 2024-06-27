@@ -30,10 +30,10 @@ namespace MAMS.API.Data
              .WithOne(sd => sd.Suser)
              .HasForeignKey<DoctorDetails>(dd => dd.SuserId);
 
-            modelBuilder.Entity<DoctorDetails>()
-                .HasMany(s => s.AvailableDetails);
-                //.WithOne(sd => sd.DoctorDetails)
-                //.HasForeignKey(dd => dd.DoctorId);
+            modelBuilder.Entity<DoctorAvailableDetails>()
+            .HasOne(d => d.DoctorDetails)
+            .WithMany(d => d.AvailableDetails)
+            .HasForeignKey(d => d.DoctorId);
 
             modelBuilder.Entity<Transactions>()
                 .HasOne(s => s.UserDetails)

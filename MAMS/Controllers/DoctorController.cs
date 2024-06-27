@@ -37,7 +37,6 @@ namespace MAMS.Controllers
             try
             {
                 string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
-                ViewData.Model = _userService.GetUserDetailsAsync(user);
 
                 if (user != null)
                 {
@@ -59,6 +58,43 @@ namespace MAMS.Controllers
                     return View("TimedOut", "Home");
                 }
                 ViewData.Model = doctors;
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Warning($"{ex.Message}", 5);
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> Profile(string userName)
+        {
+            DoctorDetailsViewModel doctor = new DoctorDetailsViewModel();
+
+            try
+            {
+                string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
+
+                if (user != null)
+                {
+                    var result = await _userService.GetDoctorDetailsAsync(userName);
+
+                    if (result.Item1 != null)
+                    {
+                        doctor = result.Item1;
+                    }
+                    else
+                    {
+                        _notfy.Error(result.Item2);
+                        return View();
+                    }
+                }
+                else
+                {
+                    _notfy.Warning("Session Timeout!:", 5);
+                    return View("TimedOut", "Home");
+                }
+                ViewData.Model = doctor;
             }
             catch (Exception ex)
             {

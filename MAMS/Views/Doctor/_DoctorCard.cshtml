@@ -30,7 +30,7 @@
                 <a asp-controller="Availability" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-sm bg-gradient-teal">
                 <i class="bi bi-calendar-check"></i> &nbsp; Availability
             </a>
-            <a href="#" class="btn btn-sm bg-gradient-primary">
+                <a asp-controller="Doctor" asp-action="Profile" asp-route-userName="@Model.UserName" class="btn btn-sm bg-gradient-primary">
                 <i class="fas fa-user"></i> View Profile
             </a>
         </div>
