@@ -4,6 +4,7 @@ namespace MAMS.API.DTOs
 {
     public class UserDetailsDto
     {
+        public int Id { get; set; }
         public int RoleId { get; set; }
         public string UserName { get; set; }
         public string? Email { get; set; }
@@ -21,5 +22,7 @@ namespace MAMS.API.DTOs
         public string Blood_Type { get; set; }
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
+        public string? Modified_By { get; set; }
+
     }
 }

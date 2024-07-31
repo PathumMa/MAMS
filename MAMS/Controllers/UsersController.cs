@@ -5,29 +5,23 @@ using MAMS.Models.ViewModels;
 
 namespace MAMS.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
         private readonly ILogger<UsersController> _logger;
-        private readonly INotyfService _notfy;
-        private readonly IConfiguration _config;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public SpecializationService _specializationService;
-        public LoginService _loginService;
-        public UserService _userService;
 
         public UsersController(IConfiguration config, INotyfService notfy, ILogger<UsersController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
+            : base(config, notfy, contextAccessor, appSettings)
         {
             _logger = logger;
-            _config = config;
-            _notfy = notfy;
-            _httpContextAccessor = contextAccessor;
-            _specializationService = new SpecializationService(appSettings.ApiUrl);
-            _loginService = new LoginService(appSettings.ApiUrl);
-            _userService = new UserService(appSettings.ApiUrl);
         }
 
         public IActionResult Index()
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             return View();
         }
 
@@ -42,12 +36,15 @@ namespace MAMS.Controllers
         {
             IList<DoctorDetailsViewModel> doctors = new List<DoctorDetailsViewModel>();
 
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
                 string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
 
-                if(user != null)
-                {
                     var result = await _userService.GetDoctorsAsync();
 
                     if (result.Item1 != null)
@@ -59,12 +56,7 @@ namespace MAMS.Controllers
                         _notfy.Error(result.Item2);
                         return View();
                     }
-                }
-                else
-                {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut", "Home");
-                }
+                
                 ViewData.Model = doctors;
             }
             catch (Exception ex)

@@ -10,21 +10,14 @@ using MAMS.Services;
 
 namespace MAMS.Controllers
 {
-    public class SpecializationController : Controller
+    public class SpecializationController : BaseController
     {
         private readonly ILogger<SpecializationController> _logger;
-        private readonly INotyfService _notfy;
-        private readonly IConfiguration _config;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public SpecializationService _specializationService;
 
         public SpecializationController(IConfiguration config, INotyfService notfy, ILogger<SpecializationController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
+        : base(config, notfy, contextAccessor, appSettings)
         {
             _logger = logger;
-            _config = config;
-            _notfy = notfy;
-            _httpContextAccessor = contextAccessor;
-            _specializationService = new SpecializationService(appSettings.ApiUrl);
 
         }
 
@@ -33,30 +26,27 @@ namespace MAMS.Controllers
             //calling the web API and populating the data in view using Entity Model Class
 
             IList<Specializations> dt = new List<Specializations>();
+
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
-                string user = HttpContext.Session.GetString("UserName");
+                var result = await _specializationService.GetAllSpecializationsAsync();
 
-                if (user != null)
+
+                if (result.Item1 != null)
                 {
-                    var result = await _specializationService.GetAllSpecializationsAsync();
-
-
-                    if (result.Item1 != null)
-                    {
-                        dt = result.Item1;
-                    }
-                    else
-                    {
-                        _notfy.Error(result.Item2);
-                        return View();
-                    }
+                    dt = result.Item1;
                 }
                 else
                 {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut", "Home");
+                    _notfy.Error(result.Item2);
+                    return View();
                 }
+
                 ViewData.Model = dt;
             }
             catch (Exception ex)
@@ -69,11 +59,22 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> Status()
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             return View();
         }
 
         public IActionResult Create()
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+
             return View();
         }
 
@@ -87,36 +88,33 @@ namespace MAMS.Controllers
                 Description = newSpec.Description,
             };
 
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
 
-                if (HttpContext.Session.GetString("UserName") != null)
+                if (ModelState.IsValid && newSpec.Specializations_Name != null)
                 {
-                    if (ModelState.IsValid && newSpec.Specializations_Name != null)
+
+                    (bool success, string errorMessage) = await _specializationService.AddSpecializationAsync(specializations);
+
+                    if (success)
                     {
-
-                        (bool success, string errorMessage) = await _specializationService.AddSpecializationAsync(specializations);
-
-                        if (success)
-                        {
-                            _notfy.Success($"{newSpec.Specializations_Name}, Successfully Added  as a new Specialization!. ");
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            _notfy.Error("Creation Fail!", 5);
-                            _notfy.Warning(errorMessage);
-                            ModelState.AddModelError(string.Empty, errorMessage);
-                            return View("Create");
-                        }
+                        _notfy.Success($"{newSpec.Specializations_Name}, Successfully Added  as a new Specialization!. ");
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        _notfy.Error("Creation Fail!", 5);
+                        _notfy.Warning(errorMessage);
+                        ModelState.AddModelError(string.Empty, errorMessage);
+                        return View("Create");
                     }
                 }
-                else
-                {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut");
-                }
-                
+
             }
             catch (Exception ex)
             {
@@ -130,6 +128,11 @@ namespace MAMS.Controllers
         public async Task<IActionResult> Edit(int Id)
         {
             Specializations dt = new Specializations();
+
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
 
             try
             {
@@ -157,7 +160,6 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> Update(Specializations currentSpec)
         {
-
             try
             {
                 if (ModelState.IsValid)
@@ -188,32 +190,30 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> UpdateRec(int Id, bool isChecked)
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
-                if (HttpContext.Session.GetString("UserName") != null)
+                if (ModelState.IsValid)
                 {
-                    if (ModelState.IsValid) 
-                    {
-                        (bool success, string errorMessage) = await _specializationService.UpdateRecordStatusAsync(Id, isChecked);
+                    (bool success, string errorMessage) = await _specializationService.UpdateRecordStatusAsync(Id, isChecked);
 
-                        if (success)
-                        {
-                            _notfy.Success($"Updated successfully.");
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            _notfy.Warning(errorMessage);
-                            _notfy.Error("update Fail!.", 5);
-                            return View("Edit");
-                        }
+                    if (success)
+                    {
+                        _notfy.Success($"Updated successfully.");
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        _notfy.Warning(errorMessage);
+                        _notfy.Error("update Fail!.", 5);
+                        return View("Edit");
                     }
                 }
-                else
-                {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut");
-                }
+
             }
             catch (Exception ex)
             {

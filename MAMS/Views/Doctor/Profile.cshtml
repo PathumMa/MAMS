@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-sm-12">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Doctors</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Doctors</a></li>
                         <li class="breadcrumb-item active">Profile View</li>
                     </ol>
                 </div>
@@ -89,8 +89,14 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-                    <a asp-action="Index">Back to List</a>
+                    <a asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back to List
+                    </a> 
+                    |
+                    <a asp-action="Edit" asp-route-Doctor="@Model.UserName" class="btn bg-gradient-info rounded-pill">
+                        <i class="bi bi-pencil-square"></i> &nbsp; Edit
+                    </a> 
+                    
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
-﻿using MAMS.Models.ViewModels;
+﻿using MAMS.Models;
+using MAMS.Models.ViewModels;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 
@@ -100,6 +101,29 @@ namespace MAMS.Services
                 throw ex;
             }
             return (viewModel, errorMessage);
+        }
+
+        public async Task<(bool Success, string? ErrorMessage)> UpdateUserDetailsAsync(UserDetails userDetails)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.PutAsJsonAsync("User/UpdateUser", userDetails);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
     }
 }

@@ -7,56 +7,39 @@ using System.Collections.Generic;
 
 namespace MAMS.Controllers
 {
-    public class DoctorController : Controller
+    public class DoctorController : BaseController
     {
         private readonly ILogger<DoctorController> _logger;
-        private readonly INotyfService _notfy;
-        private readonly IConfiguration _config;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public SpecializationService _specializationService;
-        public LoginService _loginService;
-        public UserService _userService;
-        public AvailabilityService _availabilityService;
-
-        public DoctorController(IConfiguration config, INotyfService notfy, ILogger<DoctorController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings)
+        public DoctorController(IConfiguration config, INotyfService notfy, ILogger<DoctorController> logger, IHttpContextAccessor contextAccessor, AppSettings appSettings) 
+            : base(config, notfy, contextAccessor, appSettings)
         {
             _logger = logger;
-            _config = config;
-            _notfy = notfy;
-            _httpContextAccessor = contextAccessor;
-            _specializationService = new SpecializationService(appSettings.ApiUrl);
-            _loginService = new LoginService(appSettings.ApiUrl);
-            _userService = new UserService(appSettings.ApiUrl);
-            _availabilityService = new AvailabilityService(appSettings.ApiUrl);
         }
 
         public async Task<IActionResult> Index()
         {
             IList<DoctorDetailsViewModel> doctors = new List<DoctorDetailsViewModel>();
 
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
-                string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
+                var result = await _userService.GetDoctorsAsync();
 
-                if (user != null)
+                if (result.Item1 != null)
                 {
-                    var result = await _userService.GetDoctorsAsync();
-
-                    if (result.Item1 != null)
-                    {
-                        doctors = result.Item1;
-                    }
-                    else
-                    {
-                        _notfy.Error(result.Item2);
-                        return View();
-                    }
+                    doctors = result.Item1;
                 }
                 else
                 {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut", "Home");
+
+                    _notfy.Error(result.Item2);
+                    return View();
                 }
+
                 ViewData.Model = doctors;
             }
             catch (Exception ex)
@@ -71,33 +54,67 @@ namespace MAMS.Controllers
         {
             DoctorDetailsViewModel doctor = new DoctorDetailsViewModel();
 
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
-                string user = _httpContextAccessor.HttpContext.Session.GetString("UserName");
+                var result = await _userService.GetDoctorDetailsAsync(userName);
 
-                if (user != null)
+                if (result.Item1 != null)
                 {
-                    var result = await _userService.GetDoctorDetailsAsync(userName);
-
-                    if (result.Item1 != null)
-                    {
-                        doctor = result.Item1;
-                    }
-                    else
-                    {
-                        _notfy.Error(result.Item2);
-                        return View();
-                    }
+                    doctor = result.Item1;
                 }
                 else
                 {
-                    _notfy.Warning("Session Timeout!:", 5);
-                    return View("TimedOut", "Home");
+                    _notfy.Error(result.Item2);
+                    return View();
                 }
                 ViewData.Model = doctor;
             }
             catch (Exception ex)
             {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Warning($"{ex.Message}", 5);
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> Edit(string Doctor)
+        {
+            DoctorDetailsViewModel doctorDetailsViewModel = new DoctorDetailsViewModel();
+
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+            try
+            {
+                var (activeSpecializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
+
+                ViewBag.Specializaions = activeSpecializations
+                    .Where(s => s.Record_Status == Enums.ActiveStatus.Active)
+                    .ToList();
+
+                var result = await _userService.GetDoctorDetailsAsync(Doctor);
+
+                if (result.Item1 != null)
+                {
+                    doctorDetailsViewModel = result.Item1;
+                }
+                else
+                {
+                    _notfy.Error(result.Item2);
+                    return View();
+                }
+                ViewData.Model = doctorDetailsViewModel;
+            }
+            catch (Exception ex)
+            {
+
                 ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
                 _notfy.Warning($"{ex.Message}", 5);
             }
