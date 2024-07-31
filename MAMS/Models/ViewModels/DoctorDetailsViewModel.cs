@@ -2,6 +2,7 @@
 {
     public class DoctorDetailsViewModel
     {
+        public int Id { get; set; }
         public int RoleId { get; set; }
         public string UserName { get; set; }
         public string? Email { get; set; }
@@ -22,7 +23,6 @@
         public string? MedicalCouncilRegistrationNumber { get; set; }
         public string Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
-        public List<string>? Available_Day { get; set; }
-        public string? Available_Time { get; set; }
+        public List<AvailabilityViewModel> Availability { get; set; }
     }
 }

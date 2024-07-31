@@ -1,0 +1,52 @@
+﻿@using System.Data
+@using MAMS.Services
+@using MAMS.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Doctors";
+}
+
+@model IEnumerable<DoctorDetailsViewModel>
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Doctors</h1>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                        <li class="breadcrumb-item active">All Doctors</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+
+            @if (Model == null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    Error: Failed to load data. Please try again later. or Please Log in again..
+                </div>
+            }
+            else if (!Model.Any())
+            {
+                <div class="alert alert-info" role="alert">
+                    No doctors found.
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-2">
+                    @foreach (var doctor in Model)
+                    {
+                        @await Html.PartialAsync("_DoctorCard", doctor)
+                    }
+                </div>
+            }
+
+    </div>

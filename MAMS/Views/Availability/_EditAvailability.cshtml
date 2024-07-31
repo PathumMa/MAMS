@@ -1,0 +1,63 @@
+﻿@using static MAMS.Services.Enums
+
+@model MAMS.Models.DoctorAvailableDetails
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal-@Model.Id" tabindex="-1" role="dialog" aria-labelledby="editModalLabel-@Model.Id" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title" id="editModalLabel-@Model.Id">Edit Availability</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Update" asp-controller="Availability" method="post">
+                    <input type="hidden" asp-for="@Model.Id" value="@Model.Id" />
+                    <input type="hidden" asp-for="@Model.DoctorId" value="@Model.DoctorId" />
+                    <div class="form-group">
+                        <label asp-for="@Model.Available_Day">Available Day</label>
+                        <select asp-for="@Model.Available_Day" class="form-control">
+                            <option value="">--Day--</option>
+                            @foreach (var day in Enum.GetValues(typeof(Days)))
+                            {
+                                <option value="@day">@day</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@Model.StartTime">From</label>
+                        <input type="time" asp-for="@Model.StartTime" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@Model.EndTime">To</label>
+                        <input type="time" asp-for="@Model.EndTime" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status :</label>
+                        <div class="row">
+                            <div class="col">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input custom-control-input-success" asp-for="ActiveStatus" type="radio" id="customRadio1-@Model.Id" value="Active">
+                                    <label for="customRadio1-@Model.Id" class="custom-control-label">Active</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input custom-control-input-danger" asp-for="ActiveStatus" type="radio" id="customRadio2-@Model.Id" value="Inactive">
+                                    <label for="customRadio2-@Model.Id" class="custom-control-label">Inactive</label>
+                                </div>
+                            </div>
+                            <div class="col-10"></div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn bg-gradient-info">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

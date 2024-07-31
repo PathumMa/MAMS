@@ -1,0 +1,304 @@
+﻿@model MAMS.Models.ViewModels.DoctorDetailsViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+@using static MAMS.Services.Enums
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Edit Doctor Details</h1>
+                    <a asp-controller="Doctor" asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back To List
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Doctors</a></li>
+                        <li class="breadcrumb-item active"><a asp-action="Profile">Profile View</a></li>
+                        <li class="breadcrumb-item active">update</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="card card-info card-outline">
+        <div class="card-header">
+            <h4 class="card-title text-info">Edit Details: </h4>
+        </div>
+        <form asp-action="Edit">
+            <div class="card-body">
+                <div class="row gy-1">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <input asp-for="Id" hidden />
+                    <input asp-for="RoleId" hidden />
+                    <input asp-for="UserName" hidden />
+
+                    <div class="col mb-4">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control rounded-pill" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control rounded-pill" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <br />
+
+                <div class="row gy-1">
+                    <div class="col-2 mb-4">
+                        <label asp-for="UserTitle" class="control-label"></label>
+                        <select asp-for="UserTitle" class="form-select rounded-pill">
+                            <option value="">--Title--</option>
+                            @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))
+                            {
+                                <option value="@uTitle">@uTitle</option>
+                            }
+                        </select>
+                        <span asp-validation-for="UserTitle" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="First_Name" class="control-label"></label>
+                        <input asp-for="First_Name" class="form-control rounded-pill" />
+                        <span asp-validation-for="First_Name" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="Last_Name" class="control-label"></label>
+                        <input asp-for="Last_Name" class="form-control rounded-pill" />
+                        <span asp-validation-for="Last_Name" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="Middle_Name" class="control-label"></label>
+                        <input asp-for="Middle_Name" class="form-control rounded-pill" />
+                        <span asp-validation-for="Middle_Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="Address" class="control-label"></label>
+                        <input asp-for="Address" class="form-control rounded-pill" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="City" class="control-label"></label>
+                        <input asp-for="City" class="form-control rounded-pill" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="District" class="control-label"></label>
+                        <select asp-for="District" class="form-select rounded-pill">
+                            <option value="">--Select Your District--</option>
+                            @foreach (var district in Enum.GetValues(typeof(District)))
+                            {
+                                <option value="@district">@district</option>
+                            }
+                        </select>
+                        <span asp-validation-for="District" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="Province" class="control-label"></label>
+                        <select asp-for="Province" class="form-select rounded-pill">
+                            <option value="">--Select Your Province--</option>
+                            @foreach (var province in Enum.GetValues(typeof(Province)))
+                            {
+                                <option value="@province">@province</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Province" class="text-danger"></span>
+                    </div>
+                </div>
+                <br />
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="Birth_Date" class="control-label"></label>
+                        <input asp-for="Birth_Date" class="form-control rounded-pill" />
+                        <span asp-validation-for="Birth_Date" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="Gender" class="control-label"></label>
+                        <select asp-for="Gender" id="SuserDetails.Gender" class="form-select rounded-pill">
+                            <option value="">-- Select your Gender --</option>
+                            @foreach (var gType in Enum.GetValues(typeof(GenderType)))
+                            {
+                                <option value="@gType">@gType</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+
+                    <div class="col mb-4">
+                        <label asp-for="Blood_Type" class="control-label"></label>
+                        <select asp-for="Blood_Type" class="form-select rounded-pill" required>
+                            <option value="">--Select your Blood Group--</option>
+                            @foreach (var bloodGroup in Enum.GetValues(typeof(BloodGroupType)))
+                            {
+                                <option value="@bloodGroup">@GetBloodGroupDisplayName((BloodGroupType)bloodGroup)</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Blood_Type" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="Personal_Id" class="control-label"></label>
+                        <input asp-for="Personal_Id" class="form-control rounded-pill" />
+                        <span asp-validation-for="Personal_Id" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="PersonalId_Type" class="control-label"></label>
+                        <select asp-for="PersonalId_Type" id="idTypeSelect" class="form-select rounded-pill">
+                            <option value="">-- Select Personal ID Type --</option>
+                            @foreach (var idType in Enum.GetValues(typeof(PersonalIdType)))
+                            {
+                                <option value="@idType">@idType</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PersonalId_Type" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="MedicalCouncilRegistrationNumber" class="control-label"></label>
+                        <input asp-for="MedicalCouncilRegistrationNumber" class="form-control rounded-pill" />
+                        <span asp-validation-for="MedicalCouncilRegistrationNumber" class="text-danger"></span>
+                    </div>
+                    <div class="col mb-4">
+                        <label asp-for="Specialization" class="control-label"></label>
+                        <select asp-for="Specialization" class="form-select rounded-pill">
+                            <option value="">--Select Specialization--</option>
+                            @foreach (var specializations in ViewBag.Specializaions)
+                            {
+                                <option value="@specializations.Specializations_Name">@specializations.Specializations_Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Specialization" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row gy-1">
+                    <div class="col mb-4">
+                        <label asp-for="Hospital_Affiliation" class="control-label"></label>
+                        <input asp-for="Hospital_Affiliation" class="form-control rounded-pill" />
+                        <span asp-validation-for="Hospital_Affiliation" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn bg-gradient-info rounded-pill float-right" style="width:150px"><i class="bi bi-arrow-clockwise" onclick=showConfirmationModal()></i> &nbsp; Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Update/Modify this Details?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptspartial" />
+    }
+    
+
+    @functions {
+    // Helper method to get display name for blood group
+    public string GetBloodGroupDisplayName(BloodGroupType bloodGroup)
+    {
+        switch (bloodGroup)
+        {
+            case BloodGroupType.A_Positive:
+                return "A+";
+            case BloodGroupType.A_Negative:
+                return "A-";
+            case BloodGroupType.B_Positive:
+                return "B+";
+            case BloodGroupType.B_Negative:
+                return "B-";
+            case BloodGroupType.AB_Positive:
+                return "AB+";
+            case BloodGroupType.AB_Negative:
+                return "AB-";
+            case BloodGroupType.O_Positive:
+                return "O+";
+            case BloodGroupType.O_Negative:
+                return "O-";
+            default:
+                return string.Empty;
+        }
+    }
+    }
+
+    <script>
+        //Function to show the confirmation modal
+        function showConfirmationModal() {
+            $('#confirmationModal').modal('show');
+        }
+
+        // Handle form submission when "Yes" is clicked
+        $('#confirmYes').click(function () {
+            $('#confirmationModal').modal('hide'); // Hide the modal
+            $('form').off('submit').submit(); // Submit the form
+        });
+
+        // Attach the confirmation dialog to the Create button
+        $(document).ready(function () {
+            $('button[type="submit"]').click(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                showConfirmationModal(); // Show the confirmation modal
+            });
+
+            // Email validation
+            $('input[type="email"]').on('input', function () {
+                var email = $(this).val().trim();
+            var emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                var emailSpan = $(this).next('span');
+
+                if (!emailPattern.test(email)) {
+                    emailSpan.text('Please enter a valid email address');
+                } else {
+                    emailSpan.text('');
+                }
+            });
+
+            // Phone number validation
+            $('input[name="PhoneNumber"]').on('input', function () {
+                var phoneNumber = $(this).val().trim();
+                var phonePattern = /^(?:\+?94|0)(?:7\d|2\d)(?:\d{7}|\d{8}|\d{9})$/;
+                var phoneSpan = $(this).next('span');
+
+                if (phonePattern.test(phoneNumber)) {
+                    phoneSpan.text('');
+                } else {
+                    phoneSpan.text('Please enter a valid Sri Lankan phone number');
+                }
+            });
+        });
+    </script>
+}
+

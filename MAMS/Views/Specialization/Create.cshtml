@@ -1,56 +1,59 @@
 ﻿@model Specializations
 
 @{
-    ViewData["Title"] = "Specializations";
+    ViewData["Title"] = "Create Specialization";
 }
 
 <div class="container">
-
     <div class="content-header">
-
-            <h2 class="text-primary">Specializations</h2>
-            <hr />
-        
-    </div>
-
-    <div class="content">
         <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>New Specialization</h1>
+                    <a asp-controller="Specialization" asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back To List
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Specializations</a></li>
+                        <li class="breadcrumb-item active">Create New</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="content">
             <form asp-controller="Specialization" asp-action="CreateNew" method="post" id="CreateNew" novalidate>
-                <div class="card card-primary card-outline p-3 mt-4">
+                <div class="card card-success card-outline">
                     <div class="card-header">
-                        <h5 class="m-0">Create New</h5>
+                        <h5 class="m-0">Enter Details:</h5>
                     </div>
-                    <div class="card-body">
 
+                    <div class="card-body">
                         <div class="mb-3">
-                            <label asp-for="Specializations_Name">Specialization:</label>
+                            <label asp-for="Specializations_Name" class="form-label">Specialization:</label>
                             <input asp-for="Specializations_Name" class="form-control" required />
                             <span asp-validation-for="Specializations_Name" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Description">Description:</label>
+                            <label asp-for="Description" class="form-label">Description:</label>
                             <textarea asp-for="Description" class="form-control"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
-                        <br />
-                        <hr />
-                        <div class="form-group row">
-                            <div class="col">
-                                <a asp-controller="Specialization" asp-action="Index" class="btn btn-secondary rounded-pill"><i class="bi bi-backspace"></i> &nbsp; Back To List</a>
-                            </div>
-                            <div class="col text-end">
-                                <button type="button" class="btn btn-primary rounded-pill" style="width:150px" onclick="showConfirmationModal()" id="createButton">
-                                    <i class="bi bi-plus-circle"></i> &nbsp; Create
-                                </button>
-                            </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="text-end">
+                            <button type="button" class="btn bg-gradient-success rounded-pill" style="width:150px" onclick="showConfirmationModal()" id="createButton">
+                                <i class="bi bi-plus-circle"></i> &nbsp; Create
+                            </button>
                         </div>
                     </div>
+
                 </div>
-
-
             </form>
-        </div>
     </div>
 </div>
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MAMS.Services
 {
-    public static class Password
+    public static class PasswordService
     {
         private const string Salt = "MAMS";
 

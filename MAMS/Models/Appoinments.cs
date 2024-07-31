@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using static MAMS.Services.Enums;
 
 namespace MAMS.Models
 {
@@ -11,7 +12,7 @@ namespace MAMS.Models
         [Required]
         public int DoctorId { get; set; }
         public DateTime Appoinment_Date { get; set; }
-        public int Status { get; set; } = 1;
+        public ActiveStatus Status { get; set; } = ActiveStatus.Active;
 
         public UserDetails UserDetails { get; set; }
         public DoctorDetails DoctorDetails { get; set; }

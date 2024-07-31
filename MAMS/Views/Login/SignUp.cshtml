@@ -1,4 +1,4 @@
-﻿@using MAMS.Services
+﻿﻿@using MAMS.Services
 @using MAMS.Models.ViewModels
 @{
     ViewData["Title"] = "Sign Up";
@@ -45,21 +45,21 @@
 <body>
     <div class="container">
         <div class="split left-s px-4">
-                <figure>
-                    <blockquote class="h2">
-                        <p>Sign Up</p>
-                    </blockquote>
-                    <figcaption class="blockquote-footer">
-                        Get Registered with the<cite title="Source Title">MedEase&#8482;</cite>
-                    </figcaption>
-                    <hr />
-                </figure>
+            <figure>
+                <blockquote class="h2">
+                    <p>Sign Up</p>
+                </blockquote>
+                <figcaption class="blockquote-footer">
+                    Get Registered with the<cite title="Source Title">MedEase&#8482;</cite>
+                </figcaption>
+                <hr />
+            </figure>
 
             <div>
                 <form asp-controller="Login" asp-action="Register" method="post" id="signinForm" novalidate>
                     <div>
                         <div class="card card-primary card-outline p-3 mt-4">
-                            <div class="card-header h6">
+                            <div class="card-header h6 text-primary">
                                 Personal Details :
                             </div>
                             <div class="card-body">
@@ -261,7 +261,7 @@
                             </div>
 
                             <div class="col mb-4 text-end">
-                                <button id="signinButton" type="submit" class="btn btn-primary rounded-pill" onclick=showConfirmationModal()>Register &nbsp; <i class="bi bi-box-arrow-in-up-right"></i></button>
+                                <button id="signinButton" type="submit" class="btn btn-primary rounded-pill" >Register &nbsp; <i class="bi bi-box-arrow-in-up-right"></i></button>
                             </div>
                         </div>
 
@@ -275,7 +275,18 @@
                 </div>
             </footer>
         </div>
-        <div class="split right-r"></div>
+        <div class="split right-r">
+            <div class="text-center">
+                <img src="~/img/MedEase_white.png" class="img-fluid" alt="Login img">
+            </div>
+            <br />
+            <div class="row text-center">
+                <h2 style="color:aliceblue"><i>MedEase&#8482;</i></h2>
+                <div class="row text-center">
+                    <h2 style="color:aliceblue">Appointment & Management System</h2>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
@@ -606,4 +617,3 @@
 
     </script>
 </body>
-
