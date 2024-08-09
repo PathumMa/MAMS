@@ -94,7 +94,7 @@
                                 <div class="row gy-1">
                                     <div class="mb-4">
                                         <label asp-for="Address" class="form-label">Address:</label>
-                                        <input asp-for="Address" class="form-control rounded-pill" />
+                                        <input asp-for="Address" class="form-control rounded-pill" required/>
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -102,12 +102,12 @@
                                 <div class="row gy-1">
                                     <div class="col mb-4">
                                         <label asp-for="City" class="form-label">City:</label>
-                                        <input asp-for="City" class="form-control rounded-pill" />
+                                        <input asp-for="City" class="form-control rounded-pill" required/>
                                         <span asp-validation-for="City" class="text-danger"></span>
                                     </div>
                                     <div class="col mb-4">
                                         <label asp-for="District" class="form-label">District:</label>
-                                        <select asp-for="District" class="form-select rounded-pill">
+                                        <select asp-for="District" class="form-select rounded-pill" required>
                                             <option value="">--Select Your District--</option>
                                             @foreach (var district in Enum.GetValues(typeof(District)))
                                             {
@@ -117,7 +117,7 @@
                                     </div>
                                     <div class="col mb-4">
                                         <label asp-for="Province" class="form-label">Province:</label>
-                                        <select asp-for="Province" class="form-select rounded-pill">
+                                        <select asp-for="Province" class="form-select rounded-pill" required>
                                             <option value="">--Select Your Province--</option>
                                             @foreach (var province in Enum.GetValues(typeof(Province)))
                                             {
@@ -223,6 +223,13 @@
                                             }
                                         </select>
                                     </div>
+
+                                    <div class="col mb-4" id="doctorFee">
+                                        <label asp-for="Doctor_Fee" class="form-label">Doctor Fee (LKR):</label>
+                                        <input asp-for="Doctor_Fee" class="form-control rounded-pill" asp-format="C" />
+                                        <span asp-validation-for="Doctor_Fee" class="text-danger"></span>
+                                    </div>
+
                                 </div>
 
                                 <div class="row gy-1">
@@ -313,6 +320,7 @@
         // Get the elements
         var roleTypeSelect = document.getElementById("roleTypeSelect");
         var dTypeInput = document.getElementById("dTypeInput");
+        var doctorFee = document.getElementById("doctorFee")
         console.log(dTypeInput.value);
 
         // Initial setup
@@ -323,13 +331,15 @@
             toggleSpecializationField();
         });
 
-        // Function to toggle the visibility of the "Specialization" field
+        // Function to toggle the visibility of the "Specialization" field and "doctorFee"
         function toggleSpecializationField() {
             var selectedRole = roleTypeSelect.value;
-            if (selectedRole === "30") { // Show the "Specialization" field for Doctor
+            if (selectedRole === "30") { // Show the "Specialization" field and "doctorFee" for Doctor
                 dTypeInput.style.display = "block";
+                 doctorFee.style.display = "block";
             } else {
                 dTypeInput.style.display = "none";
+                doctorFee.style.display = "none";
             }
         }
 

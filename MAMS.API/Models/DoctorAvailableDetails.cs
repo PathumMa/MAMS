@@ -16,5 +16,6 @@ namespace MAMS.API.Models
         public DateTime Created_Date { get; set; } = DateTime.Now;
 
         public DoctorDetails DoctorDetails { get; set; }
+        public List<Appointments> Appointments { get; set; }
     }
 }

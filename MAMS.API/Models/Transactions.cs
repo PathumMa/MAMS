@@ -8,11 +8,15 @@ namespace MAMS.API.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public int UserDetailsId { get; set; }
+        public int Appointment_Id { get; set; }
         [Required]
-        public int AppointmentId { get; set; }
+        public decimal Doctor_fee { get; set; }
         [Required]
-        public int Amount { get; set; }
+        public decimal Hospital_fee { get; set; }
+        [Required]
+        public decimal Discount { get; set; } = 0;
+        [Required]
+        public decimal Amount { get; set; }
         [Required]
         public PaymentMethod PaymentMethod { get; set; }
         public DateTime Created_Date { get; set; } = DateTime.Now;
@@ -20,8 +24,8 @@ namespace MAMS.API.Models
         public DateTime? Modified_Date { get; set; }
         public string? Modified_By { get; set; }
 
-        public UserDetails UserDetails { get; set; }
-        public Appoinments appoinments { get; set; }
+        
+        public Appointments Appointments { get; set; }
     }
 
 

@@ -34,6 +34,11 @@ namespace MAMS.Controllers
             _userService = new UserService(_apiUrl);
         }
 
+        public IActionResult Home()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> Login()
         {
             return View();
@@ -47,16 +52,16 @@ namespace MAMS.Controllers
                 {
                     var (success, errorMessage) = await _loginService.LoginAsync(user);
 
-                    if(success)
+                    if (success)
                     {
                         UserDetailsViewModel dt = new UserDetailsViewModel();
                         (dt, errorMessage) = await _userService.GetUserDetailsAsync(user.UserName);
 
                         _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
 
-                        _notfy.Success("view loaded Successfully.", 5);
+                        _notfy.Success($"Welcome! {dt.UserTitle}.{dt.First_Name}", 5);
                         return RedirectToAction("Index", "Home", new { dt.UserName });
-                        
+
                     }
                     else
                     {
@@ -140,60 +145,33 @@ namespace MAMS.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(SignUpViewModel userRegistrationModel)
         {
-            if(userRegistrationModel.RoleId == 30)
+            try
             {
-                try
-                {
-                    (bool success, string errorMessage) = await _loginService.DoctorRegister(userRegistrationModel);
+                (bool success, string errorMessage) = userRegistrationModel.RoleId == 30
+                    ? await _loginService.DoctorRegister(userRegistrationModel)
+                    : await _loginService.UserRegister(userRegistrationModel);
 
-                    if(success)
-                    {
-                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
-                    }
-                    else
-                    {
-                        _notfy.Error(errorMessage, 5);
-                        return View("SignUp");
-                    }
-                }
-                catch (Exception ex)
+                if (success)
                 {
-                    // Handle other exceptions (e.g., network issues, etc.)
-                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                    _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                    _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
+                    return RedirectToAction("SignUp");
+                }
+                else
+                {
+                    await SignUp();
+                    _notfy.Error(errorMessage, 5);
                     return View("SignUp");
                 }
-
-                return RedirectToAction("SignUp");
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    (bool success, string errorMessage) = await _loginService.UserRegister(userRegistrationModel);
-
-                    if (success)
-                    {
-                        _notfy.Success($"{userRegistrationModel.UserName} Registered Succesully !");
-                    }
-                    else
-                    {
-                        _notfy.Error(errorMessage, 5);
-                        return View("SignUp");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Handle other exceptions (e.g., network issues, etc.)
-                    ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
-                    _notfy.Error($"Error calling web API: {ex.Message}", 5);
-                    return View("SignUp");
-                }
-
+                await SignUp();
+                // Handle other exceptions (e.g., network issues, etc.)
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return View("SignUp");
             }
-
-            return RedirectToAction("SignUp");
-        }
+         }
 
     }
 }

@@ -1,0 +1,102 @@
+﻿@using MAMS.Models.ViewModels
+
+
+@{
+    ViewData["Title"] = "Availabilities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<DoctorAvailableDetails>
+
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>New Appointment</h1>
+
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Appointments</a></li>
+                        <li class="breadcrumb-item active">Make New</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-info card-outline">
+                <div class="card-header card-header d-flex justify-content-between align-items-center">
+                </div>
+                <!-- /.card-header -->
+
+                <div class="card-body table-responsive p-0">
+
+                    @if (Model == null)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Error: Failed to load data. Please try again later. or Please Log in again.
+                        </div>
+                    }
+                    else if (!Model.Any())
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            NO Availability Found!
+                        </div>
+                    }
+
+                    else
+                    {
+                        <table id="Availability" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Available Day</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var obj in Model)
+                                {
+                                    <tr>
+                                        <input asp-for="@obj.Id" hidden />
+                                        <input asp-for="@obj.DoctorId" hidden />
+                                        <td data-Available_day="@obj.Available_Day">@obj.Available_Day</td>
+                                        <td class="text-start">@(obj.StartTime.HasValue ? new DateTime(obj.StartTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+                                        <td class="text-Start">@(obj.EndTime.HasValue ? new DateTime(obj.EndTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+
+
+                                        <td class="text-center">
+                                            <div class="btn-group btn-group-justified" role="group">
+                                                <a asp-action="Booking" asp-route-id="@obj.Id" asp-route-doctorId="@obj.DoctorId" class="btn btn-primary btn-block"><b>Book</b></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+
+                    }
+
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <a asp-controller="Appointment" asp-action="Search" class="btn bg-gradient-secondary rounded-pill float-right" style="width:150px"><i class="bi bi-backspace"></i> &nbsp; Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+

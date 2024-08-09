@@ -24,6 +24,7 @@ namespace MAMS.API.Models
         public string? MedicalCouncilRegistrationNumber { get; set; }
         public string Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
+        public decimal? Doctor_Fee { get; set; }
         public int Auth_Status { get; set; } = 0;
         public DateTime Created_Date { get; set; } = DateTime.Now;
         public string? Created_By { get; set; }
@@ -32,7 +33,7 @@ namespace MAMS.API.Models
 
         public Suser Suser { get; set; }
         public ICollection<DoctorAvailableDetails> AvailableDetails { get; set; }
-        public List<Appoinments> Appoinments { get; set; }
+        public List<Appointments> Appointments { get; set; }
         public List<MedicalRecords> MedicalRecords { get; set; }
         
     }

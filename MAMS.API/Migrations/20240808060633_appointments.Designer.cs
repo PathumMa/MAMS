@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    [Migration("20240613050023_ReDoctorDetails_withInitial")]
-    partial class ReDoctorDetails_withInitial
+    [Migration("20240808060633_appointments")]
+    partial class appointments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace MAMS.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MAMS.API.Models.Appoinments", b =>
+            modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,13 +33,19 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Appoinment_Date")
+                    b.Property<int>("Appoinment_number")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Appointment_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("DoctorDetailsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Doctor_PersonalId")
+                    b.Property<int>("Doctor_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientDetailsId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -55,9 +61,11 @@ namespace MAMS.API.Migrations
 
                     b.HasIndex("DoctorDetailsId");
 
+                    b.HasIndex("PatientDetailsId");
+
                     b.HasIndex("UserDetailsId");
 
-                    b.ToTable("Appoinments");
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -232,6 +240,60 @@ namespace MAMS.API.Migrations
                     b.ToTable("MedicalRecords");
                 });
 
+            modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonalIdType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegisteredUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PatientDetails");
+                });
+
             modelBuilder.Entity("MAMS.API.Models.Specializations", b =>
                 {
                     b.Property<int>("Specializations_Id")
@@ -303,8 +365,8 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Amount")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("AppointmentId")
                         .HasColumnType("int");
@@ -315,6 +377,15 @@ namespace MAMS.API.Migrations
                     b.Property<DateTime>("Created_Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Doctor_fee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Hospital_fee")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Modified_By")
                         .HasColumnType("nvarchar(max)");
 
@@ -324,7 +395,7 @@ namespace MAMS.API.Migrations
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserDetailsId")
+                    b.Property<int>("User_PersonalId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -332,7 +403,7 @@ namespace MAMS.API.Migrations
                     b.HasIndex("AppointmentId")
                         .IsUnique();
 
-                    b.HasIndex("UserDetailsId")
+                    b.HasIndex("User_PersonalId")
                         .IsUnique();
 
                     b.ToTable("Transactions");
@@ -419,15 +490,58 @@ namespace MAMS.API.Migrations
                     b.ToTable("UserDetails");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.Appoinments", b =>
+            modelBuilder.Entity("MAMS.API.Models.Views.Doctors", b =>
+                {
+                    b.Property<int>("ActiveStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Available_Day")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("First_Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Last_Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("SuserId")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("View_Doctors", (string)null);
+                });
+
+            modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
                     b.HasOne("MAMS.API.Models.DoctorDetails", null)
-                        .WithMany("Appoinments")
+                        .WithMany("Appointments")
                         .HasForeignKey("DoctorDetailsId");
 
+                    b.HasOne("MAMS.API.Models.PatientDetails", "PatientDetails")
+                        .WithMany("Appointments")
+                        .HasForeignKey("PatientDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MAMS.API.Models.UserDetails", null)
-                        .WithMany("Appoinments")
+                        .WithMany("Appointmentst")
                         .HasForeignKey("UserDetailsId");
+
+                    b.Navigation("PatientDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -465,7 +579,7 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.Transactions", b =>
                 {
-                    b.HasOne("MAMS.API.Models.Appoinments", "appoinments")
+                    b.HasOne("MAMS.API.Models.Appointments", "Appointments")
                         .WithOne("Transactions")
                         .HasForeignKey("MAMS.API.Models.Transactions", "AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -473,13 +587,13 @@ namespace MAMS.API.Migrations
 
                     b.HasOne("MAMS.API.Models.UserDetails", "UserDetails")
                         .WithOne("Transactions")
-                        .HasForeignKey("MAMS.API.Models.Transactions", "UserDetailsId")
+                        .HasForeignKey("MAMS.API.Models.Transactions", "User_PersonalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserDetails");
+                    b.Navigation("Appointments");
 
-                    b.Navigation("appoinments");
+                    b.Navigation("UserDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
@@ -493,18 +607,23 @@ namespace MAMS.API.Migrations
                     b.Navigation("Suser");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.Appoinments", b =>
+            modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
                     b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorDetails", b =>
                 {
-                    b.Navigation("Appoinments");
+                    b.Navigation("Appointments");
 
                     b.Navigation("AvailableDetails");
 
                     b.Navigation("MedicalRecords");
+                });
+
+            modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.Suser", b =>
@@ -518,7 +637,7 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
                 {
-                    b.Navigation("Appoinments");
+                    b.Navigation("Appointmentst");
 
                     b.Navigation("MedicalRecords");
 

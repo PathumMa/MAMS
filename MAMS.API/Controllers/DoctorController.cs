@@ -1,6 +1,7 @@
 ﻿using MAMS.API.Data;
 using MAMS.API.DTOs;
 using MAMS.API.Models;
+using MAMS.API.Models.Views;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,8 @@ namespace MAMS.API.Controllers
             return await _dbContext.DoctorAvailableDetails.ToListAsync();
         }
 
-        [HttpGet("availability/{doctorId}")]
-        public async Task<IActionResult> GetAvailablility(int doctorId)
+        [HttpGet("availabilities/{doctorId}")]
+        public async Task<IActionResult> GetAvailablilities(int doctorId)
         {
             var doctorAvailabilities = _dbContext.DoctorAvailableDetails.Where(u => u.DoctorId == doctorId)
                 .Select(d => new DoctorAvailabilityDto
@@ -47,6 +48,18 @@ namespace MAMS.API.Controllers
                 return Ok(doctorAvailabilities);
             }
 
+        }
+
+        [HttpGet("availability/{availabilityId}")]
+        public async Task<ActionResult<DoctorAvailableDetails>> GetAvailability(int availabilityId)
+        {
+            var availability = _dbContext.DoctorAvailableDetails.Where(a => a.Id == availabilityId).FirstOrDefault<DoctorAvailableDetails>();
+            if (availability == null)
+            {
+                return NotFound("Availability Not Found!");
+            }
+
+            return availability;
         }
 
         [HttpPut("UpdateAvailability/{id}")]
@@ -169,5 +182,35 @@ namespace MAMS.API.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
+        [HttpGet("DoctorsAll")]
+        public async Task<IEnumerable<Doctors>> GetDoctors()
+        {
+            return await _dbContext.Doctors.ToListAsync();
+
+        }
+
+        [HttpGet("DoctorByName")]
+        public async Task<IActionResult> GetDoctorbyName(string? name, string? specialization)
+        {
+            var doctors = _dbContext.DoctorDetails.AsQueryable();
+
+            if(!string.IsNullOrEmpty(name))
+            {
+                doctors = doctors.Where(d => d.First_Name.Contains(name) || d.Last_Name.Contains(name) || d.Middle_Name.Contains(name)); 
+            }
+            else if(!string.IsNullOrEmpty(specialization))
+            {
+                doctors = doctors.Where(d => d.Specialization.Contains(specialization));
+            }
+            else
+            {
+                return BadRequest("Name or Specialization required!");
+            }
+            
+            var result = await doctors.ToListAsync();
+            return Ok(result);
+        }
+
     }
 }

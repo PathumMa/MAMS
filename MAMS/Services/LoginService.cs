@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net;
 using MAMS.Models.ViewModels;
+using MAMS.Models;
 
 namespace MAMS.Services
 {
@@ -28,18 +29,18 @@ namespace MAMS.Services
 
             try
             {
-                    HttpResponseMessage response = await _client.PostAsJsonAsync("Login/login", user);
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Login/login", user);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return (true, null);
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
 
-                    }
-                    else
-                    {
-                        string errorMessage = await response.Content.ReadAsStringAsync();
-                        return (false, errorMessage);
-                    }
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
             }
             catch (Exception ex)
             {
@@ -54,15 +55,15 @@ namespace MAMS.Services
             {
                 HttpResponseMessage response = await _client.PostAsJsonAsync("Login/login", user);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return (true, null);
-                    }
-                    else
-                    {
-                        string errorMessage = await response.Content.ReadAsStringAsync();
-                        return (false, errorMessage);
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
             }
             catch (Exception ex)
             {
@@ -75,17 +76,19 @@ namespace MAMS.Services
         {
             try
             {
-                    HttpResponseMessage response = await _client.PostAsJsonAsync("Login/DoctorReg", model);
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Login/DoctorReg", model);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return (true, null);
-                    }
-                    else
-                    {
-                        string errorMessage = await response.Content.ReadAsStringAsync();
-                        return (false, errorMessage);
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+
+
+                    return (false, errorMessage);
+                }
             }
             catch (Exception ex)
             {
@@ -100,15 +103,15 @@ namespace MAMS.Services
             {
                 HttpResponseMessage response = await _client.PostAsJsonAsync("Login/UserReg", model);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return (true, null);
-                    }
-                    else
-                    {
-                        string errorMessage = await response.Content.ReadAsStringAsync();
-                        return (false, errorMessage);
-                    }
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    string errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
             }
             catch (Exception ex)
             {

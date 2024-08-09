@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-sm-12">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Doctors</a></li>
+                        <li class="breadcrumb-item"><a asp-action="Index">Doctors</a></li>
                         <li class="breadcrumb-item active">All Availabilities</li>
                     </ol>
                 </div>
@@ -37,7 +37,7 @@
             <div class="col-12">
                 <div class="card card-info card-outline">
                     <div class="card-header card-header d-flex justify-content-between align-items-center">
-                        <form method="get" asp-controller="Specialization" asp-action="Index" class="d-flex ml-auto">
+                        @* <form method="get" asp-controller="Availability" asp-action="Index" class="d-flex ml-auto">
                             <div class="input-group input-group-sm" style="width: 250px;">
                                 <input type="text" name="searchString" class="form-control float-left" placeholder="Search by Day or Time" value="@ViewData["CurrentFilter"]">
                                 <div class="input-group-append">
@@ -46,7 +46,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </form>
+                        </form> *@
                     </div>
                     <!-- /.card-header -->
 

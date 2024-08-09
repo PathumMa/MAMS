@@ -109,11 +109,62 @@ namespace MAMS.API.Controllers
                 Personal_Id = docDetails.Personal_Id,
                 MedicalCouncilRegistrationNumber = docDetails.MedicalCouncilRegistrationNumber,
                 Specialization = docDetails.Specialization,
+                Hospital_Affiliation = docDetails.Hospital_Affiliation,
+                Doctor_Fee = docDetails.Doctor_Fee,
                 Availabilities = docAvailDetails // Include availability information
             };
 
             return Ok(doctorDet);
         }
+
+        [HttpGet("doctorDetails/{doctorId}")]
+        public IActionResult GetDoctorDetailsByDoctorId(int doctorID)
+        {
+            // If it's a doctor role
+            var docDetails = _dbContext.DoctorDetails.FirstOrDefault(d => d.Id == doctorID);
+
+            if (docDetails == null)
+            {
+                return NotFound("Doctor Details Not Found");
+            }
+
+            // Fetch doctor availability details
+            var docAvailDetails = _dbContext.DoctorAvailableDetails
+                .Where(d => d.DoctorId == docDetails.Id)
+                .Select(ad => new DoctorAvailabilityDto
+                {
+                    Available_Day = ad.Available_Day,
+                    StartTime = ad.StartTime,
+                    EndTime = ad.EndTime
+                })
+                .ToList();
+
+            var doctorDet = new DoctorDetailsDto
+            {
+                Id = docDetails.Id,
+                UserTitle = docDetails.UserTitle,
+                First_Name = docDetails.First_Name,
+                Last_Name = docDetails.Last_Name,
+                Middle_Name = docDetails.Middle_Name,
+                Address = docDetails.Address,
+                City = docDetails.City,
+                District = docDetails.District,
+                Province = docDetails.Province,
+                Birth_Date = docDetails.Birth_Date,
+                Blood_Type = docDetails.Blood_Type,
+                Gender = docDetails.Gender,
+                PersonalId_Type = docDetails.PersonalId_Type,
+                Personal_Id = docDetails.Personal_Id,
+                MedicalCouncilRegistrationNumber = docDetails.MedicalCouncilRegistrationNumber,
+                Specialization = docDetails.Specialization,
+                Hospital_Affiliation = docDetails.Hospital_Affiliation,
+                Doctor_Fee = docDetails.Doctor_Fee,
+                Availabilities = docAvailDetails // Include availability information
+            };
+
+            return Ok(doctorDet);
+        }
+
 
         [HttpGet("doctors")]
         public async Task<IActionResult> GetAllDoctors()
@@ -143,7 +194,8 @@ namespace MAMS.API.Controllers
                    PersonalId_Type = d.PersonalId_Type,
                    MedicalCouncilRegistrationNumber = d.MedicalCouncilRegistrationNumber,
                    Specialization = d.Specialization,
-                   Hospital_Affiliation = d.Hospital_Affiliation
+                   Hospital_Affiliation = d.Hospital_Affiliation,
+                   Doctor_Fee = d.Doctor_Fee
                }).ToListAsync();
 
             return Ok(doctors);
@@ -261,6 +313,7 @@ namespace MAMS.API.Controllers
                 existingUser.DoctorDetails.MedicalCouncilRegistrationNumber = updateDoc.MedicalCouncilRegistrationNumber;
                 existingUser.DoctorDetails.Specialization = updateDoc.Specialization;
                 existingUser.DoctorDetails.Hospital_Affiliation = updateDoc.Hospital_Affiliation;
+                existingUser.DoctorDetails.Doctor_Fee = updateDoc.Doctor_Fee;
 
 
                 _dbContext.Entry(existingUser).State = EntityState.Modified;
