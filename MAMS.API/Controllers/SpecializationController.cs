@@ -13,10 +13,12 @@ namespace MAMS.API.Controllers
     public class SpecializationController : ControllerBase
     {
         public readonly ApiDataContext _dbContext;
+        private readonly ILogger<SpecializationController> _logger;
 
-        public SpecializationController(ApiDataContext dataContext)
+        public SpecializationController(ApiDataContext dataContext, ILogger<SpecializationController> logger)
         {
             _dbContext = dataContext;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -28,6 +30,9 @@ namespace MAMS.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Specializations>> Get(int id)
         {
+            _logger.LogInformation("Get specialization : ");
+            _logger.LogInformation($"request id: {id}");
+            
             var speciality = _dbContext.Specializations.Where(u => u.Specializations_Id == id).FirstOrDefault<Specializations>();
             if (speciality == null)
             {
