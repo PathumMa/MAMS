@@ -1,4 +1,6 @@
-﻿namespace MAMS.API.DTOs
+﻿using MAMS.API.Models;
+
+namespace MAMS.API.DTOs
 {
     public class DoctorDetailsDto
     {
@@ -21,7 +23,8 @@
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
         public string? MedicalCouncilRegistrationNumber { get; set; }
-        public string Specialization { get; set; }
+        public int Specializations_Id { get; set; }
+        public Specializations Specializations { get; set; }
         public string? Hospital_Affiliation { get; set; }
         public List<DoctorAvailabilityDto> Availabilities { get; set; }
     }

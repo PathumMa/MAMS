@@ -166,9 +166,8 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Specialization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Specializations_Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("SuserId")
                         .HasColumnType("int");
@@ -178,6 +177,8 @@ namespace MAMS.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Specializations_Id");
 
                     b.HasIndex("SuserId")
                         .IsUnique();
@@ -440,11 +441,19 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.DoctorDetails", b =>
                 {
+                    b.HasOne("MAMS.API.Models.Specializations", "Specialization")
+                        .WithMany()
+                        .HasForeignKey("Specializations_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MAMS.API.Models.Suser", "Suser")
                         .WithOne("DoctorDetails")
                         .HasForeignKey("MAMS.API.Models.DoctorDetails", "SuserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Specialization");
 
                     b.Navigation("Suser");
                 });

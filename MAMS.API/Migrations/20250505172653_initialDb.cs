@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MAMS.API.Migrations
 {
     /// <inheritdoc />
-    public partial class ReDoctorDetails_withInitial : Migration
+    public partial class initialDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,7 +67,7 @@ namespace MAMS.API.Migrations
                     Personal_Id = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PersonalId_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MedicalCouncilRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Specialization = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Specializations_Id = table.Column<int>(type: "int", nullable: false),
                     Hospital_Affiliation = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Auth_Status = table.Column<int>(type: "int", nullable: false),
                     Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -78,6 +78,12 @@ namespace MAMS.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DoctorDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DoctorDetails_Specializations_Specializations_Id",
+                        column: x => x.Specializations_Id,
+                        principalTable: "Specializations",
+                        principalColumn: "Specializations_Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DoctorDetails_Susers_SuserId",
                         column: x => x.SuserId,
@@ -253,6 +259,11 @@ namespace MAMS.API.Migrations
                 column: "DoctorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DoctorDetails_Specializations_Id",
+                table: "DoctorDetails",
+                column: "Specializations_Id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DoctorDetails_SuserId",
                 table: "DoctorDetails",
                 column: "SuserId",
@@ -297,9 +308,6 @@ namespace MAMS.API.Migrations
                 name: "MedicalRecords");
 
             migrationBuilder.DropTable(
-                name: "Specializations");
-
-            migrationBuilder.DropTable(
                 name: "Transactions");
 
             migrationBuilder.DropTable(
@@ -310,6 +318,9 @@ namespace MAMS.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserDetails");
+
+            migrationBuilder.DropTable(
+                name: "Specializations");
 
             migrationBuilder.DropTable(
                 name: "Susers");

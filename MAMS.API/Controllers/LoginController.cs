@@ -161,7 +161,7 @@ namespace MAMS.API.Controllers
                     Personal_Id = signUpData.Personal_Id,
                     PersonalId_Type = signUpData.PersonalId_Type,
                     MedicalCouncilRegistrationNumber = signUpData.MedicalCouncilRegistrationNumber,
-                    Specialization = signUpData.Specialization,
+                    Specializations_Id = signUpData.Specializations_Id,
                     Hospital_Affiliation = signUpData.Hospital_Affiliation
                 };
 

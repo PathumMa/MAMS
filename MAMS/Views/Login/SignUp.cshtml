@@ -214,12 +214,12 @@
                                     </div>
 
                                     <div class="col mb-4" id="dTypeInput">
-                                        <label asp-for="Specialization" style="color:#d63384" class="form-label">Specialization:</label>
-                                        <select asp-for="Specialization" class="form-select rounded-pill">
+                                        <label asp-for="Specializations_Id" style="color:#d63384" class="form-label">Specialization:</label>
+                                        <select asp-for="Specializations_Id" class="form-select rounded-pill">
                                             <option value="">--Select Specialization--</option>
                                             @foreach (var specializations in ViewBag.Specializaions)
                                             {
-                                                <option value="@specializations.Specializations_Name">@specializations.Specializations_Name</option>
+                                                <option value="@specializations.Specializations_Id">@specializations.Specializations_Name</option>
                                             }
                                         </select>
                                     </div>
