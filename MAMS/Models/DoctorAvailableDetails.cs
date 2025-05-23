@@ -12,9 +12,9 @@ namespace MAMS.Models
 
         [DataType(DataType.Time)]
         public TimeSpan? StartTime { get; set; }
-        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
 
         [DataType(DataType.Time)]
         public TimeSpan? EndTime { get; set; }
+        public ActiveStatus ActiveStatus { get; set; } = ActiveStatus.Active;
     }
 }

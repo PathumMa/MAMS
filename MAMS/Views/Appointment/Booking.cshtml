@@ -1,0 +1,522 @@
+﻿@using MAMS.Models.ViewModels
+@using static MAMS.Services.Enums
+
+
+@{
+    ViewData["Title"] = "Booking Doctor";
+}
+\
+@model BookingViewModel
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Place Appointment</h1>
+
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Appointments</a></li>
+                        <li class="breadcrumb-item active">Make New</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+
+            <form method="post" asp-action="PlaceNewAppointment" asp-controller="Appointment">
+                <div class="row">
+                    <div class="col-md-9">
+
+                        <div class="card card-info card-outline">
+
+                            <div class="card-header d-flex justify-content-end align-items-center">
+                                <div class="row gy-1">
+                                    <input asp-for="@Model.Availability_Id" hidden />
+                                    <input asp-for="@Model.Doctor_Id" hidden />
+
+                                    @* <p class="col-auto text-start"><strong>Appointment Count:</strong> @ViewBag.AppointmentCount  / 15</p> *@
+                                    <div class="col-auto text-center">
+                                        <input asp-for="@Model.Available_Day" class="form-control rounded-pill" readonly />
+                                    </div>
+                                    <div class="col-auto text-center">
+                                        <input asp-for="@Model.Appointment_Date" hidden />
+                                    </div>
+
+                                    <div class="col-auto text-center">
+                                        <input asp-for="@Model.StartTime" class="form-control rounded-pill" readonly />
+                                    </div>
+                                    <input asp-for="@Model.EndTime" hidden />
+                                    <input asp-for="@Model.Appoinment_number" hidden />
+
+                                    
+                                </div>
+                            </div>
+
+                            <div class="card-body pt-0">
+                                <div class="form">
+                                    <div class="row gy-1 mb-4">
+                                        <div class="form-group mb-4">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input" id="useLogin">
+                                                <label class="custom-control-label" for="useLogin">Use Login Details or Continue as Guest</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="userDetailsSection">
+                                        <!-- Details auto-filled from login -->
+                                        <div class="row gy-1 mb-4">
+                                            <div class="col-2 mb-4">
+                                                <label asp-for="@Model.UserTitle" class="form-label">Title:</label>
+                                                <select asp-for="@Model.UserTitle" class="form-select rounded-pill">
+                                                    <option value="">--Title--</option>
+                                                    @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))
+                                                    {
+                                                        <option value="@uTitle">@uTitle</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.Name" class="form-label">Name:</label>
+                                                <input asp-for="@Model.Name" class="form-control rounded-pill" required />
+                                                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row gy-1 mb-4">
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.Email" class="form-label">Email:</label>
+                                                <input asp-for="@Model.Email" class="form-control rounded-pill" type="email" />
+                                                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.PhoneNumber" class="form-label">Phone:</label>
+                                                <input asp-for="@Model.PhoneNumber" class="form-control rounded-pill" type="tel" oninput="validatePhoneNumber(this)" required />
+                                                <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="manualDetailsSection" style="display: none;">
+                                        <!-- Manual entry details -->
+                                        <div class="row gy-1 mb-4">
+                                            <div class="col-2 mb-4">
+                                                <label asp-for="@Model.UserTitle" class="form-label">Title:</label>
+                                                <select asp-for="@Model.UserTitle" class="form-select rounded-pill">
+                                                    <option value="">--Title--</option>
+                                                    @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))
+                                                    {
+                                                        <option value="@uTitle">@uTitle</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.Name" class="form-label">Name:</label>
+                                                <input asp-for="@Model.Name" class="form-control rounded-pill" required />
+                                                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="row gy-1 mb-4">
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.Email" class="form-label">Email:</label>
+                                                <input asp-for="@Model.Email" class="form-control rounded-pill" type="email" />
+                                                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="col mb-4">
+                                                <label asp-for="@Model.PhoneNumber" class="form-label">Phone: *</label>
+                                                <input asp-for="@Model.PhoneNumber" class="form-control rounded-pill" type="tel" oninput="validatePhoneNumber(this)" required />
+                                                <span asp-validation-for="@Model.PhoneNumber" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row gy-1">
+                                        <div class="col mb-4">
+                                            <label asp-for="@Model.PersonalId_Type" class="form-label">Personal Id: *</label>
+                                            <select asp-for="@Model.PersonalId_Type" id="idTypeSelect" class="form-select rounded-pill" required>
+                                                <option value="">-- Select Personal ID Type --</option>
+                                                @foreach (var idType in Enum.GetValues(typeof(PersonalIdType)))
+                                                {
+                                                    <option value="@idType">@idType</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col mb-4 nic-validate" id="nic-input" data-type="Nic" style="display: none;">
+                                            <label asp-for="@Model.Personal_Id" class="form-label">NIC:</label>
+                                            <input asp-for="@Model.Personal_Id" class="form-control rounded-pill" />
+                                            <span asp-validation-for="@Model.Personal_Id" class="text-danger" id="nic-validation-msg"></span>
+                                        </div>
+                                        <div class="col mb-4" id="passport-input" data-type="Passport" style="display: none;">
+                                            <label asp-for="@Model.Personal_Id" class="form-label">Passport:</label>
+                                            <input asp-for="@Model.Personal_Id" class="form-control rounded-pill" />
+                                            <span asp-validation-for="@Model.Personal_Id" class="text-danger"></span>
+                                        </div>
+                                        <div class="col mb-4" id="dlicence-input" data-type="DLicence" style="display: none;">
+                                            <label asp-for="@Model.Personal_Id" class="form-label">Driving licence Id:</label>
+                                            <input asp-for="@Model.Personal_Id" class="form-control rounded-pill" />
+                                            <span asp-validation-for="@Model.Personal_Id" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <div class="col mb-4 text-end">
+                                    <button id="signinButton" type="submit" class="btn btn-success rounded-pill">Book &nbsp; <i class="bi bi-box-arrow-in-up-right"></i></button>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="bi bi-cash"></i> &nbsp; Payment Details  </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tr>
+                                            <th style="width:50%"> Doctor Fee:</th>
+                                            <td class="text-end">Rs @Model.Doctor_fee.ToString("F2")</td>
+                                            <input asp-for="@Model.Doctor_fee" hidden />
+
+                                        </tr>
+                                        <tr>
+                                            <th> Hospital Fee:</th>
+                                            <td class="text-end">Rs @Model.Hospital_fee.ToString("F2")</td>
+                                            <input asp-for="@Model.Hospital_fee" hidden />
+                                        </tr>
+                                        <tr>
+                                            <th class="text-danger"> Discounts:</th>
+                                            <td class="text-end text-danger">Rs 0.00 </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Fee:</th>
+                                            <td class="text-end">Rs @Model.Amount.ToString("F2")</td>
+                                            <input asp-for="@Model.Amount" hidden />
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+
+
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Book this?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    <partial name="_ValidationScriptspartial" />
+}
+
+<script>
+
+    
+
+    //phoneNumber and Email Validation
+    function validatePhoneNumber(input) {
+        var phoneNumber = input.value.trim();
+        var spanElement = input.nextElementSibling; // Get the next element, which is the <span> for validation
+
+        // Regular expression pattern for Sri Lankan phone number (supports various formats)
+        var phonePattern = /^(?:\+?94|0)(?:7\d|2\d)(?:\d{7}|\d{8}|\d{9})$/;
+
+        if (phonePattern.test(phoneNumber)) {
+            // Valid phone number format
+            input.setCustomValidity('');
+            spanElement.textContent = ''; // Clear any previous validation message
+        }
+        else {
+            // Invalid phone number format
+            input.setCustomValidity('Please enter a valid Sri Lankan phone number');
+            spanElement.textContent = 'Please enter a valid Sri Lankan phone number'; // Show error message in the <span>
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var emailInput = document.querySelector('input[type="email"]');
+        var emailSpan = document.querySelector('[data-valmsg-for="Email"]');
+
+        emailInput.addEventListener('input', function (event) {
+            var email = event.target.value.trim();
+            var emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/; // Updated regex pattern
+
+            if (!emailPattern.test(email)) {
+                emailSpan.textContent = 'Please enter a valid email address';
+            } else {
+                emailSpan.textContent = '';
+            }
+        });
+    });
+
+    // Function to show the relevant input field based on the selected Personal ID Type
+    function showPersonalIdInput() {
+        var idTypeSelect = document.getElementById("idTypeSelect");
+        console.log(idTypeSelect.value);
+        var nicInput = document.getElementById("nic-input");
+        var passportInput = document.getElementById("passport-input");
+        var dlicenceInput = document.getElementById("dlicence-input");
+
+        // Hide all input fields initially
+        nicInput.style.display = "none";
+        passportInput.style.display = "none";
+        dlicenceInput.style.display = "none";
+
+        // Show the relevant input field based on the selected type
+        if (idTypeSelect.value === "NIC") {
+            nicInput.style.display = "block";
+        } else if (idTypeSelect.value === "Passport") {
+            passportInput.style.display = "block";
+            document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
+        } else if (idTypeSelect.value === "DLicence") {
+            dlicenceInput.style.display = "block";
+            document.getElementById("Personal_Id").setAttribute("data-type", "NIC");
+        }
+    }
+
+    // Attach event listener to trigger NIC validation
+    var nicInput = document.getElementById("Personal_Id");
+    nicInput.addEventListener("blur", function () {
+        validateNIC();
+    });
+
+    // Attach event listener to trigger the display of the relevant input field
+    var idTypeSelect = document.getElementById("idTypeSelect");
+    idTypeSelect.addEventListener("change", function () {
+        showPersonalIdInput();
+    });
+
+    // Initial setup
+    showPersonalIdInput();
+
+    // Function to validate NIC
+    function showPersonalIdInput() {
+        var idTypeSelect = document.getElementById("idTypeSelect");
+        var nicInput = document.getElementById("nic-input");
+        var passportInput = document.getElementById("passport-input");
+        var dlicenceInput = document.getElementById("dlicence-input");
+        var personalIdInput = document.getElementById("Personal_Id");
+
+        // Hide all input fields initially
+        nicInput.style.display = "none";
+        passportInput.style.display = "none";
+        dlicenceInput.style.display = "none";
+
+        // Show the relevant input field based on the selected type
+        switch (idTypeSelect.value) {
+            case "NIC":
+                nicInput.style.display = "block";
+                break;
+            case "Passport":
+                passportInput.style.display = "block";
+                break;
+            case "DLicence":
+                dlicenceInput.style.display = "block";
+                break;
+        }
+
+        // Reset Personal_Id attribute
+        personalIdInput.removeAttribute("data-type");
+    }
+
+    // Function to validate NIC
+    function validateNIC() {
+        var nicInput = document.getElementById("Personal_Id");
+        var nicValidationMsg = document.getElementById("nic-validation-msg");
+        var nicNumber = nicInput.value.trim();
+
+        // Regular expression pattern for NIC validation
+        var nicPattern = /^\d{9}[VXvx]$/; // Old NIC pattern
+        var newNicPattern = /^\d{12}$/; // New NIC pattern
+
+        if (nicPattern.test(nicNumber) || newNicPattern.test(nicNumber)) {
+            nicValidationMsg.textContent = ''; // Clear validation message
+        } else {
+            nicValidationMsg.textContent = 'Please enter a valid NIC number';
+        }
+    }
+
+    // Attach event listeners
+    document.addEventListener("DOMContentLoaded", function () {
+        var idTypeSelect = document.getElementById("idTypeSelect");
+        idTypeSelect.addEventListener("change", showPersonalIdInput);
+
+        var nicInput = document.getElementById("Personal_Id");
+        nicInput.addEventListener("blur", validateNIC);
+
+        // Initial setup
+        showPersonalIdInput();
+    });
+
+    //handle input data--------------------------------------------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', function () {
+        const userDetailsSection = document.getElementById('userDetailsSection');
+        const manualDetailsSection = document.getElementById('manualDetailsSection');
+        const useLoginCheckbox = document.getElementById('useLogin');
+        const idTypeSelect = document.getElementById("idTypeSelect");
+
+        function toggleSections() {
+            if (useLoginCheckbox.checked) {
+                userDetailsSection.style.display = 'block';
+                manualDetailsSection.style.display = 'none';
+                populateUserDetails();
+            } else {
+                userDetailsSection.style.display = 'none';
+                manualDetailsSection.style.display = 'block';
+                clearManualDetails();
+            }
+        }
+
+        function populateUserDetails() {
+            // Populate user details if available
+            const userTitle = document.querySelector('select[name="UserTitle"]');
+            const userName = document.querySelector('input[name="Name"]');
+            const userEmail = document.querySelector('input[name="Email"]');
+            const userPhoneNumber = document.querySelector('input[name="PhoneNumber"]');
+            const personalIdType = document.querySelector('select[name="PersonalId_Type"]');
+            const personalId = document.querySelector('input[name="Personal_Id"]');
+
+            // Fill in the details if they are available
+            if (userTitle) {
+                userTitle.value = userTitle.dataset.value || '';
+            }
+            if (userName) {
+                userName.value = userName.dataset.value || '';
+            }
+            if (userEmail) {
+                userEmail.value = userEmail.dataset.value || '';
+            }
+            if (userPhoneNumber) {
+                userPhoneNumber.value = userPhoneNumber.dataset.value || '';
+            }
+            if (personalIdType) {
+                personalIdType.value = personalIdType.dataset.value || '';
+                showPersonalIdInput();
+            }
+        }
+
+        function clearManualDetails() {
+            // Clear manual entry fields
+            document.querySelector('select[name="UserTitle"]').value = '';
+            document.querySelector('input[name="Name"]').value = '';
+            document.querySelector('input[name="Email"]').value = '';
+            document.querySelector('input[name="PhoneNumber"]').value = '';
+            document.querySelector('select[name="PersonalId_Type"]').value = '';
+        }
+
+        function showPersonalIdInput() {
+            var nicInput = document.getElementById("nic-input");
+            var passportInput = document.getElementById("passport-input");
+            var dlicenceInput = document.getElementById("dlicence-input");
+
+            // Hide all input fields initially
+            nicInput.style.display = "none";
+            passportInput.style.display = "none";
+            dlicenceInput.style.display = "none";
+
+            // Show the relevant input field based on the selected type
+            switch (idTypeSelect.value) {
+                case "NIC":
+                    nicInput.style.display = "block";
+                    break;
+                case "Passport":
+                    passportInput.style.display = "block";
+                    break;
+                case "DLicence":
+                    dlicenceInput.style.display = "block";
+                    break;
+            }
+        }
+
+        useLoginCheckbox.addEventListener('change', function () {
+            toggleSections();
+        });
+
+        idTypeSelect.addEventListener('change', showPersonalIdInput);
+
+        // Initialize the display based on the default checkbox state
+        toggleSections();
+    });
+    //----------------------------------------------------------------------------------------------------
+
+    //Function to show the confirmation modal
+    function showConfirmationModal() {
+        $('#confirmationModal').modal('show');
+    }
+
+    // Handle form submission when "Yes" is clicked
+    $('#confirmYes').click(function () {
+        $('#confirmationModal').modal('hide'); // Hide the modal
+        $('form').submit(); // Submit the form
+    });
+
+    // Attach the confirmation dialog to the Create button
+    $(document).ready(function () {
+        $('button[type="submit"]').click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            showConfirmationModal(); // Show the confirmation modal
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var createForm = document.getElementById('CreateNew');
+        var createButton = document.getElementById('createButton');
+
+        // Disable the button initially
+        createButton.disabled = true;
+
+        // Add an event listener to check form validity on input
+        createForm.addEventListener('input', function () {
+            createButton.disabled = !createForm.checkValidity();
+        });
+
+        // Add an event listener to handle form submission
+        createForm.addEventListener('submit', function (event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Check form validity before allowing submission
+            if (createForm.checkValidity()) {
+                // If the form is valid, you can enable the button and perform any other actions
+                createButton.disabled = false;
+                createButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+                // Optionally, you can trigger your confirmation modal or other actions here
+                showConfirmationModal();
+            }
+        });
+    });
+
+</script>

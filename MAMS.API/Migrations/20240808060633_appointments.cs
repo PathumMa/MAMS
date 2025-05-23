@@ -6,11 +6,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MAMS.API.Migrations
 {
     /// <inheritdoc />
-    public partial class ReDoctorDetails_withInitial : Migration
+    public partial class appointments : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "PatientDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RegisteredUserId = table.Column<int>(type: "int", nullable: true),
+                    UserTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PersonalId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PersonalIdType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PatientDetails", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Specializations",
                 columns: table => new
@@ -147,28 +171,36 @@ namespace MAMS.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Appoinments",
+                name: "Appointments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     User_PersonalId = table.Column<int>(type: "int", nullable: false),
-                    Doctor_PersonalId = table.Column<int>(type: "int", nullable: false),
-                    Appoinment_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Doctor_Id = table.Column<int>(type: "int", nullable: false),
+                    Appointment_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Appoinment_number = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    PatientDetailsId = table.Column<int>(type: "int", nullable: false),
                     DoctorDetailsId = table.Column<int>(type: "int", nullable: true),
                     UserDetailsId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appoinments", x => x.Id);
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appoinments_DoctorDetails_DoctorDetailsId",
+                        name: "FK_Appointments_DoctorDetails_DoctorDetailsId",
                         column: x => x.DoctorDetailsId,
                         principalTable: "DoctorDetails",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Appoinments_UserDetails_UserDetailsId",
+                        name: "FK_Appointments_PatientDetails_PatientDetailsId",
+                        column: x => x.PatientDetailsId,
+                        principalTable: "PatientDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Appointments_UserDetails_UserDetailsId",
                         column: x => x.UserDetailsId,
                         principalTable: "UserDetails",
                         principalColumn: "Id");
@@ -211,9 +243,12 @@ namespace MAMS.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserDetailsId = table.Column<int>(type: "int", nullable: false),
+                    User_PersonalId = table.Column<int>(type: "int", nullable: false),
                     AppointmentId = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<int>(type: "int", nullable: false),
+                    Doctor_fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Hospital_fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PaymentMethod = table.Column<int>(type: "int", nullable: false),
                     Created_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Created_By = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -224,27 +259,32 @@ namespace MAMS.API.Migrations
                 {
                     table.PrimaryKey("PK_Transactions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transactions_Appoinments_AppointmentId",
+                        name: "FK_Transactions_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
-                        principalTable: "Appoinments",
+                        principalTable: "Appointments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Transactions_UserDetails_UserDetailsId",
-                        column: x => x.UserDetailsId,
+                        name: "FK_Transactions_UserDetails_User_PersonalId",
+                        column: x => x.User_PersonalId,
                         principalTable: "UserDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appoinments_DoctorDetailsId",
-                table: "Appoinments",
+                name: "IX_Appointments_DoctorDetailsId",
+                table: "Appointments",
                 column: "DoctorDetailsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appoinments_UserDetailsId",
-                table: "Appoinments",
+                name: "IX_Appointments_PatientDetailsId",
+                table: "Appointments",
+                column: "PatientDetailsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_UserDetailsId",
+                table: "Appointments",
                 column: "UserDetailsId");
 
             migrationBuilder.CreateIndex(
@@ -275,9 +315,9 @@ namespace MAMS.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_UserDetailsId",
+                name: "IX_Transactions_User_PersonalId",
                 table: "Transactions",
-                column: "UserDetailsId",
+                column: "User_PersonalId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -303,10 +343,13 @@ namespace MAMS.API.Migrations
                 name: "Transactions");
 
             migrationBuilder.DropTable(
-                name: "Appoinments");
+                name: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "DoctorDetails");
+
+            migrationBuilder.DropTable(
+                name: "PatientDetails");
 
             migrationBuilder.DropTable(
                 name: "UserDetails");

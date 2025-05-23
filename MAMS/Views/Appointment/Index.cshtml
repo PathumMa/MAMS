@@ -1,2 +1,135 @@
-﻿<h1>All Appoinments</h1>
+﻿@using System.Data
+@using MAMS.Services
+@using MAMS.Models.ViewModels
 
+@{
+    ViewData["Title"] = "Availabilities";
+    var doctorId = ViewData["DoctorId"] as int?;
+}
+
+@model IList<DoctorAvailabilityViewModel>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/adminlte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>All Availabilities</h1>
+                    <a asp-controller="Appointment" asp-action="Index" class="btn bg-gradient-secondary rounded-pill float-right" style="width:150px"><i class="bi bi-backspace"></i> &nbsp; Back</a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Appointments</a></li>
+                        <li class="breadcrumb-item active">All Availabilities</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-info card-outline">
+                    <div class="card-header card-header d-flex justify-content-between align-items-center">
+                        <form method="get" asp-controller="Appointment" asp-action="Index" class="d-flex ml-auto">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" name="searchString" class="form-control float-left" placeholder="Search by Day or Time" value="@ViewData["CurrentFilter"]">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body table-responsive p-0">
+
+                        @if (Model == null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                Error: Failed to load data. Please try again later. or Please Log in again.
+                            </div>
+                        }
+                        else if (!Model.Any())
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                NO Availability Found!
+                            </div>
+                        }
+
+                        else
+                        {
+                            <table id="Availability" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Specialization</th>
+                                        <th>Available Day</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Status</th>
+                                        @* <th class="text-center">Actions</th> *@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var obj in Model)
+                                    {
+                                        <tr>
+                                            <td class="text-Start" data-doctor>@obj.First_Name @obj.Last_Name</td>
+                                            <td class="text-Start" data-specialization>@obj.Specialization</td>
+                                            <td data-Available_day="@obj.Available_Day">@obj.Available_Day</td>
+                                            <td class="text-start">@(obj.StartTime.HasValue ? new DateTime(obj.StartTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+                                            <td class="text-start">@(obj.EndTime.HasValue ? new DateTime(obj.EndTime.Value.Ticks).ToString("hh:mm tt") : "")</td>
+                                            <td class="text-center">
+                                                @if (obj.ActiveStatus == Enums.ActiveStatus.Active)
+                                                {
+                                                    <span class="badge bg-gradient-success">Active</span>
+                                                }
+                                                else if (obj.ActiveStatus == Enums.ActiveStatus.Inactive)
+                                                {
+                                                    <span class="badge bg-gradient-danger">Inactive</span>
+                                                }
+                                            </td>
+
+                                            @* <td class="text-center">
+                                                <div class="btn-group btn-group-justified" role="group">
+                                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#editModal-@obj.Id" title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                    <button type="button" class="delete-button btn btn-light" data-id="@obj.Id" data-doctor-id="@obj.DoctorId" title="Delete">
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </button>
+                                                </div>
+                                            </td> *@
+                                        </tr>
+
+                                        @* @await Html.PartialAsync("_EditAvailability", obj) *@
+
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                        <button type="button" class="btn bg-gradient-success rounded-pill float-right" data-bs-toggle="modal" data-bs-target="#addNewModal" data-doctor-id="@doctorId" style="width:150px">
+                            <i class="bi bi-plus-circle"></i>&ensp; Add New
+                        </button>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</div>

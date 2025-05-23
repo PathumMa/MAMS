@@ -23,6 +23,7 @@
         public string? MedicalCouncilRegistrationNumber { get; set; }
         public string Specialization { get; set; }
         public string? Hospital_Affiliation { get; set; }
+        public decimal Doctor_Fee { get; set; }
         public List<AvailabilityViewModel> Availability { get; set; }
     }
 }

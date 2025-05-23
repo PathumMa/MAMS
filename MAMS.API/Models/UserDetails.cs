@@ -29,7 +29,7 @@ namespace MAMS.API.Models
         public string? Modified_By { get; set; }
 
         public Suser Suser { get; set; }
-        public List<Appoinments>? Appoinments { get; set; }
+        public List<Appointments>? Appointmentst { get; set; }
         public List<MedicalRecords>? MedicalRecords { get; set; }
         public Transactions? Transactions { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using MAMS.API.Models;
+using MAMS.API.Models.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace MAMS.API.Data
@@ -15,8 +16,10 @@ namespace MAMS.API.Data
         public DbSet<DoctorDetails> DoctorDetails { get; set; }
         public DbSet<Specializations> Specializations { get; set; }
         public DbSet<MedicalRecords> MedicalRecords { get; set; }
-        public DbSet<Appoinments> Appoinments { get; set; }
+        public DbSet<Appointments> Appointments { get; set; }
         public DbSet<Transactions> Transactions { get; set; }
+        public DbSet<PatientDetails> PatientDetails { get; set; }
+        public DbSet<Doctors> Doctors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,14 +39,21 @@ namespace MAMS.API.Data
             .HasForeignKey(d => d.DoctorId);
 
             modelBuilder.Entity<Transactions>()
-                .HasOne(s => s.UserDetails)
+                .HasOne(s => s.Appointments)
                 .WithOne(sd => sd.Transactions)
-                .HasForeignKey<Transactions>(dd => dd.UserDetailsId);
+                .HasForeignKey<Transactions>(dd => dd.Appointment_Id);
 
-            modelBuilder.Entity<Transactions>()
-                .HasOne(s => s.appoinments)
-                .WithOne(sd => sd.Transactions)
-                .HasForeignKey<Transactions>(dd => dd.AppointmentId);
+            modelBuilder.Entity<Appointments>()
+                .HasOne(a => a.PatientDetails)
+                .WithOne(a => a.Appointments)
+                .HasForeignKey<PatientDetails>(dd => dd.Appointment_Id);
+
+
+            modelBuilder.Entity<Doctors>()
+                .ToView("View_Doctors").HasNoKey();
+
+
+
 
             // Additional configurations...
 

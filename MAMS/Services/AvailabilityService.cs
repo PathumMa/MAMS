@@ -58,7 +58,7 @@ namespace MAMS.Services
 
             try
             {
-                HttpResponseMessage response = await _client.GetAsync("Doctor/availability/" + id);
+                HttpResponseMessage response = await _client.GetAsync("Doctor/availabilities/" + id);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -141,6 +141,34 @@ namespace MAMS.Services
             {
                 return (false, ex.Message);
             }
+        }
+
+        public async Task<(DoctorAvailableDetails, string)> GetAvailability(int Id)
+        {
+            DoctorAvailableDetails availability = new DoctorAvailableDetails();
+            string? errorMessage = null;
+
+            try
+            {
+
+                HttpResponseMessage response = await _client.GetAsync("Doctor/availability/ " + Id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    availability = JsonConvert.DeserializeObject<DoctorAvailableDetails>(result);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return (availability, errorMessage);
+
         }
     }
 }

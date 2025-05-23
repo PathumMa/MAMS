@@ -77,6 +77,33 @@ namespace MAMS.Services
             return (viewModel, errorMessage);
         }
 
+        public async Task<(DoctorDetailsViewModel, string)> GetDoctorDetailsByIdAsync(int id)
+        {
+            DoctorDetailsViewModel? viewModel = new DoctorDetailsViewModel();
+            string? errorMessage = null;
+
+            try
+            {
+                HttpResponseMessage getData = await _client.GetAsync("User/doctorDetails/" + id);
+
+                if (getData.IsSuccessStatusCode)
+                {
+                    string results = await getData.Content.ReadAsStringAsync();
+                    viewModel = JsonConvert.DeserializeObject<DoctorDetailsViewModel>(results);
+                }
+                else
+                {
+                    errorMessage = await getData.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return (viewModel, errorMessage);
+        }
+
         public async Task<(IList<DoctorDetailsViewModel>, string?)> GetDoctorsAsync()
         {
             IList<DoctorDetailsViewModel> viewModel = new List<DoctorDetailsViewModel>();

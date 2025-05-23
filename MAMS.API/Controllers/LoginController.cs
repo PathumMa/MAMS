@@ -65,9 +65,24 @@ namespace MAMS.API.Controllers
             {
                 if (_dbContext.Susers.Any(u => u.UserName == signUpData.UserName))
                 {
-                    ModelState.AddModelError("Suser.UserName", "Username is already taken. Please choose a different one.");
-                    return BadRequest(ModelState);
+                    return BadRequest("Username already exists!, Please try with another.");
                 }
+
+                if (_dbContext.Susers.Any(u => u.Email == signUpData.Email))
+                {
+                    return BadRequest("Email belongs to an existing user!");
+                }
+
+                if (_dbContext.Susers.Any(u => u.PhoneNumber == signUpData.PhoneNumber))
+                {
+                    return BadRequest("Phone number belongs to an existing user!");
+                }
+
+                if (_dbContext.UserDetails.Any(u => u.Personal_Id == signUpData.Personal_Id))
+                {
+                    return BadRequest("Personal ID belongs to an existing user!");
+                }
+
 
                 var hashedPassword = Password.HashPassword(signUpData.Password);
 
@@ -121,15 +136,30 @@ namespace MAMS.API.Controllers
             // Validate the model
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(signUpData);
             }
 
             try
             {
                 if (_dbContext.Susers.Any(u => u.UserName == signUpData.UserName))
                 {
-                    ModelState.AddModelError("Suser.UserName", "Username is already taken. Please choose a different one.");
-                    return BadRequest(ModelState);
+                    return BadRequest("Username already exists!, Please try with another.");
+
+                }
+
+                if (_dbContext.Susers.Any(u => u.Email == signUpData.Email))
+                {
+                    return BadRequest("Email belongs to an existing user!");
+                }
+
+                if (_dbContext.Susers.Any(u => u.PhoneNumber == signUpData.PhoneNumber))
+                {
+                    return BadRequest("Phone number belongs to an existing user!");
+                }
+
+                if (_dbContext.UserDetails.Any(u => u.Personal_Id == signUpData.Personal_Id))
+                {
+                    return BadRequest("Personal ID belongs to an existing user!");
                 }
 
                 var hashedPassword = Password.HashPassword(signUpData.Password);
@@ -162,7 +192,8 @@ namespace MAMS.API.Controllers
                     PersonalId_Type = signUpData.PersonalId_Type,
                     MedicalCouncilRegistrationNumber = signUpData.MedicalCouncilRegistrationNumber,
                     Specialization = signUpData.Specialization,
-                    Hospital_Affiliation = signUpData.Hospital_Affiliation
+                    Hospital_Affiliation = signUpData.Hospital_Affiliation,
+                    Doctor_Fee = signUpData.Doctor_Fee
                 };
 
                 // Add available details for the doctor

@@ -26,7 +26,7 @@ namespace MAMS.Models
         public string? Modified_By { get; set; }
 
         public Suser Suser { get; set; }
-        public List<Appoinments> Appoinments { get; set; }
+        public List<Appointments> Appoinments { get; set; }
         public List<MedicalRecords> MedicalRecords { get; set; }
     }
 }
