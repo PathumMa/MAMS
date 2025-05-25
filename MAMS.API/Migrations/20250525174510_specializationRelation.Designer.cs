@@ -4,6 +4,7 @@ using MAMS.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    partial class ApiDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250525174510_specializationRelation")]
+    partial class specializationRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,6 +187,9 @@ namespace MAMS.API.Migrations
                     b.Property<int>("Specialization_Id")
                         .HasColumnType("int");
 
+                    b.Property<int>("Specializations_Id")
+                        .HasColumnType("int");
+
                     b.Property<int>("SuserId")
                         .HasColumnType("int");
 
@@ -193,7 +199,7 @@ namespace MAMS.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Specialization_Id");
+                    b.HasIndex("Specializations_Id");
 
                     b.HasIndex("SuserId")
                         .IsUnique();
@@ -569,7 +575,7 @@ namespace MAMS.API.Migrations
                 {
                     b.HasOne("MAMS.API.Models.Specializations", "Specialization")
                         .WithMany()
-                        .HasForeignKey("Specialization_Id")
+                        .HasForeignKey("Specializations_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

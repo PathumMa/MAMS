@@ -108,7 +108,7 @@ namespace MAMS.API.Controllers
                 PersonalId_Type = docDetails.PersonalId_Type,
                 Personal_Id = docDetails.Personal_Id,
                 MedicalCouncilRegistrationNumber = docDetails.MedicalCouncilRegistrationNumber,
-                Specialization = docDetails.Specialization,
+                Specialization_Id = docDetails.Specialization_Id,
                 Hospital_Affiliation = docDetails.Hospital_Affiliation,
                 Doctor_Fee = docDetails.Doctor_Fee,
                 Availabilities = docAvailDetails // Include availability information
@@ -156,7 +156,7 @@ namespace MAMS.API.Controllers
                 PersonalId_Type = docDetails.PersonalId_Type,
                 Personal_Id = docDetails.Personal_Id,
                 MedicalCouncilRegistrationNumber = docDetails.MedicalCouncilRegistrationNumber,
-                Specialization = docDetails.Specialization,
+                Specialization_Id = docDetails.Specialization_Id,
                 Hospital_Affiliation = docDetails.Hospital_Affiliation,
                 Doctor_Fee = docDetails.Doctor_Fee,
                 Availabilities = docAvailDetails // Include availability information
@@ -193,7 +193,7 @@ namespace MAMS.API.Controllers
                    Personal_Id = d.Personal_Id,
                    PersonalId_Type = d.PersonalId_Type,
                    MedicalCouncilRegistrationNumber = d.MedicalCouncilRegistrationNumber,
-                   Specialization = d.Specialization,
+                   Specialization_Id = d.Specialization_Id,
                    Hospital_Affiliation = d.Hospital_Affiliation,
                    Doctor_Fee = d.Doctor_Fee
                }).ToListAsync();
@@ -311,7 +311,7 @@ namespace MAMS.API.Controllers
                 existingUser.DoctorDetails.Personal_Id = updateDoc.Personal_Id;
                 existingUser.DoctorDetails.PersonalId_Type = updateDoc.PersonalId_Type;
                 existingUser.DoctorDetails.MedicalCouncilRegistrationNumber = updateDoc.MedicalCouncilRegistrationNumber;
-                existingUser.DoctorDetails.Specialization = updateDoc.Specialization;
+                existingUser.DoctorDetails.Specialization_Id = updateDoc.Specialization_Id;
                 existingUser.DoctorDetails.Hospital_Affiliation = updateDoc.Hospital_Affiliation;
                 existingUser.DoctorDetails.Doctor_Fee = updateDoc.Doctor_Fee;
 

@@ -191,23 +191,23 @@ namespace MAMS.API.Controllers
         }
 
         [HttpGet("DoctorByName")]
-        public async Task<IActionResult> GetDoctorbyName(string? name, string? specialization)
+        public async Task<IActionResult> GetDoctorbyName(string? name, int? specialization)
         {
             var doctors = _dbContext.DoctorDetails.AsQueryable();
 
-            if(!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
-                doctors = doctors.Where(d => d.First_Name.Contains(name) || d.Last_Name.Contains(name) || d.Middle_Name.Contains(name)); 
+                doctors = doctors.Where(d => d.First_Name.Contains(name) || d.Last_Name.Contains(name) || d.Middle_Name.Contains(name));
             }
-            else if(!string.IsNullOrEmpty(specialization))
+            else if (specialization.HasValue)
             {
-                doctors = doctors.Where(d => d.Specialization.Contains(specialization));
+                doctors = doctors.Where(d => d.Specialization_Id == specialization.Value);
             }
             else
             {
                 return BadRequest("Name or Specialization required!");
             }
-            
+
             var result = await doctors.ToListAsync();
             return Ok(result);
         }
