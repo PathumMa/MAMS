@@ -1,5 +1,10 @@
 ﻿@inject IHttpContextAccessor _httpContextAccessor;
 
+
+@{
+    var role = _httpContextAccessor.HttpContext.Session.GetInt32("RoleId") ?? 0;
+}
+
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-warning elevation-4" style="backdrop-filter: blur(40px);
     background-image: linear-gradient(to right top, #051937, #10315e, #1a4c89, #1f69b6, #1e88e5, #08d087);">
@@ -38,47 +43,77 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
-                <li class="nav-item menu-open">
-                    <a href="#" class="nav-link active">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>
-                            Admin Maintenance
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Index">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Doctors</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SignUp">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>New Users</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Specialization" asp-action="Index">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Specializations</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Specialization" asp-action="Status">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Specializations Status</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Search">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Appointments</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                @if (role == 10) // Admin Role
+                {
+                    <li class="nav-item menu-open">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>
+                                Admin Maintenance
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Index">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Doctors</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Login" asp-action="SignUp">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>New Users</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Specialization" asp-action="Index">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Specializations</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Specialization" asp-action="Status">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Specializations Status</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                }
+
+                else if (role == 20) // Doctor
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="MyAppointments">
+                            <i class="nav-icon fas fa-calendar-check"></i>
+                            <p>My Appointments</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="Availability">
+                            <i class="nav-icon fas fa-clock"></i>
+                            <p>Availability</p>
+                        </a>
+                    </li>
+                }
+
+                else if (role == 30) // Patient
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Book">
+                            <i class="nav-icon fas fa-notes-medical"></i>
+                            <p>Book Appointment</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="MyAppointments">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>My Appointments</p>
+                        </a>
+                    </li>
+                }
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>

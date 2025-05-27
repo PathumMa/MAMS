@@ -58,6 +58,7 @@ namespace MAMS.Controllers
                         (dt, errorMessage) = await _userService.GetUserDetailsAsync(user.UserName);
 
                         _httpContextAccessor.HttpContext.Session.SetString("UserName", dt.UserName);
+                        _httpContextAccessor.HttpContext.Session.SetInt32("RoleId", dt.RoleId);
 
                         _notfy.Success($"Welcome! {dt.UserTitle}.{dt.First_Name}", 5);
                         return RedirectToAction("Index", "Home", new { dt.UserName });
