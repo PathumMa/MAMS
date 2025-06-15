@@ -171,6 +171,7 @@ namespace MAMS.API.Controllers
         {
             var doctors = await _dbContext.DoctorDetails
                .Include(dd => dd.Suser)
+               .Include(dd => dd.Specialization)
                .Where(dd => dd.Suser.RoleId == 30)
                .Select(d => new DoctorDetailsDto
                {
@@ -194,6 +195,7 @@ namespace MAMS.API.Controllers
                    PersonalId_Type = d.PersonalId_Type,
                    MedicalCouncilRegistrationNumber = d.MedicalCouncilRegistrationNumber,
                    Specialization_Id = d.Specialization_Id,
+                   Specializations = d.Specialization,
                    Hospital_Affiliation = d.Hospital_Affiliation,
                    Doctor_Fee = d.Doctor_Fee
                }).ToListAsync();

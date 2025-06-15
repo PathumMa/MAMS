@@ -1,4 +1,7 @@
-﻿namespace MAMS.Models.ViewModels
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace MAMS.Models.ViewModels
 {
     public class DoctorDetailsViewModel
     {
@@ -21,7 +24,8 @@
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
         public string? MedicalCouncilRegistrationNumber { get; set; }
-        public string Specialization { get; set; }
+        public int Specialization_Id { get; set; }
+        public Specializations Specializations { get; set; }
         public string? Hospital_Affiliation { get; set; }
         public decimal Doctor_Fee { get; set; }
         public List<AvailabilityViewModel> Availability { get; set; }
