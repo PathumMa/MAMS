@@ -37,9 +37,9 @@ namespace MAMS.API.Models
         public string? Modified_By { get; set; }
 
         public Suser Suser { get; set; }
-        public ICollection<DoctorAvailableDetails> AvailableDetails { get; set; }
-        public List<Appointments> Appointments { get; set; }
-        public List<MedicalRecords> MedicalRecords { get; set; }
-        
+        public ICollection<DoctorAvailableDetails> AvailableDetails { get; set; } = new List<DoctorAvailableDetails>();
+        public ICollection<Appointments> Appointments { get; set; } = new List<Appointments>();
+        public ICollection<MedicalRecords> MedicalRecords { get; set; } = new List<MedicalRecords>();
+
     }
 }

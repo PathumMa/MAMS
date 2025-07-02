@@ -2,6 +2,7 @@
 using MAMS.Models;
 using MAMS.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -170,6 +171,61 @@ namespace MAMS.Services
             {
                 return (false, ex.Message);
             }
+        }
+        public async Task<(IList<AppointmentsViewModel>, string)> GetPatientAppointmentsAsync(string PersonalId, DateTime? date, DateTime? startDate, DateTime? endDate)
+        {
+            try
+            {
+                var queryParams = new Dictionary<string, string>();
+
+                if (date.HasValue)
+                {
+                    queryParams.Add("date", date.Value.ToString("yyyy-MM-dd"));
+                }
+                if (startDate.HasValue)
+                {
+                    queryParams.Add("startDate", startDate.Value.ToString("yyyy-MM-dd"));
+                }
+                if (endDate.HasValue)
+                {
+                    queryParams.Add("endDate", endDate.Value.ToString("yyyy-MM-dd"));
+                }
+
+                string queryString = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
+
+                var endpoint = $"appointment/by-patient/{PersonalId}";
+                string fullUrl = QueryHelpers.AddQueryString(endpoint, queryParams);
+
+                HttpResponseMessage response = await _client.GetAsync(fullUrl);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return (new List<AppointmentsViewModel>(), "No appointments found for the specified patient.");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return (new List<AppointmentsViewModel>(), "Invalid request parameters.");
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    return (new List<AppointmentsViewModel>(), "An error occurred while processing your request.");
+                }
+                else
+                {
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    var appointments = JsonConvert.DeserializeObject<List<AppointmentsViewModel>>(content);
+
+                    return (appointments ?? new List<AppointmentsViewModel>(), null);
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
     }
 }

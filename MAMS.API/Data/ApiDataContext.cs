@@ -48,6 +48,12 @@ namespace MAMS.API.Data
                 .WithOne(a => a.Appointments)
                 .HasForeignKey<PatientDetails>(dd => dd.Appointment_Id);
 
+            modelBuilder.Entity<Appointments>()
+                .HasOne(a => a.Doctor)
+                .WithMany(d => d.Appointments)
+                .HasForeignKey(a => a.Doctor_Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Doctors>()
                 .ToView("View_Doctors").HasNoKey();

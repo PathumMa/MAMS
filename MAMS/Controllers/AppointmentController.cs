@@ -151,10 +151,10 @@ namespace MAMS.Controllers
                 }
 
                 DateTime date = _calanderService.GetDateForDayOfWeek(dayOfWeek);
-                var lastAppointmentNumber = await _appointmentService.GetLastAppointmentNumberAsync(Id, date);
+                var lastAppointmentNumber = await _appointmentService.GetLastAppointmentNumberAsync(DoctorId, date);
                 var yourAppointmentNumber = lastAppointmentNumber + 1;
 
-                var appointmentCount = await _appointmentService.GetAppointmentCountAsync(Id, date);
+                var appointmentCount = await _appointmentService.GetAppointmentCountAsync(DoctorId, date);
 
                 var doctorDetails = await _userService.GetDoctorDetailsByIdAsync(DoctorId);
 
@@ -228,7 +228,7 @@ namespace MAMS.Controllers
                 if (success)
                 {
                     _notfy.Success($"Appointment Placed! - Appointment number :{bookingViewModel.Appoinment_number} - Appointment Date : {bookingViewModel.Appointment_Date} ");
-                    return RedirectToAction("Search");
+                    return RedirectToAction("AppoinmentList", bookingViewModel);
                 }
                 else
                 {
@@ -245,6 +245,64 @@ namespace MAMS.Controllers
                 _notfy.Error($"Error calling web API: {ex.Message}", 5);
                 return View("Booking");
             }
+        }
+        public async Task<IActionResult> AppoinmentList(BookingViewModel appointment, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+            try
+            {
+                var (appointments, errorMessage) = await _appointmentService.GetPatientAppointmentsAsync(appointment.Personal_Id, appointment.Appointment_Date, startDate, endDate);
+
+                if (appointments.Count > 0)
+                {
+                    ViewData.Model = appointments;
+                    return View();
+                }
+                else
+                {
+                    _notfy.Error(errorMessage);
+                    return View();
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Warning($"{ex.Message}", 5);
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> PatientBookingList(string PersonalId, DateTime? date = null, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+            try
+            {
+                var (appointments, errorMessage) = await _appointmentService.GetPatientAppointmentsAsync(PersonalId, date, startDate, endDate);
+
+                if (appointments.Count > 0)
+                {
+                    ViewData.Model = appointments;
+                    return View("AppoinmentList");
+                }
+                else
+                {
+                    _notfy.Error(errorMessage);
+                    return View("AppoinmentList");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Warning($"{ex.Message}", 5);
+            }
+            return View("AppoinmentList");
         }
     }
 
