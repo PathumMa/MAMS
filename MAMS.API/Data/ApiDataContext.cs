@@ -20,6 +20,10 @@ namespace MAMS.API.Data
         public DbSet<Transactions> Transactions { get; set; }
         public DbSet<PatientDetails> PatientDetails { get; set; }
         public DbSet<Doctors> Doctors { get; set; }
+        public DbSet<LabTest> LabTests { get; set; }
+        public DbSet<LabTestCategory> LabTestCategories { get; set; }
+        public DbSet<LabTestResult> LabTestResults { get; set; }
+        public DbSet<LabTestLabTestCategory> LabTestLabTestCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,10 +58,30 @@ namespace MAMS.API.Data
                 .HasForeignKey(a => a.Doctor_Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             modelBuilder.Entity<Doctors>()
                 .ToView("View_Doctors").HasNoKey();
 
+            // Configure many-to-many
+            modelBuilder.Entity<LabTestLabTestCategory>()
+                .HasKey(x => new { x.LabTestId, x.LabTestCategoryId });
+
+            modelBuilder.Entity<LabTestLabTestCategory>()
+                .HasOne(x => x.LabTest)
+                .WithMany(x => x.LabTestLabTestCategories)
+                .HasForeignKey(x => x.LabTestId);
+
+            modelBuilder.Entity<LabTestLabTestCategory>()
+                .HasOne(x => x.LabTestCategory)
+                .WithMany(x => x.LabTestLabTestCategories)
+                .HasForeignKey(x => x.LabTestCategoryId);
+
+            // Dummy seed data for categories
+            modelBuilder.Entity<LabTestCategory>().HasData(
+                new LabTestCategory { LabTestCategoryId = 1, CategoryName = "Blood Tests", Description = "Tests related to blood components" },
+                new LabTestCategory { LabTestCategoryId = 2, CategoryName = "Urine Tests", Description = "Urine analysis and infection detection" },
+                new LabTestCategory { LabTestCategoryId = 3, CategoryName = "Diabetes", Description = "Sugar and insulin related tests" },
+                new LabTestCategory { LabTestCategoryId = 4, CategoryName = "Liver Function", Description = "Health of liver and enzymes" }
+            );
 
 
 
