@@ -20,7 +20,7 @@ namespace MAMS.API.Controllers
             _dbContext = dataContext;
         }
 
-        [HttpGet]
+        [HttpGet("allTests")]
         public async Task<IActionResult> GetAll()
         {
             try
