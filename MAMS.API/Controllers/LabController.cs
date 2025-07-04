@@ -120,6 +120,9 @@ namespace MAMS.API.Controllers
             }
         }
 
+
+        // ─────────────── CATEGORY Maintain ───────────────
+
         [HttpGet("categories")]
         public async Task<IActionResult> GetAllCategories()
         {
@@ -192,9 +195,6 @@ namespace MAMS.API.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-
-        // ─────────────── CATEGORY Maintain ───────────────
 
         [HttpDelete("categories/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
