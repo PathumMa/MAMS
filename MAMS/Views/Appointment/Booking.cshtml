@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Booking Doctor";
 }
-\
+
 @model BookingViewModel
 
 <div class="container">
@@ -73,7 +73,7 @@
                                         <!-- Details auto-filled from login -->
                                         <div class="row gy-1 mb-4">
                                             <div class="col-2 mb-4">
-                                                <label asp-for="@Model.UserTitle" class="form-label">Title:</label>
+                                                <label asp-for="@Model.UserTitle" class="form-label">Title:</label> 
                                                 <select asp-for="@Model.UserTitle" class="form-select rounded-pill">
                                                     <option value="">--Title--</option>
                                                     @foreach (var uTitle in Enum.GetValues(typeof(UserTitleType)))

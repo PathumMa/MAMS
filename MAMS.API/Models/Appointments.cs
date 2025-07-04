@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Models
@@ -11,6 +12,8 @@ namespace MAMS.API.Models
         public string User_PersonalId { get; set; }
         [Required]
         public int Doctor_Id { get; set; }
+        [ForeignKey("Doctor_Id")]
+        public DoctorDetails Doctor { get; set; }
         [Required]
         public int Availability_Id { get; set; }
         public DateTime Appointment_Date { get; set; }
@@ -19,5 +22,6 @@ namespace MAMS.API.Models
 
         public Transactions? Transactions { get; set; }
         public PatientDetails PatientDetails { get; set; }
+
     }
 }

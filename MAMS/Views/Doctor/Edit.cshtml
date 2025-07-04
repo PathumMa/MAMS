@@ -177,15 +177,15 @@
                         <span asp-validation-for="MedicalCouncilRegistrationNumber" class="text-danger"></span>
                     </div>
                     <div class="col mb-4">
-                        <label asp-for="Specialization" class="control-label"></label>
-                        <select asp-for="Specialization" class="form-select rounded-pill">
+                        <label asp-for="Specializations" class="control-label"></label>
+                        <select asp-for="Specializations" class="form-select rounded-pill">
                             <option value="">--Select Specialization--</option>
                             @foreach (var specializations in ViewBag.Specializaions)
                             {
                                 <option value="@specializations.Specializations_Name">@specializations.Specializations_Name</option>
                             }
                         </select>
-                        <span asp-validation-for="Specialization" class="text-danger"></span>
+                        <span asp-validation-for="Specializations" class="text-danger"></span>
                     </div>
                 </div>
 
