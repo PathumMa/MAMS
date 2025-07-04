@@ -121,7 +121,7 @@ namespace MAMS.API.Controllers
         }
 
 
-        // ─────────────── CATEGORY Maintain ───────────────
+        // ─────────────── Lab Category Maintain ───────────────
 
         [HttpGet("categories")]
         public async Task<IActionResult> GetAllCategories()
