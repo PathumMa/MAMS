@@ -27,17 +27,79 @@ namespace MAMS.Services
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        //public async Task<List<LabTestViewModel>> GetAllAsync()
-        //{
-        //    try
-        //    {
-        //        HttpResponseMessage response = await _client.GetAsync("Lab/allTests");
+        public async Task<(bool Success, string ErrorMessage)> AddLabsAsync(LabTypeViewModel model)
+        {
+            try
+            {
 
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var results = await response.Content.ReadAsStringAsync();
-        //        }
-        //    }
-        //}
+                HttpResponseMessage response = await _client.PostAsJsonAsync("Lab/addType", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (true, null);
+                }
+                else
+                {
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    return (false, errorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(IList<LabTypeViewModel>, string?)> GetAllLabsAsync()
+        {
+            IList<LabTypeViewModel> dt = new List<LabTypeViewModel>();
+            string? errorMessage = null;
+
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync("Lab/allTypes");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string results = await response.Content.ReadAsStringAsync();
+                    dt = JsonConvert.DeserializeObject<List<LabTypeViewModel>>(results);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return (dt, errorMessage);
+        }
+
+        public async Task<(IList<LabCategoryViewModel>, string?)> GetAllLabCategoriesAsync()
+        {
+            IList<LabCategoryViewModel> dt = new List<LabCategoryViewModel>();
+            string? errorMessage = null;
+
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync("Lab/categories");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string results = await response.Content.ReadAsStringAsync();
+                    dt = JsonConvert.DeserializeObject<List<LabCategoryViewModel>>(results);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return (dt, errorMessage);
+        }
     }
 }

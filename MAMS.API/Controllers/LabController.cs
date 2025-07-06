@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Controllers
 {
@@ -20,17 +21,14 @@ namespace MAMS.API.Controllers
             _dbContext = dataContext;
         }
 
-        [HttpGet("allTests")]
+        [HttpGet("allTypes")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var tests = await _dbContext.LabTests
-                    .Include(x => x.LabTestLabTestCategories)
-                    .ThenInclude(x => x.LabTestCategory)
-                    .ToListAsync();
+                var types = await _dbContext.LabTypes.ToListAsync();
 
-                return Ok(tests);
+                return Ok(types);
             }
             catch (Exception ex)
             {
@@ -44,10 +42,9 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var test = await _dbContext.LabTests
-                    .Include(x => x.LabTestLabTestCategories)
-                        .ThenInclude(x => x.LabTestCategory)
-                    .FirstOrDefaultAsync(x => x.Id == id);
+                var test = await _dbContext.LabTypes
+                    .Include(x => x.LabCategory)
+                    .FirstOrDefaultAsync(x => x.LabTypeId == id);
 
                 if (test == null)
                     return NotFound();
@@ -60,17 +57,23 @@ namespace MAMS.API.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] LabTest test)
+        [HttpPost("addType")]
+        public async Task<IActionResult> Create([FromBody] LabTypeDto newTypeDto)
         {
             try
             {
-                test.CreatedDate = DateTime.Now;
+                var newType = new LabType
+                {
+                    LabName = newTypeDto.LabName,
+                    Description = newTypeDto.Description,
+                    Price = newTypeDto.Price,
+                    LabCategoryId = newTypeDto.LabCategoryId
+                };
 
-                _dbContext.LabTests.Add(test);
+                _dbContext.LabTypes.Add(newType);
                 await _dbContext.SaveChangesAsync();
 
-                return Ok(test);
+                return Ok(newType);
             }
             catch (Exception ex)
             {
@@ -78,19 +81,19 @@ namespace MAMS.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] LabTest updated)
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] LabTypeDto updatedDto)
         {
             try
             {
-                var test = await _dbContext.LabTests.FindAsync(id);
+                var test = await _dbContext.LabTypes.FindAsync(id);
                 if (test == null) return NotFound();
 
-                test.Name = updated.Name;
-                test.Description = updated.Description;
-                test.Price = updated.Price;
-                test.IsActive = updated.IsActive;
-                test.UpdatedDate = DateTime.Now;
+                test.LabName = updatedDto.LabName;
+                test.Description = updatedDto.Description;
+                test.Price = updatedDto.Price;
+                test.IsActive = updatedDto.IsActive;
+                test.ModifiedDate = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();
                 return Ok(test);
@@ -106,13 +109,27 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var test = await _dbContext.LabTests.FindAsync(id);
-                if (test == null) return NotFound();
+                var labType = await _dbContext.LabTypes
+            .Include(l => l.LabResults)
+            .FirstOrDefaultAsync(l => l.LabTypeId == id);
 
-                _dbContext.LabTests.Remove(test);
+                if (labType == null)
+                    return NotFound();
+
+                if (labType.LabResults.Any())
+                {
+                    // Soft delete: Mark as inactive
+                    labType.IsActive = ActiveStatus.Inactive;
+                    labType.ModifiedDate = DateTime.Now;
+
+                    await _dbContext.SaveChangesAsync();
+                    return Ok("Lab type has bookings and was inactive instead of deleted.");
+                }
+
+                // If no bookings, safe to delete
+                _dbContext.LabTypes.Remove(labType);
                 await _dbContext.SaveChangesAsync();
-
-                return NoContent();
+                return Ok("Lab type deleted successfully.");
             }
             catch (Exception ex)
             {
@@ -128,9 +145,14 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var categories = await _dbContext.LabTestCategories
-                    .Include(c => c.LabTestLabTestCategories)
-                        .ThenInclude(lc => lc.LabTest)
+                var categories = await _dbContext.LabCategories
+                    .Select(c => new
+                    {
+                        c.LabCategoryId,
+                        c.CategoryName,
+                        c.Description,
+                        LabCount = c.LabTypes.Count
+                    })
                     .ToListAsync();
 
                 return Ok(categories);
@@ -146,10 +168,22 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var category = await _dbContext.LabTestCategories
-                    .Include(c => c.LabTestLabTestCategories)
-                        .ThenInclude(lc => lc.LabTest)
-                    .FirstOrDefaultAsync(c => c.LabTestCategoryId == id);
+                var category = await _dbContext.LabCategories
+                    .Include(c => c.LabTypes)
+                    .Select(c => new
+                    {
+                        c.LabCategoryId,
+                        c.CategoryName,
+                        c.Description,
+                        Labs = c.LabTypes.Select(l => new
+                        {
+                            l.LabTypeId,
+                            l.LabName,
+                            l.Price,
+                            l.IsActive
+                        })
+                    })
+                    .FirstOrDefaultAsync(c => c.LabCategoryId == id);
 
                 if (category == null) return NotFound();
 
@@ -161,13 +195,20 @@ namespace MAMS.API.Controllers
             }
         }
 
-        [HttpPost("categories")]
-        public async Task<IActionResult> CreateCategory([FromBody] LabTestCategory category)
+        [HttpPost("addCategories")]
+        public async Task<IActionResult> CreateCategory([FromBody] LabCategoryDto dto)
         {
             try
             {
-                _dbContext.LabTestCategories.Add(category);
+                var category = new LabCategory
+                {
+                    CategoryName = dto.CategoryName,
+                    Description = dto.Description
+                };
+
+                _dbContext.LabCategories.Add(category);
                 await _dbContext.SaveChangesAsync();
+
                 return Ok(category);
             }
             catch (Exception ex)
@@ -176,18 +217,20 @@ namespace MAMS.API.Controllers
             }
         }
 
-        [HttpPut("categories/{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] LabTestCategory updated)
+
+        [HttpPut("updateCategories/{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] LabCategoryDto dto)
         {
             try
             {
-                var category = await _dbContext.LabTestCategories.FindAsync(id);
+                var category = await _dbContext.LabCategories.FindAsync(id);
                 if (category == null) return NotFound();
 
-                category.CategoryName = updated.CategoryName;
-                category.Description = updated.Description;
+                category.CategoryName = dto.CategoryName;
+                category.Description = dto.Description;
 
                 await _dbContext.SaveChangesAsync();
+
                 return Ok(category);
             }
             catch (Exception ex)
@@ -196,18 +239,24 @@ namespace MAMS.API.Controllers
             }
         }
 
-        [HttpDelete("categories/{id}")]
+        [HttpDelete("deleteCategories/{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             try
             {
-                var category = await _dbContext.LabTestCategories.FindAsync(id);
+                var category = await _dbContext.LabCategories
+                    .Include(c => c.LabTypes)
+                    .FirstOrDefaultAsync(c => c.LabCategoryId == id);
+
                 if (category == null) return NotFound();
 
-                _dbContext.LabTestCategories.Remove(category);
+                if (category.LabTypes.Any())
+                    return BadRequest("Cannot delete category that contains lab types. Please reassign or remove labs first.");
+
+                _dbContext.LabCategories.Remove(category);
                 await _dbContext.SaveChangesAsync();
 
-                return NoContent();
+                return Ok("Category deleted.");
             }
             catch (Exception ex)
             {

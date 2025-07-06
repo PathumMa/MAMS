@@ -15,6 +15,7 @@ namespace MAMS.Controllers
         protected AvailabilityService _availabilityService;
         protected AppointmentService _appointmentService;
         protected CalanderService _calanderService;
+        protected LabService _labService;
 
         public BaseController(IConfiguration config, INotyfService notfy, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
@@ -27,6 +28,7 @@ namespace MAMS.Controllers
             _availabilityService = new AvailabilityService(appSettings.ApiUrl);
             _appointmentService = new AppointmentService(appSettings.ApiUrl);
             _calanderService = new CalanderService(appSettings.ApiUrl);
+            _labService = new LabService(appSettings.ApiUrl);
         }
 
         protected bool IsSessionValid()
