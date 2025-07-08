@@ -43,13 +43,15 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover">
-                            <thead>
+                        <table class="table table-bordered table-hover" id="AllLabs">
+                            <thead class="table-light">
                                 <tr>
                                     <th>Lab</th>
-                                    <th class="text-center">Description</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Price (LKR)</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,8 +71,10 @@
                                     {
                                         <tr>
                                             <input asp-for="@obj.LabTypeId" hidden />
-                                            <td data-Specializations_Name="@obj.LabName">@obj.LabName</td>
+                                            <td data-lab_Name="@obj.LabName">@obj.LabName</td>
                                             <td class="text-start text-break">@obj.Description</td>
+                                            <td>@obj.CategoryName</td>
+                                            <td class="text-end">@obj.Price</td>
                                             <td class="text-center">
                                                 @if (obj.IsActive == Enums.ActiveStatus.Active)
                                                 {
@@ -81,7 +85,7 @@
                                                     <span class="badge bg-gradient-danger">Inactive</span>
                                                 }
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 <div class="btn-group" role="group">
                                                     <a asp-controller="Lab" asp-action="Edit" asp-route-id="@obj.LabTypeId" class="btn btn-light" title="Edit">
                                                         <i class="bi bi-pencil-square"></i>
@@ -124,22 +128,22 @@
         $(document).ready(function () {
             // Handle checkbox toggle event
             $('.status-switch').change(function () {
-                var Id = $(this).data('Lab-id');
+                var id = $(this).data('labId'); // make sure your HTML uses data-lab-id
                 var isChecked = $(this).prop('checked');
-                console.log(Id);
+                console.log(id);
                 console.log(isChecked);
-                updateRecordStatus(Id, isChecked);
+                updateRecordStatus(id, isChecked);
             });
 
             // Function to update Record_Status asynchronously
-            function updateRecordStatus(Id, isChecked) {
+            function updateRecordStatus(id, isChecked) {
                 var apiUrl = '@Url.Action("UpdateLab", "Lab")';
 
                 $.ajax({
                     url: apiUrl,
                     type: 'POST', // or 'PUT' depending on your API
                     data: {
-                        Id: Id,
+                        Id: id,
                         isChecked: isChecked
                     },
                     success: function (result) {
@@ -151,36 +155,35 @@
                     }
                 });
             }
-        });
-    </script>
 
-    @{
-        <partial name="_ValidationScriptspartial" />
-    }
-    <script>
-        //Function to show the delete confirmation modal
-        function showDeleteConfirmationModal(id) {
-            $('#deleteConfirmationModal').modal('show');
-            var id = $('#confirmYes').data('id', id);
-        }
+            // Function to show the delete confirmation modal
+            function showDeleteConfirmationModal(id) {
+                $('#deleteConfirmationModal').modal('show');
+                $('#confirmYes').data('id', id);
+            }
 
-        // Attach the delete confirmation dialog to the Delete button
-        $(document).ready(function () {
+            // Attach the delete confirmation dialog to the Delete button
             $('.delete-button').click(function (e) {
                 e.preventDefault(); // Prevent the default link behavior
-                // Extract the id from the delete button's data-id attribute
                 var id = $(this).data('id');
-                showDeleteConfirmationModal(id); // Show the delete confirmation modal
+                showDeleteConfirmationModal(id);
             });
 
             // Handle form submission when "Yes" is clicked
             $('#confirmYes').click(function () {
                 var id = $(this).data('id');
-                $('#deleteConfirmationModal').modal('hide'); // Hide the modal
-                // Redirect to the delete action with the id parameter
+                $('#deleteConfirmationModal').modal('hide');
                 console.log("Deletion ID:", id);
                 window.location.href = '@Url.Action("Delete", "Lab")' + '?id=' + id;
             });
+
+            // Initialize DataTable
+            $('#AllLabs').DataTable({
+                responsive: true,
+                autoWidth: false
+            });
         });
     </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

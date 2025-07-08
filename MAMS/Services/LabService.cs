@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace MAMS.Services
@@ -101,5 +102,66 @@ namespace MAMS.Services
             }
             return (dt, errorMessage);
         }
+        public async Task<(LabTypeViewModel? lab, string? errorMessage)> GetLabByIdAsync(int id)
+        {
+            LabTypeViewModel? lab = null;
+            string? errorMessage = null;
+
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync($"Lab/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    lab = JsonConvert.DeserializeObject<LabTypeViewModel>(result);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return (lab, errorMessage);
+        }
+        public async Task<(bool success, string? errorMessage)> UpdateLabAsync(LabTypeViewModel updatedLab)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.PutAsJsonAsync($"Lab/update/{updatedLab.LabTypeId}", updatedLab);
+
+                if (response.IsSuccessStatusCode)
+                    return (true, null);
+
+                string error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool success, string? errorMessage)> DeleteLabAsync(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.DeleteAsync("Lab/" + id);
+
+                if (response.IsSuccessStatusCode)
+                    return (true, null);
+
+                string error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
     }
 }

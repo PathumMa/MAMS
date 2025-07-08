@@ -4,6 +4,7 @@ using MAMS.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    partial class ApiDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250708080215_updateLabResults")]
+    partial class updateLabResults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,48 +244,6 @@ namespace MAMS.API.Migrations
                             LabCategoryId = 4,
                             CategoryName = "Liver Function",
                             Description = "Health of liver and enzymes"
-                        },
-                        new
-                        {
-                            LabCategoryId = 5,
-                            CategoryName = "Kidney Function",
-                            Description = "Urea, creatinine, and kidney health"
-                        },
-                        new
-                        {
-                            LabCategoryId = 6,
-                            CategoryName = "Infectious Diseases",
-                            Description = "Dengue, COVID-19, Hepatitis, etc."
-                        },
-                        new
-                        {
-                            LabCategoryId = 7,
-                            CategoryName = "Hormones & Endocrine",
-                            Description = "Thyroid, reproductive hormones"
-                        },
-                        new
-                        {
-                            LabCategoryId = 8,
-                            CategoryName = "Lipid Profile",
-                            Description = "Cholesterol and triglyceride levels"
-                        },
-                        new
-                        {
-                            LabCategoryId = 9,
-                            CategoryName = "Electrolytes",
-                            Description = "Sodium, Potassium, Chloride"
-                        },
-                        new
-                        {
-                            LabCategoryId = 10,
-                            CategoryName = "Coagulation",
-                            Description = "Blood clotting and bleeding tests"
-                        },
-                        new
-                        {
-                            LabCategoryId = 11,
-                            CategoryName = "Tumor Markers",
-                            Description = "Cancer-related markers and screening"
                         });
                 });
 

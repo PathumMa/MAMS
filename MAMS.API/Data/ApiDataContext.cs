@@ -80,7 +80,14 @@ namespace MAMS.API.Data
                 new LabCategory { LabCategoryId = 1, CategoryName = "Blood Tests", Description = "Tests related to blood components" },
                 new LabCategory { LabCategoryId = 2, CategoryName = "Urine Tests", Description = "Urine analysis and infection detection" },
                 new LabCategory { LabCategoryId = 3, CategoryName = "Diabetes", Description = "Sugar and insulin related tests" },
-                new LabCategory { LabCategoryId = 4, CategoryName = "Liver Function", Description = "Health of liver and enzymes" }
+                new LabCategory { LabCategoryId = 4, CategoryName = "Liver Function", Description = "Health of liver and enzymes" },
+                new LabCategory { LabCategoryId = 5, CategoryName = "Kidney Function", Description = "Urea, creatinine, and kidney health" },
+                new LabCategory { LabCategoryId = 6, CategoryName = "Infectious Diseases", Description = "Dengue, COVID-19, Hepatitis, etc." },
+                new LabCategory { LabCategoryId = 7, CategoryName = "Hormones & Endocrine", Description = "Thyroid, reproductive hormones" },
+                new LabCategory { LabCategoryId = 8, CategoryName = "Lipid Profile", Description = "Cholesterol and triglyceride levels" },
+                new LabCategory { LabCategoryId = 9, CategoryName = "Electrolytes", Description = "Sodium, Potassium, Chloride" },
+                new LabCategory { LabCategoryId = 10, CategoryName = "Coagulation", Description = "Blood clotting and bleeding tests" },
+                new LabCategory { LabCategoryId = 11, CategoryName = "Tumor Markers", Description = "Cancer-related markers and screening" }
             );
 
 

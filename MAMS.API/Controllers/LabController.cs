@@ -26,9 +26,25 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var types = await _dbContext.LabTypes.ToListAsync();
+                var types = await _dbContext.LabTypes
+            .Include(t => t.LabCategory) 
+            .Select(t => new LabTypeDto
+            {
+                LabTypeId = t.LabTypeId,
+                LabName = t.LabName,
+                Description = t.Description,
+                Price = t.Price,
+                LabCategoryId = t.LabCategoryId,
+                CategoryName = t.LabCategory.CategoryName,
+                IsActive = t.IsActive
+            })
+            .ToListAsync();
+
+                if (types == null || !types.Any())
+                    return NotFound("No lab types found.");
 
                 return Ok(types);
+
             }
             catch (Exception ex)
             {
@@ -42,14 +58,25 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var test = await _dbContext.LabTypes
-                    .Include(x => x.LabCategory)
-                    .FirstOrDefaultAsync(x => x.LabTypeId == id);
+                var type = await _dbContext.LabTypes
+            .Include(x => x.LabCategory)
+            .Where(x => x.LabTypeId == id)
+            .Select(x => new LabTypeDto
+            {
+                LabTypeId = x.LabTypeId,
+                LabName = x.LabName,
+                Description = x.Description,
+                Price = x.Price,
+                LabCategoryId = x.LabCategoryId,
+                CategoryName = x.LabCategory.CategoryName,
+                IsActive = x.IsActive
+            })
+            .FirstOrDefaultAsync();
 
-                if (test == null)
+                if (type == null)
                     return NotFound();
 
-                return Ok(test);
+                return Ok(type);
             }
             catch (Exception ex)
             {
@@ -86,17 +113,18 @@ namespace MAMS.API.Controllers
         {
             try
             {
-                var test = await _dbContext.LabTypes.FindAsync(id);
-                if (test == null) return NotFound();
+                var currentLab = await _dbContext.LabTypes.FindAsync(id);
+                if (currentLab == null) return NotFound();
 
-                test.LabName = updatedDto.LabName;
-                test.Description = updatedDto.Description;
-                test.Price = updatedDto.Price;
-                test.IsActive = updatedDto.IsActive;
-                test.ModifiedDate = DateTime.Now;
+                currentLab.LabName = updatedDto.LabName;
+                currentLab.Description = updatedDto.Description;
+                currentLab.Price = updatedDto.Price;
+                currentLab.LabCategoryId = updatedDto.LabCategoryId;
+                currentLab.IsActive = updatedDto.IsActive;
+                currentLab.ModifiedDate = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();
-                return Ok(test);
+                return Ok(currentLab);
             }
             catch (Exception ex)
             {

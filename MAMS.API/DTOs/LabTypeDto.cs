@@ -5,10 +5,12 @@ namespace MAMS.API.DTOs
 {
     public class LabTypeDto
     {
+        public int LabTypeId { get; set; }
         public string LabName { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public ActiveStatus IsActive { get; set; }
         public int LabCategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

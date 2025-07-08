@@ -8,6 +8,7 @@ namespace MAMS.API.Models
     {
         [Key]
         public int LabTypeId { get; set; }
+        [Required]
         public string LabName { get; set; }
         public string? Description { get; set; }
         [Column(TypeName = "decimal(10,2)")]

@@ -105,5 +105,90 @@ namespace MAMS.Controllers
             var (categories, _) = await _labService.GetAllLabCategoriesAsync();
             ViewBag.Categories = categories.Where(c => c.IsActive == Enums.ActiveStatus.Active).ToList();
         }
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (!IsSessionValid())
+                return View("TimedOut", "Home");
+
+            var (lab, errorMessage) = await _labService.GetLabByIdAsync(id);
+
+            if (lab == null)
+            {
+                _notfy.Error($"Lab type with ID {id} not found.");
+                return RedirectToAction("Index");
+            }
+
+            var (activeLabCategories, errorMessage2) = await _labService.GetAllLabCategoriesAsync();
+
+            ViewBag.Categories = activeLabCategories
+                .ToList();
+
+            return View(lab);
+        }
+
+        public async Task<IActionResult> Update(LabTypeViewModel model)
+        {
+            if (!IsSessionValid())
+                return View("TimedOut", "Home");
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    (bool success, string? errorMessage) = await _labService.UpdateLabAsync(model);
+
+                    if (success)
+                    {
+                        _notfy.Success($"{model.LabName}, Updated successfully.");
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        _notfy.Warning(errorMessage);
+                        _notfy.Error("update Fail!.", 5);
+                        return View("Edit");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return View("Edit");
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+            try
+            {
+                var result = await _labService.DeleteLabAsync(id);
+
+                if (result.Item1)
+                {
+                    _notfy.Success($"Lab deleted successfully.");
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    _notfy.Error(result.Item2);
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Error: {ex.Message}");
+                _notfy.Error($"Error calling web API: {ex.Message}", 5);
+                return RedirectToAction("Index");
+            }
+        }
+
     }
 }
