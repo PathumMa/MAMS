@@ -1,0 +1,72 @@
+﻿@using MAMS.Models.ViewModels
+@model LabBookingViewModel
+
+<h4 class="text-primary">Book Lab Test</h4>
+
+@if (ViewBag.LabName != null && ViewBag.Price != null)
+{
+    <div class="alert alert-info">
+        <strong>Lab Test:</strong> @ViewBag.LabName <br />
+        <strong>Price:</strong> LKR @ViewBag.Price
+    </div>
+}
+
+<form method="post" asp-action="CreateBooking" asp-controller="LabBooking">
+    <!-- Hidden field to retain LabTypeId -->
+    <input type="hidden" asp-for="LabTypeId" />
+
+    <div class="form-group">
+        <label asp-for="PersonalId"></label>
+        <input asp-for="PersonalId" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PersonalIdType"></label>
+        <select asp-for="PersonalIdType" class="form-control" required>
+            <option value="">--Select ID Type--</option>
+            <option>NIC</option>
+            <option>Passport</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="UserTitle"></label>
+        <select asp-for="UserTitle" class="form-control" required>
+            <option value="">--Select Title--</option>
+            <option>Mr.</option>
+            <option>Ms.</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber"></label>
+        <input asp-for="PhoneNumber" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address"></label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BookedDate"></label>
+        <input asp-for="BookedDate" type="date" class="form-control" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PaymentMethod"></label>
+        <select asp-for="PaymentMethod" class="form-control" required>
+            <option value="">--Select Payment--</option>
+            <option>Cash</option>
+            <option>Card</option>
+            <option>Online</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Book Lab Test</button>
+</form>

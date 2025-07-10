@@ -31,24 +31,24 @@
         <div class="container-fluid">
 
             <div class="info-box shadow">
-                <span class="info-box-icon bg-olive"><i class="bi bi-search"></i></span>
+                <span class="info-box-icon bg-olive elevation-1 d-flex align-items-center justify-content-center"><i class="bi bi-search"></i></span>
 
-                <div class="info-box-content">
-                    <form method="get" asp-action="SearchDoctors" class="row g-3">
-                        <div class="form-group col">
+                <div class="info-box-content w-100">
+                    <form method="get" asp-action="SearchDoctors" class="row align-items-center ">
+                        <div class="form-group col-md-5 mb-2">
                             <input type="text" class="form-control rounded-pill" id="Name" name="name" placeholder="Enter doctor's name">
                         </div>
-                        <div class="form-group col">
-                            <select id="Specialization" name="Specialization" class="form-select rounded-pill">
-                                <option value="">--Select Specialization--</option>
+                        <div class="form-group col-md-5 mb-2">
+                            <select id="Specialization" name="Specialization" class="form-select rounded-pill" placeholder="--Select Specialization--">
+                                <option value="" class="text-gray">--Select Specialization--</option>
                                 @foreach (var specializations in ViewBag.Specializaions)
                                 {
                                     <option value="@specializations.Specializations_Id">@specializations.Specializations_Name</option>
                                 }
                             </select>
                         </div>
-                        <div class="col-2 text-center">
-                            <button type="submit" class="btn btn-primary rounded-pill">Search</button>
+                        <div class="col-md-2 mb-2 text-center">
+                            <button type="submit" class="btn btn-primary btn-block rounded-pill"> <i class="bi bi-search"></i> &nbsp; Search</button>
                         </div>
                     </form>
                 </div>

@@ -10,6 +10,8 @@ namespace MAMS.API.Models
         public int? RegisteredUserId { get; set; }
         public string UserTitle { get; set; }
         public string Name { get; set; }
+        [Required]
+        public string PhoneNumber { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
         public DateTime? BirthDate { get; set; }

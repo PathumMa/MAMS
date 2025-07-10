@@ -4,6 +4,7 @@ using MAMS.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    partial class ApiDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250709160816_updateLabResultAndTransactions")]
+    partial class updateLabResultAndTransactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,6 +304,7 @@ namespace MAMS.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Comments")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsResultAvailable")
@@ -320,6 +324,7 @@ namespace MAMS.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResultValue")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -462,10 +467,6 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("RegisteredUserId")
                         .HasColumnType("int");
 
@@ -586,9 +587,6 @@ namespace MAMS.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("PatientDetailsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Patient_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("PaymentMethod")

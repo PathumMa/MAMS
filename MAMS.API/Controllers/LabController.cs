@@ -84,6 +84,47 @@ namespace MAMS.API.Controllers
             }
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> GetBySearch(string? labName, int? categoryId)
+        {
+            var labTypes = _dbContext.LabTypes
+                .Include(x => x.LabCategory)
+                .Select(t => new LabTypeDto
+                {
+                    LabTypeId = t.LabTypeId,
+                    LabName = t.LabName,
+                    Description = t.Description,
+                    Price = t.Price,
+                    LabCategoryId = t.LabCategoryId,
+                    CategoryName = t.LabCategory.CategoryName,
+                    IsActive = t.IsActive
+                })
+                .AsQueryable();
+
+            try
+            {
+                if (!string.IsNullOrEmpty(labName))
+                {
+                    labTypes = labTypes.Where(l => l.LabName.Contains(labName) || l.Description.Contains(labName) || l.CategoryName.Contains(labName));
+                }
+                else if (categoryId.HasValue)
+                {
+                    labTypes = labTypes.Where(l => l.LabCategoryId == categoryId.Value);
+                }
+                else
+                {
+                    return BadRequest("Lab Name or Category required!");
+                }
+
+                var result = await labTypes.ToListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost("addType")]
         public async Task<IActionResult> Create([FromBody] LabTypeDto newTypeDto)
         {

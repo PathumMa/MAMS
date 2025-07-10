@@ -193,7 +193,21 @@ namespace MAMS.API.Controllers
         [HttpGet("DoctorByName")]
         public async Task<IActionResult> GetDoctorbyName(string? name, int? specialization)
         {
-            var doctors = _dbContext.DoctorDetails.AsQueryable();
+            var doctors = _dbContext.DoctorDetails.Include(s => s.Specialization)
+                .Select(d => new DoctorDetails
+                {
+                    SuserId = d.SuserId,
+                    First_Name = d.First_Name,
+                    Last_Name = d.Last_Name,
+                    Middle_Name = d.Middle_Name,
+                    MedicalCouncilRegistrationNumber = d.MedicalCouncilRegistrationNumber,
+                    AvailableDetails = d.AvailableDetails,
+                    Specialization = d.Specialization,
+                    Specialization_Id = d.Specialization_Id,
+                    Hospital_Affiliation = d.Hospital_Affiliation,
+                    Doctor_Fee = d.Doctor_Fee,
+                    Auth_Status = d.Auth_Status,
+                }).AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
             {

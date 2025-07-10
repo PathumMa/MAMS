@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Lab Booking Success";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="card shadow rounded border-success">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0"><i class="bi bi-check-circle-fill"></i> Booking Successful</h4>
+        </div>
+        <div class="card-body">
+            <p class="lead text-success">Your lab booking was successful!</p>
+
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <th>Reference Number</th>
+                    <td><strong>@ViewBag.RefNo</strong></td>
+                </tr>
+                <tr>
+                    <th>Booked Date</th>
+                    <td>@TempData["BookedDate"]</td>
+                </tr>
+                <tr>
+                    <th>Time Slot</th>
+                    <td>@TempData["Time"]</td>
+                </tr>
+                <tr>
+                    <th>Lab Test</th>
+                    <td>@TempData["LabName"]</td>
+                </tr>
+                <tr>
+                    <th>Fee</th>
+                    <td>Rs. @((TempData["Price"] != null ? Convert.ToDecimal(TempData["Price"]).ToString("N2") : "-"))</td>
+                </tr>
+                <tr>
+                    <th>Patient</th>
+                    <td>@TempData["Patient"]</td>
+                </tr>
+            </table>
+
+            <div class="text-end mt-4">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill">Back to Home</a>
+                <a asp-controller="LabBooking" asp-action="SearchLabs" class="btn btn-outline-secondary rounded-pill">Book Another Test</a>
+            </div>
+        </div>
+    </div>
+</div>

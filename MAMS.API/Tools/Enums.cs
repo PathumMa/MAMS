@@ -53,6 +53,11 @@
             Passport = 2,
             DLicence = 3
         }
+        public enum BookingType
+        {
+            Doctor = 1,
+            LabTest = 2
+        }
 
         public enum Province
         {

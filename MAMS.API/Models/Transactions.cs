@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static MAMS.API.Tools.Enums;
 
 namespace MAMS.API.Models
@@ -7,13 +8,12 @@ namespace MAMS.API.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
-        public int Appointment_Id { get; set; }
-        [Required]
-        public decimal Doctor_fee { get; set; }
-        [Required]
-        public decimal Hospital_fee { get; set; }
-        [Required]
+        public int? Appointment_Id { get; set; }
+        public int Patient_Id { get; set; } // FK to PatientDetails
+        public BookingType BookingType { get; set; } = BookingType.Doctor;
+        public decimal? Doctor_fee { get; set; }
+        public int? LabResultId { get; set; } // FK to LabResult for lab bookings
+        public decimal? Hospital_fee { get; set; }
         public decimal Discount { get; set; } = 0;
         [Required]
         public decimal Amount { get; set; }
@@ -24,8 +24,11 @@ namespace MAMS.API.Models
         public DateTime? Modified_Date { get; set; }
         public string? Modified_By { get; set; }
 
-        
-        public Appointments Appointments { get; set; }
+        // Navigation Properties
+        [ForeignKey("Appointment_Id")]
+        public virtual Appointments? Appointments { get; set; }
+        [ForeignKey("LabResultId")]
+        public virtual LabResult? LabResult { get; set; }
     }
 
 
