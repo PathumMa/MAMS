@@ -37,6 +37,11 @@
                     <td>@TempData["Patient"]</td>
                 </tr>
             </table>
+            <div class="text-center mt-3">
+            <a class="btn btn-outline-primary" asp-action="PrintSlip" asp-route-refNo="@ViewBag.RefNo">
+                 <i class="bi bi-printer"></i> Print Slip (PDF)
+                 </a>
+            </div>
 
             <div class="text-end mt-4">
                 <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill">Back to Home</a>

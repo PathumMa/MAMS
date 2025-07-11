@@ -5,7 +5,7 @@
 namespace MAMS.API.Migrations
 {
     /// <inheritdoc />
-    public partial class newDoctorDetails : Migration
+    public partial class transactionsUpdate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

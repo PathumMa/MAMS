@@ -50,7 +50,10 @@ namespace MAMS.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Invalid data.");
 
-            // 1. Check if patient exists
+            // 1. Normalize Personal ID
+            dt.PersonalId = dt.PersonalId?.Trim().ToUpper();
+
+            // 2. Check if patient exists
             var patient = await _dbContext.PatientDetails
                 .FirstOrDefaultAsync(p => p.PersonalId == dt.PersonalId);
 
@@ -71,26 +74,39 @@ namespace MAMS.API.Controllers
                 await _dbContext.SaveChangesAsync();
             }
 
-            // 2. Check booking count for the day
+            // 3. Check booking count for the day
             var bookedCount = await _dbContext.LabResults
                 .CountAsync(x => x.BookedDate.Date == dt.BookedDate.Date);
 
-            if (bookedCount >= 50) // Assuming 5 slots * 10 hours max
+            if (bookedCount >= 50) // Assuming 5 patients/hour * 10 hours
                 return BadRequest("Selected day is fully booked.");
 
-            // 3. Assign time slot (generate logic: 5 patients per hour)
+            // 4. Assign next available time slot
             var nextSlot = GenerateNextAvailableTimeSlot(dt.BookedDate, _dbContext);
 
             if (nextSlot == null)
-                return BadRequest("No available time slots for selected date.");
+                return BadRequest("No available time slots for the selected date.");
 
-            // 4. Generate Reference Number
+            // 5. Check if this patient already booked same time slot
+            bool alreadyExists = await _dbContext.LabResults
+                .AnyAsync(x => x.PatientId == patient.Id
+                            && x.BookedDate.Date == dt.BookedDate.Date
+                            && x.TimeSlot == nextSlot);
+
+            if (alreadyExists)
+                return BadRequest("You have already booked a lab test in this time slot.");
+
+            // 6. Validate lab type
+            var labType = await _dbContext.LabTypes.FindAsync(dt.LabTypeId);
+            if (labType == null)
+                return BadRequest("Invalid Lab Test selected.");
+
+            // 7. Generate Reference Number
             var todayCount = await _dbContext.LabResults
                 .CountAsync(x => x.BookedDate.Date == dt.BookedDate.Date);
             var refNo = $"LAB-{dt.BookedDate:yyyyMMdd}-{(todayCount + 1):D4}";
 
-            var labType = await _dbContext.LabTypes.FindAsync(dt.LabTypeId);
-
+            // 8. Save Lab Result
             var labResult = new LabResult
             {
                 LabTypeId = dt.LabTypeId,
@@ -101,28 +117,27 @@ namespace MAMS.API.Controllers
                 BookedPrice = labType.Price,
                 ReferenceNo = refNo
             };
-
             _dbContext.LabResults.Add(labResult);
             await _dbContext.SaveChangesAsync();
 
-            // 5. Save Transaction
+            // 9. Save Transaction
             var transaction = new Transactions
             {
                 LabResultId = labResult.LabResultId,
                 BookingType = BookingType.LabTest,
                 Amount = labType.Price,
                 PaymentMethod = dt.PaymentMethod,
+                PatientDetails_Id = patient.Id,
                 Created_Date = DateTime.Now,
-                Patient_Id = patient.Id
             };
-
             _dbContext.Transactions.Add(transaction);
             await _dbContext.SaveChangesAsync();
 
+            // 11. Prepare response
             var response = new LabBookingResponseDto
             {
                 ReferenceNo = refNo,
-                Time = nextSlot.ToString(),
+                Time = string.Format("{0:hh\\:mm}", nextSlot), // Format to 09:00
                 BookedDate = dt.BookedDate.ToString("dd/MM/yyyy"),
                 LabName = labType.LabName,
                 Price = labType.Price,
@@ -131,6 +146,7 @@ namespace MAMS.API.Controllers
 
             return Ok(response);
         }
+
 
         private TimeSpan? GenerateNextAvailableTimeSlot(DateTime date, ApiDataContext context)
         {
@@ -150,6 +166,8 @@ namespace MAMS.API.Controllers
 
             return null;
         }
+
+        
 
     }
 }

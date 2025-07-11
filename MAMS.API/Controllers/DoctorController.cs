@@ -196,6 +196,7 @@ namespace MAMS.API.Controllers
             var doctors = _dbContext.DoctorDetails.Include(s => s.Specialization)
                 .Select(d => new DoctorDetails
                 {
+                    Id = d.Id,
                     SuserId = d.SuserId,
                     First_Name = d.First_Name,
                     Last_Name = d.Last_Name,

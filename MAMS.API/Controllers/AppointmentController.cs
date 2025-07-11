@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
+using static MAMS.API.Tools.Enums;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MAMS.API.Controllers
@@ -46,56 +47,81 @@ namespace MAMS.API.Controllers
 
             try
             {
-                if (_dbContext.Appointments.Any(a => a.Appointment_Date  == newBooking.Appointment_Date && a.Appoinment_number == newBooking.Appoinment_number))
+                // Check if patient already booked this doctor on this date
+                bool appointmentExists = await _dbContext.Appointments.AnyAsync(a =>
+                    a.PatientDetails.PersonalId == newBooking.Personal_Id &&
+                    a.Doctor_Id == newBooking.Doctor_Id &&
+                    a.Appointment_Date.Date == newBooking.Appointment_Date.Date
+                );
+
+                if (appointmentExists)
                 {
-                    return BadRequest("Appointment Number Exist!");
-                }
-                else if(_dbContext.Appointments.Any(a => a.Appointment_Date == newBooking.Appointment_Date && a.User_PersonalId == newBooking.Personal_Id))
-                {
-                    return BadRequest("Patient already have an appointment!");
+                    return BadRequest("This patient already has an appointment with this doctor on this date.");
                 }
 
+                // Check if appointment number is already used by this doctor on this date
+                bool numberExists = await _dbContext.Appointments.AnyAsync(a =>
+                    a.Doctor_Id == newBooking.Doctor_Id &&
+                    a.Appointment_Date.Date == newBooking.Appointment_Date.Date &&
+                    a.Appoinment_number == newBooking.Appoinment_number
+                );
+
+                if (numberExists)
+                {
+                    return BadRequest($"Appointment number {newBooking.Appoinment_number} is already used for this doctor on this date.");
+                }
+
+                // Check if patient already exists by PersonalId
+                var patientDetails = await _dbContext.PatientDetails
+                    .FirstOrDefaultAsync(p => p.PersonalId == newBooking.Personal_Id);
+
+                if (patientDetails == null)
+                {
+                    patientDetails = new PatientDetails
+                    {
+                        UserTitle = newBooking.UserTitle,
+                        Name = newBooking.Name,
+                        PhoneNumber = newBooking.PhoneNumber,
+                        Address = newBooking.Address,
+                        City = newBooking.City,
+                        BirthDate = newBooking.BirthDate,
+                        PersonalId = newBooking.Personal_Id,
+                        PersonalIdType = newBooking.PersonalId_Type
+                    };
+
+                    _dbContext.PatientDetails.Add(patientDetails);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+                // Create appointment and link to patient
                 var appointmentEntity = new Appointments
                 {
                     User_PersonalId = newBooking.Personal_Id,
                     Doctor_Id = newBooking.Doctor_Id,
+                    Availability_Id = newBooking.Availability_Id,
                     Appointment_Date = newBooking.Appointment_Date,
                     Appoinment_number = newBooking.Appoinment_number,
-                    Status = newBooking.Status,
+                    PatientDetails_Id = patientDetails.Id,
+                    Status = newBooking.Status
                 };
 
-                var patientDetails = new PatientDetails
-                {
-                    //RegisteredUserId = newBooking.RegisteredUserId,
-                    UserTitle = newBooking.UserTitle,
-                    Name = newBooking.Name,
-                    Address = newBooking.Address,
-                    City = newBooking.City,
-                    BirthDate = newBooking.BirthDate,
-                    PersonalIdType = newBooking.PersonalId_Type,
-                    PersonalId = newBooking.Personal_Id
+                _dbContext.Appointments.Add(appointmentEntity);
+                await _dbContext.SaveChangesAsync();
 
-                };
-
+                // Create transaction and link to appointment and patient
                 var transactionEntity = new Transactions
                 {
+                    Appointment_Id = appointmentEntity.Id,
+                    PatientDetails_Id = patientDetails.Id,
                     Doctor_fee = newBooking.Doctor_fee,
                     Hospital_fee = newBooking.Hospital_fee,
                     Discount = newBooking.Discount,
                     Amount = newBooking.Amount,
+                    BookingType = BookingType.Doctor,
                     PaymentMethod = newBooking.PaymentMethod
                 };
 
-                appointmentEntity.PatientDetails = patientDetails;
-
-                appointmentEntity.Transactions = transactionEntity;
-
-                _dbContext.Appointments.Add(appointmentEntity);
-
-                _dbContext.PatientDetails.Add(patientDetails);
-
                 _dbContext.Transactions.Add(transactionEntity);
-
                 await _dbContext.SaveChangesAsync();
 
                 return Ok($"{newBooking.Appoinment_number} - Booking Success.");
@@ -105,6 +131,7 @@ namespace MAMS.API.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
 
         [HttpGet("AppoinmentCount")]
         public async Task<IActionResult> GetAppointmentCount(int doctorId, DateTime date)
@@ -134,12 +161,13 @@ namespace MAMS.API.Controllers
         [HttpGet("by-doctor/{doctorId}")]
         public async Task<IActionResult> GetAppointmentByDoctor(int doctorId, DateTime? date, DateTime? startDate, DateTime? endDate)
         {
-            var query =  _dbContext.Appointments
-                .Where(a => a.Doctor_Id == doctorId)
+            var query = _dbContext.Appointments
                 .Include(a => a.PatientDetails)
-                .Include(a => a.Transactions)
+                .Include(a => a.Transaction)
+                .Where(a => a.Doctor_Id == doctorId)
                 .AsQueryable();
 
+            // Filter by date or range
             if (date.HasValue)
             {
                 query = query.Where(a => a.Appointment_Date.Date == date.Value.Date);
@@ -156,7 +184,7 @@ namespace MAMS.API.Controllers
 
             if (appointments == null || !appointments.Any())
             {
-                return NotFound($"No appointments found for doctor with ID {doctorId} on {date:yyyy-MM-dd}");
+                return NotFound($"No appointments found for doctor with ID {doctorId}");
             }
 
             var result = appointments.Select(a => new AppointmentDetailsDto
@@ -169,6 +197,7 @@ namespace MAMS.API.Controllers
                 Appoinment_number = a.Appoinment_number,
                 Status = a.Status.ToString(),
 
+                // Patient Info
                 PatientName = a.PatientDetails?.Name,
                 PatientTitle = a.PatientDetails?.UserTitle,
                 PersonalId = a.PatientDetails?.PersonalId,
@@ -177,27 +206,38 @@ namespace MAMS.API.Controllers
                 Address = a.PatientDetails?.Address,
                 City = a.PatientDetails?.City,
 
-                Doctor_fee = a.Transactions?.Doctor_fee,
-                Hospital_fee = a.Transactions?.Hospital_fee,
-                Discount = a.Transactions?.Discount,
-                Amount = a.Transactions?.Amount,
-                PaymentMethod = a.Transactions?.PaymentMethod.ToString()
+                // Transaction (single wrapped in list)
+                Transactions = a.Transaction != null
+                    ? new List<TransactionDto>
+                    {
+                new TransactionDto
+                {
+                    Doctor_fee = a.Transaction.Doctor_fee,
+                    Hospital_fee = a.Transaction.Hospital_fee,
+                    Discount = a.Transaction.Discount,
+                    Amount = a.Transaction.Amount,
+                    PaymentMethod = a.Transaction.PaymentMethod.ToString()
+                }
+                    }
+                    : new List<TransactionDto>()
             });
 
             return Ok(result);
         }
 
+
         [HttpGet("by-patient/{personalId}")]
         public async Task<IActionResult> GetAppointmentByPatient(string personalId, DateTime? date, DateTime? startDate, DateTime? endDate)
         {
             var query = _dbContext.Appointments
-                .Where(a => a.User_PersonalId == personalId)
                 .Include(a => a.PatientDetails)
-                .Include(a => a.Transactions)
+                .Include(a => a.Transaction)
                 .Include(a => a.Doctor)
-                    .ThenInclude(d => d.Specialization) // Optional: get specialization if needed
+                    .ThenInclude(d => d.Specialization)
+                .Where(a => a.PatientDetails.PersonalId == personalId)
                 .AsQueryable();
 
+            // Date filters
             if (date.HasValue)
             {
                 query = query.Where(a => a.Appointment_Date.Date == date.Value.Date);
@@ -216,7 +256,6 @@ namespace MAMS.API.Controllers
             {
                 return NotFound($"No appointments found for patient with Personal ID {personalId}");
             }
-            
 
             var result = appointments.Select(a => new AppointmentDetailsDto
             {
@@ -241,15 +280,24 @@ namespace MAMS.API.Controllers
                 DoctorName = $"{a.Doctor?.First_Name} {a.Doctor?.Last_Name}",
                 DoctorSpecialization = a.Doctor?.Specialization?.Specializations_Name,
 
-                // Transaction Info
-                Doctor_fee = a.Transactions?.Doctor_fee,
-                Hospital_fee = a.Transactions?.Hospital_fee,
-                Discount = a.Transactions?.Discount,
-                Amount = a.Transactions?.Amount,
-                PaymentMethod = a.Transactions?.PaymentMethod.ToString()
+                // Transaction (only one now)
+                Transactions = a.Transaction != null
+                    ? new List<TransactionDto>
+                    {
+                new TransactionDto
+                {
+                    Doctor_fee = a.Transaction.Doctor_fee,
+                    Hospital_fee = a.Transaction.Hospital_fee,
+                    Discount = a.Transaction.Discount,
+                    Amount = a.Transaction.Amount,
+                    PaymentMethod = a.Transaction.PaymentMethod.ToString()
+                }
+                    }
+                    : new List<TransactionDto>()
             });
 
             return Ok(result);
         }
+
     }
 }

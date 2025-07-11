@@ -211,22 +211,53 @@ namespace MAMS.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<LabBookingResponseViewModel>(content);
+                    var result = await response.Content.ReadFromJsonAsync<LabBookingResponseViewModel>();
                     return (true, null, result);
                 }
                 else
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
+
+                    // Optional: simplify error messages if needed
+                    if (errorMessage.StartsWith("\"") && errorMessage.EndsWith("\""))
+                        errorMessage = errorMessage.Trim('"');
+
                     return (false, errorMessage, null);
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                return (false, "Server is not responding. Please try again later.", null);
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Unexpected error: {ex.Message}", null);
+            }
+        }
+
+        public async Task<(TransactionReceiptViewModel?, string? errorMessage)> GetLabByRefNo(string referenceNo)
+        {
+            TransactionReceiptViewModel? lab = null;
+            string? errorMessage = null;
+            try
+            {
+                HttpResponseMessage response = await _client.GetAsync($"LabBooking/GetReceiptByRef/{referenceNo}");
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    lab = JsonConvert.DeserializeObject<TransactionReceiptViewModel>(result);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error booking lab: {ex.Message}");
+                throw ex;
             }
+            return (lab, errorMessage);
         }
-
 
     }
 }

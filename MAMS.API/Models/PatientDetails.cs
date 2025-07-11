@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MAMS.API.Models;
+﻿using MAMS.API.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MAMS.API.Models
 {
@@ -7,24 +8,30 @@ namespace MAMS.API.Models
     {
         [Key]
         public int Id { get; set; }
+
         public int? RegisteredUserId { get; set; }
         public string UserTitle { get; set; }
         public string Name { get; set; }
+
         [Required]
         public string PhoneNumber { get; set; }
+
         public string? Address { get; set; }
         public string? City { get; set; }
         public DateTime? BirthDate { get; set; }
+
         [Required]
         public string PersonalId { get; set; }
         public string PersonalIdType { get; set; }
-        public int Appointment_Id { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public Appointments Appointments { get; set; }
-        public ICollection<Transactions> Transactions { get; set; }
+        public ICollection<Appointments> Appointments { get; set; } = new List<Appointments>();
+        public ICollection<Transactions> Transactions { get; set; } = new List<Transactions>();
     }
+
+
 }

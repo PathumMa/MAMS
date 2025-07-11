@@ -246,6 +246,11 @@ namespace MAMS.Controllers
                 return View("Booking");
             }
         }
+        public async Task<IActionResult> MyAppoinmentList()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> AppoinmentList(BookingViewModel appointment, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (!IsSessionValid())

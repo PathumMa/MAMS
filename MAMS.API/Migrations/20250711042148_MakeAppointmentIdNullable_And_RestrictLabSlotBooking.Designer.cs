@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    [Migration("20250710083451_updateTransactionsWithLabs")]
-    partial class updateTransactionsWithLabs
+    [Migration("20250711042148_MakeAppointmentIdNullable_And_RestrictLabSlotBooking")]
+    partial class MakeAppointmentIdNullable_And_RestrictLabSlotBooking
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,9 @@ namespace MAMS.API.Migrations
                     b.Property<int>("Doctor_Id")
                         .HasColumnType("int");
 
+                    b.Property<int>("PatientDetails_Id")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -65,6 +68,9 @@ namespace MAMS.API.Migrations
                     b.HasIndex("Doctor_Id");
 
                     b.HasIndex("UserDetailsId");
+
+                    b.HasIndex("PatientDetails_Id", "Doctor_Id", "Appointment_Date")
+                        .IsUnique();
 
                     b.ToTable("Appointments");
                 });
@@ -304,7 +310,6 @@ namespace MAMS.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsResultAvailable")
@@ -324,7 +329,6 @@ namespace MAMS.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResultValue")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -338,6 +342,10 @@ namespace MAMS.API.Migrations
                     b.HasIndex("LabTypeId");
 
                     b.HasIndex("PatientId", "LabTypeId");
+
+                    b.HasIndex("PatientId", "BookedDate", "TimeSlot")
+                        .IsUnique()
+                        .HasFilter("[TimeSlot] IS NOT NULL");
 
                     b.ToTable("LabResults");
                 });
@@ -366,7 +374,7 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Price")
@@ -434,9 +442,6 @@ namespace MAMS.API.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Appointment_Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
@@ -479,9 +484,6 @@ namespace MAMS.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Appointment_Id")
-                        .IsUnique();
 
                     b.ToTable("PatientDetails");
                 });
@@ -560,7 +562,7 @@ namespace MAMS.API.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("Appointment_Id")
+                    b.Property<int>("Appointment_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("BookingType")
@@ -590,10 +592,7 @@ namespace MAMS.API.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PatientDetailsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Patient_Id")
+                    b.Property<int>("PatientDetails_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("PaymentMethod")
@@ -602,12 +601,11 @@ namespace MAMS.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Appointment_Id")
-                        .IsUnique()
-                        .HasFilter("[Appointment_Id] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("LabResultId");
 
-                    b.HasIndex("PatientDetailsId");
+                    b.HasIndex("PatientDetails_Id");
 
                     b.ToTable("Transactions");
                 });
@@ -742,6 +740,12 @@ namespace MAMS.API.Migrations
                     b.HasOne("MAMS.API.Models.DoctorDetails", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("Doctor_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MAMS.API.Models.PatientDetails", "PatientDetails")
+                        .WithMany("Appointments")
+                        .HasForeignKey("PatientDetails_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -750,6 +754,8 @@ namespace MAMS.API.Migrations
                         .HasForeignKey("UserDetailsId");
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("PatientDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -823,34 +829,28 @@ namespace MAMS.API.Migrations
                         .HasForeignKey("UserDetailsId");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
-                {
-                    b.HasOne("MAMS.API.Models.Appointments", "Appointments")
-                        .WithOne("PatientDetails")
-                        .HasForeignKey("MAMS.API.Models.PatientDetails", "Appointment_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointments");
-                });
-
             modelBuilder.Entity("MAMS.API.Models.Transactions", b =>
                 {
                     b.HasOne("MAMS.API.Models.Appointments", "Appointments")
-                        .WithOne("Transactions")
-                        .HasForeignKey("MAMS.API.Models.Transactions", "Appointment_Id");
+                        .WithOne("Transaction")
+                        .HasForeignKey("MAMS.API.Models.Transactions", "Appointment_Id")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MAMS.API.Models.LabResult", "LabResult")
                         .WithMany()
                         .HasForeignKey("LabResultId");
 
-                    b.HasOne("MAMS.API.Models.PatientDetails", null)
+                    b.HasOne("MAMS.API.Models.PatientDetails", "PatientDetails")
                         .WithMany("Transactions")
-                        .HasForeignKey("PatientDetailsId");
+                        .HasForeignKey("PatientDetails_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Appointments");
 
                     b.Navigation("LabResult");
+
+                    b.Navigation("PatientDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
@@ -872,10 +872,8 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
-                    b.Navigation("PatientDetails")
+                    b.Navigation("Transaction")
                         .IsRequired();
-
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -904,6 +902,8 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("Transactions");
                 });
 

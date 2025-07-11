@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MAMS.API.Migrations
 {
     [DbContext(typeof(ApiDataContext))]
-    [Migration("20250708105040_LabTypesUpdate")]
-    partial class LabTypesUpdate
+    [Migration("20250710174224_updateTransactionPatientID")]
+    partial class updateTransactionPatientID
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -318,8 +318,18 @@ namespace MAMS.API.Migrations
                     b.Property<DateTime?>("PerformedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ReferenceNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ResultValue")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<TimeSpan?>("TimeSlot")
+                        .HasColumnType("time");
 
                     b.HasKey("LabResultId");
 
@@ -354,7 +364,7 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedDate")
+                    b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Price")
@@ -455,6 +465,10 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("RegisteredUserId")
                         .HasColumnType("int");
 
@@ -544,7 +558,10 @@ namespace MAMS.API.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Appointment_Id")
+                    b.Property<int?>("Appointment_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BookingType")
                         .HasColumnType("int");
 
                     b.Property<string>("Created_By")
@@ -556,11 +573,14 @@ namespace MAMS.API.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Doctor_fee")
+                    b.Property<decimal?>("Doctor_fee")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Hospital_fee")
+                    b.Property<decimal?>("Hospital_fee")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("LabResultId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Modified_By")
                         .HasColumnType("nvarchar(max)");
@@ -577,7 +597,10 @@ namespace MAMS.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Appointment_Id")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Appointment_Id] IS NOT NULL");
+
+                    b.HasIndex("LabResultId");
 
                     b.HasIndex("PatientDetailsId");
 
@@ -762,7 +785,15 @@ namespace MAMS.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MAMS.API.Models.PatientDetails", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("LabType");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.LabType", b =>
@@ -802,15 +833,19 @@ namespace MAMS.API.Migrations
                 {
                     b.HasOne("MAMS.API.Models.Appointments", "Appointments")
                         .WithOne("Transactions")
-                        .HasForeignKey("MAMS.API.Models.Transactions", "Appointment_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MAMS.API.Models.Transactions", "Appointment_Id");
+
+                    b.HasOne("MAMS.API.Models.LabResult", "LabResult")
+                        .WithMany()
+                        .HasForeignKey("LabResultId");
 
                     b.HasOne("MAMS.API.Models.PatientDetails", null)
                         .WithMany("Transactions")
                         .HasForeignKey("PatientDetailsId");
 
                     b.Navigation("Appointments");
+
+                    b.Navigation("LabResult");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>

@@ -1,0 +1,19 @@
+﻿@using MAMS.Models.ViewModels
+
+@model TransactionReceiptViewModel
+@{
+    ViewData["Title"] = "My Lab Booking Receipt";
+}
+<h2>Receipt Details</h2>
+<div>
+    <p><strong>Reference No:</strong> @Model.ReferenceNo</p>
+    <p><strong>Patient Name:</strong> @Model.PatientName</p>
+    <p><strong>Lab Test:</strong> @Model.LabTestName</p>
+    <p><strong>Booked Date:</strong> @Model.BookedDate</p>
+    <p><strong>Time Slot:</strong> @Model.TimeSlot</p>
+    <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+    <p><strong>Amount Paid:</strong> Rs. @Model.AmountPaid</p>
+    <p><strong>Issued Date:</strong> @Model.IssuedDate</p>
+
+    <a asp-action="DownloadReceiptPdf" asp-route-refNo="@Model.ReferenceNo" class="btn btn-success mt-3">Download PDF Slip</a>
+</div>

@@ -41,21 +41,29 @@ namespace MAMS.API.Data
             .WithMany(d => d.AvailableDetails)
             .HasForeignKey(d => d.DoctorId);
 
-            modelBuilder.Entity<Transactions>()
-                .HasOne(s => s.Appointments)
-                .WithOne(sd => sd.Transactions)
-                .HasForeignKey<Transactions>(dd => dd.Appointment_Id);
-
             modelBuilder.Entity<Appointments>()
                 .HasOne(a => a.PatientDetails)
-                .WithOne(a => a.Appointments)
-                .HasForeignKey<PatientDetails>(dd => dd.Appointment_Id);
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(a => a.PatientDetails_Id)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Transactions>()
+                .HasOne(t => t.Appointments)
+                .WithOne(a => a.Transaction)
+                .HasForeignKey<Transactions>(t => t.Appointment_Id)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Transactions>()
+                .HasOne(t => t.PatientDetails)
+                .WithMany(p => p.Transactions)
+                .HasForeignKey(t => t.PatientDetails_Id)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointments>()
-                .HasOne(a => a.Doctor)
-                .WithMany(d => d.Appointments)
-                .HasForeignKey(a => a.Doctor_Id)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasIndex(a => new { a.PatientDetails_Id, a.Doctor_Id, a.Appointment_Date })
+                .IsUnique(); // ✅ updated to prevent double booking per patient-doctor-day
+
 
             modelBuilder.Entity<Doctors>()
                 .ToView("View_Doctors").HasNoKey();
@@ -74,6 +82,11 @@ namespace MAMS.API.Data
 
             modelBuilder.Entity<LabResult>()
                 .HasIndex(e => new { e.PatientId, e.LabTypeId });
+
+            modelBuilder.Entity<LabResult>()
+                .HasIndex(l => new { l.PatientId, l.BookedDate, l.TimeSlot })
+                .IsUnique(); // ✅ Enforces only 1 booking per patient per slot
+
 
             // Dummy seed data for categories
             modelBuilder.Entity<LabCategory>().HasData(
