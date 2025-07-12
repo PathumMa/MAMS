@@ -65,5 +65,25 @@ namespace MAMS.API.Controllers
 
         }
 
+        [HttpGet("GetRevenueSummary/{date}")]
+        public async Task<IActionResult> GetRevenueSummary(DateTime date)
+        {
+            try
+            {
+                var result = await _dbContext.Set<RevenueSummaryViewModel>()
+                    .FromSqlRaw("SELECT * FROM vw_RevenueSummary WHERE RevenueDate = {0}", date)
+                    .ToListAsync();
+
+                if (!result.Any())
+                    return NotFound("No revenue data found for the selected date.");
+
+                return Ok(result.First()); // Only one row per date
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
     }
 }

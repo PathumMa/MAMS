@@ -34,6 +34,10 @@ namespace MAMS.Controllers
             _userService = new UserService(_apiUrl);
         }
 
+        public IActionResult Welcome()
+        {
+            return View();
+        }
         public IActionResult Home()
         {
             return View();

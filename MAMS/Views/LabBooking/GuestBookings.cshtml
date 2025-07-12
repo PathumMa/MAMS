@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_GuestLayout.cshtml";
+    ViewData["Title"] = "Lab Receipt Lookup";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center mb-4">
+                <img src="~/img/MedEase.png" alt="MAMS Logo" style="height: 80px; object-fit: contain;" />
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-body text-center">
+
+                    <h2 class="mb-4 font-weight-bold text-primary">Get Your Lab Receipt</h2>
+                    <p class="mb-4 text-muted">
+                        Quickly retrieve your lab test receipt using your reference number. No login required.
+                    </p>
+
+                    <form method="get" action="@Url.Action("DownloadReceipt", "Transactions")">
+                        <div class="form-group text-left">
+                            <label for="refNo" class="font-weight-bold">Reference Number</label>
+                            <input type="text" class="form-control" id="refNo" name="refNo" placeholder="For Ref, see your reciept (LAB-20xxxxxx-xxxx)" required />
+                        </div>
+                        <button type="submit" class="btn btn-outline-danger btn-block mt-3">
+                            <i class="fas fa-download mr-1"></i> Download Receipt
+                        </button>
+                    </form>
+                    <a href="@Url.Action("Welcome", "Login")" class="btn btn-outline-secondary mt-4">
+                        <i class="fas fa-arrow-left mr-1"></i> Back
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

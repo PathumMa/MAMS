@@ -46,5 +46,15 @@ namespace MAMS.Services.Reports
             return JsonConvert.DeserializeObject<List<DoctorAppointmentSummaryViewModel>>(json);
         }
 
+        public async Task<RevenueSummaryViewModel?> GetRevenueSummaryAsync(DateTime date)
+        {
+            var response = await _client.GetAsync($"Reports/GetRevenueSummary/{date:yyyy-MM-dd}");
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<RevenueSummaryViewModel>(json);
+        }
     }
 }

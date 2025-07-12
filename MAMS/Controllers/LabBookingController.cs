@@ -155,10 +155,11 @@ namespace MAMS.Controllers
 
         public IActionResult MyBookings()
         {
-            if (!IsSessionValid())
-            {
-                return View("TimedOut", "Home");
-            }
+
+            return View();
+        }
+        public IActionResult GuestBookings()
+        {
 
             return View();
         }

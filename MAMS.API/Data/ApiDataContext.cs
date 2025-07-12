@@ -25,6 +25,7 @@ namespace MAMS.API.Data
         public DbSet<LabResult> LabResults { get; set; }
         public DbSet<LabBookingSummaryViewModel> LabBookingSummaryView { get; set; }
         public DbSet<DoctorAppointmentSummaryViewModel> DoctorAppointmentSummaryView { get; set; }
+        public DbSet<RevenueSummaryViewModel> RevenueSummaryView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -113,6 +114,10 @@ namespace MAMS.API.Data
             modelBuilder.Entity<DoctorAppointmentSummaryViewModel>()
                 .HasNoKey()
                 .ToView("vw_DoctorAppointmentSummary");
+
+            modelBuilder.Entity<RevenueSummaryViewModel>()
+                .HasNoKey()
+                .ToView("vw_RevenueSummary");
 
 
 

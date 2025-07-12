@@ -1,4 +1,5 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using MAMS.Reports.Documents;
 using MAMS.Services;
 using MAMS.Services.Reports;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,24 @@ namespace MAMS.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> DownloadReceiptPdf(string refNo)
+        {
+            if (string.IsNullOrEmpty(refNo))
+            {
+                return BadRequest("Reference number is required.");
+            }
+
+            var receiptStream = await _transactionService.DownloadReceiptPdfAsync(refNo);
+
+            if (receiptStream == null)
+            {
+                return NotFound("No receipt found for the given reference number.");
+            }
+
+            // Return the file as a PDF download
+            return File(receiptStream, "application/pdf", $"LabReceipt_{refNo}.pdf");
         }
 
         //Daily Lab Summery
@@ -79,6 +98,35 @@ namespace MAMS.Controllers
 
             return File(pdfStream, "application/pdf", $"DoctorAppointments_{date:yyyyMMdd}.pdf");
         }
+
+        //Revenue Summary
+        public async Task<IActionResult> RevenueSummary(DateTime? date)
+        {
+            var selectedDate = date ?? DateTime.Today;
+            var report = await _reportService.GetRevenueSummaryAsync(selectedDate);
+
+            if (report == null)
+            {
+                _notfy.Error("No revenue data found for the selected date.");
+            }
+
+            ViewBag.SelectedDate = selectedDate;
+            return View(report);
+        }
+
+        public async Task<IActionResult> DownloadRevenueSummaryPdf(DateTime date)
+        {
+            var report = await _reportService.GetRevenueSummaryAsync(date);
+
+            if (report == null)
+                return NotFound("No data available to generate PDF.");
+
+            var document = new RevenueSummaryPdfDocument(report, date);
+            var stream = document.GeneratePdf();
+
+            return File(stream, "application/pdf", $"RevenueSummary_{date:yyyyMMdd}.pdf");
+        }
+
 
 
 
