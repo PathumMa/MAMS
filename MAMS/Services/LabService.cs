@@ -4,6 +4,7 @@ using MAMS.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -192,8 +193,15 @@ namespace MAMS.Services
             {
                 HttpResponseMessage response = await _client.DeleteAsync("Lab/" + id);
 
-                if (response.IsSuccessStatusCode)
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
                     return (true, null);
+                }
+                else if (response.StatusCode == HttpStatusCode.Accepted)
+                {
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    return (true, $"{response}");
+                }
 
                 string error = await response.Content.ReadAsStringAsync();
                 return (false, error);
@@ -235,17 +243,17 @@ namespace MAMS.Services
             }
         }
 
-        public async Task<(TransactionReceiptViewModel?, string? errorMessage)> GetLabByRefNo(string referenceNo)
+        public async Task<(LabResultViewModel, string? errorMessage)> GetLabByRefNo(string referenceNo)
         {
-            TransactionReceiptViewModel? lab = null;
+            LabResultViewModel? lab = null;
             string? errorMessage = null;
             try
             {
-                HttpResponseMessage response = await _client.GetAsync($"LabBooking/GetReceiptByRef/{referenceNo}");
+                HttpResponseMessage response = await _client.GetAsync($"LabBooking/ByReference/{referenceNo}");
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
-                    lab = JsonConvert.DeserializeObject<TransactionReceiptViewModel>(result);
+                    lab = JsonConvert.DeserializeObject<LabResultViewModel>(result);
                 }
                 else
                 {
@@ -257,6 +265,23 @@ namespace MAMS.Services
                 throw ex;
             }
             return (lab, errorMessage);
+        }
+        public async Task<(bool success, string? errorMessage)> UpdateLabResultAsync(int id, LabResultUpdateViewModel model)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.PutAsJsonAsync($"LabBooking/updateLabResult/{id}", model);
+
+                if (response.IsSuccessStatusCode)
+                    return (true, null);
+
+                string error = await response.Content.ReadAsStringAsync();
+                return (false, error);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
 
     }

@@ -162,7 +162,7 @@ namespace MAMS.API.Controllers
                 currentLab.Price = updatedDto.Price;
                 currentLab.LabCategoryId = updatedDto.LabCategoryId;
                 currentLab.IsActive = updatedDto.IsActive;
-                currentLab.ModifiedDate = DateTime.Now;
+                currentLab.Modified_Date = DateTime.Now;
 
                 await _dbContext.SaveChangesAsync();
                 return Ok(currentLab);
@@ -189,10 +189,10 @@ namespace MAMS.API.Controllers
                 {
                     // Soft delete: Mark as inactive
                     labType.IsActive = ActiveStatus.Inactive;
-                    labType.ModifiedDate = DateTime.Now;
+                    labType.Modified_Date = DateTime.Now;
 
                     await _dbContext.SaveChangesAsync();
-                    return Ok("Lab type has bookings and was inactive instead of deleted.");
+                    return Accepted("Lab type has bookings and was inactive instead of deleted.");
                 }
 
                 // If no bookings, safe to delete

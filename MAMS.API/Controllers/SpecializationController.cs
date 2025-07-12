@@ -143,10 +143,15 @@ namespace MAMS.API.Controllers
             try
             {
                 var specToDelete = await _dbContext.Specializations.FindAsync(id);
-
+                var doctorWithSpec = await _dbContext.DoctorDetails.AnyAsync(d => d.Specialization_Id == id);
+                
                 if (specToDelete == null)
                 {
                     return NotFound("Specialization not found!.");
+                }
+                else if (doctorWithSpec)
+                {
+                    return BadRequest("Cannot delete this specialization as it is associated with one or more doctors.");
                 }
 
                 _dbContext.Specializations.Remove(specToDelete);

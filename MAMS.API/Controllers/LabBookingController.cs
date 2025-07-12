@@ -115,7 +115,8 @@ namespace MAMS.API.Controllers
                 TimeSlot = nextSlot,
                 Status = AppoinmentStatus.Scheduled,
                 BookedPrice = labType.Price,
-                ReferenceNo = refNo
+                ReferenceNo = refNo,
+                Modified_Date = DateTime.Now,
             };
             _dbContext.LabResults.Add(labResult);
             await _dbContext.SaveChangesAsync();
@@ -139,6 +140,7 @@ namespace MAMS.API.Controllers
                 ReferenceNo = refNo,
                 Time = string.Format("{0:hh\\:mm}", nextSlot), // Format to 09:00
                 BookedDate = dt.BookedDate.ToString("dd/MM/yyyy"),
+                Status = labResult.Status,
                 LabName = labType.LabName,
                 Price = labType.Price,
                 Patient = patient.Name
@@ -167,7 +169,67 @@ namespace MAMS.API.Controllers
             return null;
         }
 
-        
+        [HttpGet("ByReference/{refNo}")]
+        public async Task<ActionResult<LabResult>> GetByReference(string refNo)
+        {
+            try {
+                var labResult = await _dbContext.LabResults
+                    .Include(l => l.Patient)
+                    .Include(l => l.LabType)
+                    .FirstOrDefaultAsync(l => l.ReferenceNo == refNo);
+
+                if (labResult == null)
+                    return NotFound("Reference not found");
+
+                var dto = new LabResultDto
+                {
+                    LabResultId = labResult.LabResultId,
+                    ReferenceNo = labResult.ReferenceNo,
+                    LabTypeId = labResult.LabTypeId,
+                    LabTypeName = labResult.LabType.LabName,
+                    PatientId = labResult.PatientId,
+                    PatientName = $"{labResult.Patient.UserTitle} {labResult.Patient.Name}",
+                    BookedDate = labResult.BookedDate,
+                    TimeSlot = labResult.TimeSlot,
+                    PerformedDate = labResult.PerformedDate,
+                    ResultValue = labResult.ResultValue,
+                    Comments = labResult.Comments,
+                    Status = labResult.Status,
+                    BookedPrice = labResult.BookedPrice,
+                    Modified_Date = labResult.Modified_Date ?? DateTime.Now
+                };
+
+                return Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
+        }
+
+        [HttpPut("updateLabResult/{id}")]
+        public async Task<IActionResult> UpdateLabResult(int id, [FromBody] LabResultUpdateDto update)
+        {
+            try
+            {
+                var result = await _dbContext.LabResults.FindAsync(id);
+                if (result == null) return NotFound();
+
+                result.PerformedDate = update.PerformedDate;
+                result.ResultValue = update.ResultValue;
+                result.Comments = update.Comments;
+                result.Status = update.Status;
+                result.Modified_Date = DateTime.Now;
+
+                await _dbContext.SaveChangesAsync();
+                return Ok(new { Message = "Lab Test updated successfully." });
+
+            } catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
     }
 }

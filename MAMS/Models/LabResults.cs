@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using static MAMS.API.Tools.Enums;
+﻿using static MAMS.Services.Enums;
 
-namespace MAMS.API.Models
+namespace MAMS.Models
 {
     public class LabResult
     {
@@ -20,10 +19,6 @@ namespace MAMS.API.Models
         public decimal BookedPrice { get; set; }
 
         public string ReferenceNo { get; set; }
-        public DateTime? Created_Date { get; set; } = DateTime.Now;
-        public string? Created_By { get; set; }
-        public DateTime? Modified_Date { get; set; }
-        public string? Modified_By { get; set; }
 
         public virtual PatientDetails Patient { get; set; }
         public virtual LabType LabType { get; set; }

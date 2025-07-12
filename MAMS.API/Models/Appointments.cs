@@ -33,6 +33,10 @@ namespace MAMS.API.Models
         public PatientDetails PatientDetails { get; set; }
 
         public ActiveStatus Status { get; set; } = ActiveStatus.Active;
+        public DateTime? Created_Date { get; set; } = DateTime.Now;
+        public string? Created_By { get; set; }
+        public DateTime? Modified_Date { get; set; }
+        public string? Modified_By { get; set; }
 
         public Transactions Transaction { get; set; }
     }

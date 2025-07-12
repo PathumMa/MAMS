@@ -23,6 +23,8 @@ namespace MAMS.API.Data
         public DbSet<LabType> LabTypes { get; set; }
         public DbSet<LabCategory> LabCategories { get; set; }
         public DbSet<LabResult> LabResults { get; set; }
+        public DbSet<LabBookingSummaryViewModel> LabBookingSummaryView { get; set; }
+        public DbSet<DoctorAppointmentSummaryViewModel> DoctorAppointmentSummaryView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -102,6 +104,15 @@ namespace MAMS.API.Data
                 new LabCategory { LabCategoryId = 10, CategoryName = "Coagulation", Description = "Blood clotting and bleeding tests" },
                 new LabCategory { LabCategoryId = 11, CategoryName = "Tumor Markers", Description = "Cancer-related markers and screening" }
             );
+
+            // views
+            modelBuilder.Entity<LabBookingSummaryViewModel>()
+                .HasNoKey()
+                .ToView("vw_LabBookingSummary");
+
+            modelBuilder.Entity<DoctorAppointmentSummaryViewModel>()
+                .HasNoKey()
+                .ToView("vw_DoctorAppointmentSummary");
 
 
 

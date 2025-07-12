@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Threading.Tasks;
 
 namespace MAMS.Controllers
 {
@@ -112,16 +113,23 @@ namespace MAMS.Controllers
 
                     return View("Booking", model);
                 }
+                var response = new LabBookingResponseViewModel
+                {
+                    ReferenceNo = result.ReferenceNo,
+                    BookedDate = result.BookedDate,
+                    Time = result.Time,
+                    Status = result.Status,
+                    LabName = result.LabName,
+                    Price = result.Price,
+                    Patient = result.Patient
+                };
 
                 TempData["Success"] = "Booking successful!";
-                TempData["BookedDate"] = result.BookedDate;
-                TempData["Time"] = result.Time;
-                TempData["LabName"] = result.LabName;
-                TempData["Price"] = result.Price.ToString("F2");
-                TempData["Patient"] = result.Patient;
                 _notfy.Success("Booking successful!");
 
-                return RedirectToAction("Success", new { refNo = result.ReferenceNo });
+                TempData["BookingResult"] = JsonConvert.SerializeObject(response);
+
+                return RedirectToAction("Success");
             }
             catch (Exception ex)
             {
@@ -133,65 +141,57 @@ namespace MAMS.Controllers
 
         }
 
-        public IActionResult Success(string refNo)
+        public IActionResult Success()
         {
-            ViewBag.RefNo = refNo;
-            return View();
+            if (TempData["BookingResult"] == null)
+            {
+                _notfy.Error("No Booking Reults");
+                return RedirectToAction("Booking");
+            }
+
+            var response = JsonConvert.DeserializeObject<LabBookingResponseViewModel>(TempData["BookingResult"].ToString());
+            return View(response);
         }
 
         public IActionResult MyBookings()
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             return View();
         }
-        public IActionResult PrintSlip(string refNo)
+        public async Task<IActionResult> PrintSlip(string refNo)
         {
-            // You can fetch full details from TempData or session or a service.
-            var model = new LabBookingResponseViewModel
+            var (result, errorMessage) = await _labService.GetLabByRefNo(refNo);
+
+            if(result == null)
             {
-                ReferenceNo = refNo,
-                Patient = TempData["Patient"]?.ToString(),
-                LabName = TempData["LabName"]?.ToString(),
-                BookedDate = TempData["BookedDate"]?.ToString(),
-                Time = TempData["Time"]?.ToString(),
-                Price = decimal.Parse(TempData["Price"]?.ToString() ?? "0")
+                _notfy.Error(errorMessage ?? "Booking not found");
+                return RedirectToAction("Success");
+            }
+            
+            var model = new LabResultViewModel
+            {
+                ReferenceNo = result.ReferenceNo,
+                BookedDate = result.BookedDate,
+                TimeSlot = result.TimeSlot,
+                LabTypeName = result.LabTypeName,
+                PatientName = result.PatientName,
+                BookedPrice = result.BookedPrice
             };
 
-            var generator = new BookingSlipGenerator();
-            var pdf = generator.Generate(model);
+            var stream = new MemoryStream();
 
-            return File(pdf, "application/pdf", $"Booking_{refNo}.pdf");
+            var document = new BookingSlipGenerator(model); // you’ll create this class
+            document.GeneratePdf(stream);
+
+            stream.Position = 0;
+
+            return File(stream.ToArray(), "application/pdf", $"Booking_{refNo}_{DateTime.Now}.pdf");
         }
-        public IActionResult DownloadSample()
-        {
-            var document = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Margin(40);
-                    page.Size(PageSizes.A5);
-
-                    page.Header().Text("MAMS - Lab Booking Slip")
-                        .FontSize(20).Bold().FontColor(Colors.Blue.Medium);
-
-                    page.Content().Column(col =>
-                    {
-                        col.Spacing(5);
-                        col.Item().Text("Patient Name: Test Patient");
-                        col.Item().Text("Lab Test: Blood Test");
-                        col.Item().Text("Date: " + DateTime.Now.ToString("dd/MM/yyyy"));
-                        col.Item().Text("Time: 10:30 AM");
-                        col.Item().Text("Fee: Rs. 1500.00");
-                    });
-
-                    page.Footer().AlignCenter().Text("MAMS | Powered by Pathum")
-                        .FontSize(10).FontColor(Colors.Grey.Darken1);
-                });
-            });
-
-            byte[] pdfBytes = document.GeneratePdf();
-
-            return File(pdfBytes, "application/pdf", "LabBookingSlip.pdf");
-        }
+        
 
     }
 }

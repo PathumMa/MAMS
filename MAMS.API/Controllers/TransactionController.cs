@@ -34,6 +34,7 @@ namespace MAMS.API.Controllers
                 ReferenceNo = transaction.LabResult.ReferenceNo,
                 PatientName = transaction.PatientDetails.Name,
                 LabTestName = transaction.LabResult.LabType.LabName,
+                Status = transaction.LabResult.Status,
                 BookedDate = transaction.LabResult.BookedDate.ToString("dd/MM/yyyy"),
                 TimeSlot = transaction.LabResult.TimeSlot?.ToString(@"hh\:mm") ?? "N/A",
                 PaymentMethod = transaction.PaymentMethod.ToString(),

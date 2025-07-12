@@ -6,45 +6,49 @@ using MAMS.Models.ViewModels;
 
 namespace MAMS.Services.Reports
 {
-    public class BookingSlipGenerator
+    public class BookingSlipGenerator : IDocument
     {
-        public byte[] Generate(LabBookingResponseViewModel model)
+        private readonly LabResultViewModel _model;
+
+        public BookingSlipGenerator(LabResultViewModel model)
         {
-            var document = Document.Create(container =>
+            _model = model;
+        }
+
+        public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+
+        public void Compose(IDocumentContainer container)
+        {
+            container.Page(page =>
             {
-                container.Page(page =>
+                page.Margin(30);
+                page.Size(PageSizes.A5.Landscape());
+                page.PageColor(Colors.White);
+                page.DefaultTextStyle(x => x.FontSize(12));
+
+                page.Header().Row(row =>
                 {
-                    page.Margin(30);
-                    page.Size(PageSizes.A5);
-                    page.PageColor(Colors.White);
-                    page.DefaultTextStyle(x => x.FontSize(12));
-
-                    page.Header().Row(row =>
+                    row.RelativeItem().Column(col =>
                     {
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Item().Text("MedEase&#8482; - Lab Booking Slip").Bold().FontSize(16).FontColor(Colors.Blue.Darken2);
-                            col.Item().Text($"Reference: {model.ReferenceNo}").FontSize(10).FontColor(Colors.Grey.Darken2);
-                        });
-
-                        row.ConstantItem(50).Height(50).Image("wwwroot/img/MedEase.png");
+                        col.Item().Text("MedEase - Lab Booking Slip").Bold().FontSize(16).FontColor(Colors.Blue.Darken2);
+                        col.Item().Text($"Reference: {_model.ReferenceNo}").FontSize(10).FontColor(Colors.Grey.Darken2);
                     });
 
-                    page.Content().Column(col =>
-                    {
-                        col.Item().Text($"Patient Name: {model.Patient}");
-                        col.Item().Text($"Lab Test: {model.LabName}");
-                        col.Item().Text($"Date: {model.BookedDate}");
-                        col.Item().Text($"Time: {model.Time}");
-                        col.Item().Text($"Fee: Rs. {model.Price:N2}");
+                    row.ConstantItem(60).Image("wwwroot/img/MedEase.png");
+                });
 
-                        col.Item().PaddingTop(15).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
-                        col.Item().PaddingTop(10).Text("Thank you for choosing MAMS!");
-                    });
+                page.Content().Column(col =>
+                {
+                    col.Item().Text($"Patient Name: {_model.PatientName}");
+                    col.Item().Text($"Lab Test: {_model.LabTypeName}");
+                    col.Item().Text($"Date: {_model.BookedDate}");
+                    col.Item().Text($"Time: {_model.TimeSlot}");
+                    col.Item().Text($"Fee: Rs. {_model.BookedPrice:N2}");
+
+                    col.Item().PaddingTop(15).LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
+                    col.Item().PaddingTop(10).Text("Thank you for choosing MedEase!");
                 });
             });
-
-            return document.GeneratePdf();
         }
     }
 }

@@ -32,6 +32,7 @@ namespace MAMS.Controllers
             if (receipt == null)
             {
                 TempData["Error"] = "Receipt not found";
+                _notfy.Error("Receipt not found. Please check the reference number and try again.");
                 return View("MyLabBookings"); // or RedirectToAction("Search")
             }
 

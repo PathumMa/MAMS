@@ -14,5 +14,7 @@ namespace MAMS.API.DTOs
         public int LabTypeId { get; set; }
         public DateTime BookedDate { get; set; }
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash; // Default to Cash
+        public DateTime Created_Date { get; set; } = DateTime.Now;
+        public DateTime Modified_Date { get; set; } = DateTime.Now;
     }
 }

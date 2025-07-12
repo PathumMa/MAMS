@@ -1,10 +1,13 @@
-﻿namespace MAMS.API.DTOs
+﻿using static MAMS.API.Tools.Enums;
+
+namespace MAMS.API.DTOs
 {
     public class TransactionReceiptDto
     {
         public string ReferenceNo { get; set; }
         public string PatientName { get; set; }
         public string LabTestName { get; set; }
+        public AppoinmentStatus Status { get; set; }
         public string BookedDate { get; set; }
         public string TimeSlot { get; set; }
         public string PaymentMethod { get; set; }

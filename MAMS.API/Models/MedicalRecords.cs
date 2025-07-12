@@ -14,6 +14,9 @@ namespace MAMS.API.Models
         public string? Diagnosis { get; set; }
         public string? Treatment_plan { get; set; }
         public string? Prescription { get; set; }
-        public DateTime CreatedDate { get; set;} = DateTime.Now;
+        public DateTime? Created_Date { get; set; } = DateTime.Now;
+        public string? Created_By { get; set; }
+        public DateTime? Modified_Date { get; set; }
+        public string? Modified_By { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using MAMS.Models;
 using MAMS.Models.ViewModels;
 using MAMS.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -171,9 +172,16 @@ namespace MAMS.Controllers
             {
                 var result = await _labService.DeleteLabAsync(id);
 
-                if (result.Item1)
+                if (result.success)
                 {
-                    _notfy.Success($"Lab deleted successfully.");
+                    if (!string.IsNullOrEmpty(result.errorMessage))
+                    {
+                        _notfy.Warning("Lab type has bookings and was inactive instead of deleted.");
+                    }
+                    else
+                    {
+                        _notfy.Success($"Lab deleted successfully.");
+                    }
                     return RedirectToAction("Index");
                 }
                 else
@@ -188,6 +196,59 @@ namespace MAMS.Controllers
                 _notfy.Error($"Error calling web API: {ex.Message}", 5);
                 return RedirectToAction("Index");
             }
+        }
+
+        
+        //Booked Labs performance
+        public async Task<IActionResult> PerformLabs()
+        {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+            return View();
+        }
+
+        public async Task<IActionResult> PerformBookedLabs(string referenceNo)
+        {
+            var (result, errorMessage) = await _labService.GetLabByRefNo(referenceNo);
+            try
+            {
+                if (result == null)
+                {
+                    _notfy.Error(errorMessage);
+                    return RedirectToAction("PerformLabs");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _notfy.Error($"Error: {ex.Message}");
+                return RedirectToAction("PerformLabs");
+            }
+
+            return View("PerformLabs", result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateBookedLab(LabResultUpdateViewModel model)
+        {
+
+            var (result, errorMessage) = await _labService.UpdateLabResultAsync(model.LabResultId, model);
+
+            if (result)
+            {
+                TempData["Success"] = "Lab result updated successfully.";
+                _notfy.Success($"{model.ReferenceNo} result updated successfully.");
+            }
+            else
+            {
+                TempData["Error"] = "Update failed.";
+                _notfy.Error(errorMessage);
+            }
+
+            return RedirectToAction("PerformLabs");
         }
 
     }

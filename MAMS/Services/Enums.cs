@@ -11,7 +11,8 @@
         {
             Admin = 10,
             Patient = 20,
-            Doctor = 30
+            Doctor = 30,
+            WorkGroup1 = 40
         }
 
         public enum GenderType
@@ -137,6 +138,14 @@
             Cash,
             Card,
             Insurance
+        }
+
+        public enum AppoinmentStatus
+        {
+            Scheduled = 1,
+            Completed = 2,
+            canceled = 3,
+            Postponed = 4
         }
     }
 }

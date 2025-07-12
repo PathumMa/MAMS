@@ -1,8 +1,8 @@
-﻿using static MAMS.Services.Enums;
+﻿using static MAMS.API.Tools.Enums;
 
-namespace MAMS.Models.ViewModels
+namespace MAMS.API.DTOs
 {
-    public class LabResultViewModel
+    public class LabResultDto
     {
         public int LabResultId { get; set; }
         public string ReferenceNo { get; set; }

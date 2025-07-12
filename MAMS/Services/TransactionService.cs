@@ -35,6 +35,7 @@ namespace MAMS.Services
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<TransactionReceiptViewModel>(json);
         }
+
         public async Task<byte[]> DownloadReceiptPdfAsync(string refNo)
         {
             var response = await _client.GetAsync($"Transaction/DownloadReceiptPdf/{refNo}");

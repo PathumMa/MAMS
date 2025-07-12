@@ -47,6 +47,7 @@ namespace MAMS.Services.Reports
                         col.Item().Text($"👤 Patient Name: {_model.PatientName}");
                         col.Item().Text($"🧪 Lab Test: {_model.LabTestName}");
                         col.Item().Text($"📅 Booked Date: {_model.BookedDate}");
+                        col.Item().Text($"🕒 Status: {_model.Status}");
                         col.Item().Text($"⏰ Time Slot: {_model.TimeSlot}");
                         col.Item().Text($"💳 Payment Method: {_model.PaymentMethod}");
                         col.Item().Text($"💰 Amount Paid: Rs. {_model.AmountPaid:F2}");
@@ -56,11 +57,26 @@ namespace MAMS.Services.Reports
                 // Footer
                 page.Footer()
                     .AlignCenter()
-                    .Text(txt =>
+                    .Column(col =>
                     {
-                        txt.Span("Thank you for choosing ").FontSize(10).FontColor(Colors.Grey.Darken2);
-                        txt.Span("MedEase").Bold().FontColor(Colors.Blue.Medium).FontSize(10);
-                        txt.Span(" – We care for your health.").FontSize(10).FontColor(Colors.Grey.Darken2);
+                        col.Spacing(5);
+
+                        col.Item().Text(txt =>
+                        {
+                            txt.Span("Thank you for choosing ").FontSize(10).FontColor(Colors.Grey.Darken2);
+                            txt.Span("MedEase").Bold().FontColor(Colors.Blue.Medium).FontSize(10);
+                            txt.Span(" – We care for your health.").FontSize(10).FontColor(Colors.Grey.Darken2);
+                        });
+
+                        col.Item().AlignCenter().Text(txt =>
+                        {
+                            txt.Span("Call us at ").FontSize(9).FontColor(Colors.Black);
+                            txt.Span("+94 112 345 678")
+                                .FontSize(9)
+                                .FontColor(Colors.Blue.Darken2)
+                                .Underline();
+                            txt.Span(" for any queries.").FontSize(9).FontColor(Colors.Black);
+                        });
                     });
             }); ;
         }

@@ -1,7 +1,14 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc;
+@using MAMS.Services
+@using MAMS.Models.ViewModels
+@using static MAMS.Services.Enums
+
+
+@{
     ViewData["Title"] = "Lab Booking Success";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+    }
+
+@model LabBookingResponseViewModel
 
 <div class="container mt-5">
     <div class="card shadow rounded border-success">
@@ -14,31 +21,31 @@
             <table class="table table-bordered mt-4">
                 <tr>
                     <th>Reference Number</th>
-                    <td><strong>@ViewBag.RefNo</strong></td>
+                    <td><strong>@Model.ReferenceNo</strong></td>
                 </tr>
                 <tr>
                     <th>Booked Date</th>
-                    <td>@TempData["BookedDate"]</td>
+                    <td>@Model.BookedDate</td>
                 </tr>
                 <tr>
                     <th>Time Slot</th>
-                    <td>@TempData["Time"]</td>
+                    <td>@Model.Time</td>
                 </tr>
                 <tr>
                     <th>Lab Test</th>
-                    <td>@TempData["LabName"]</td>
+                    <td>@Model.LabName</td>
                 </tr>
                 <tr>
                     <th>Fee</th>
-                    <td>Rs. @((TempData["Price"] != null ? Convert.ToDecimal(TempData["Price"]).ToString("N2") : "-"))</td>
+                    <td>Rs. @Model.Price</td>
                 </tr>
                 <tr>
                     <th>Patient</th>
-                    <td>@TempData["Patient"]</td>
+                    <td>@Model.Patient</td>
                 </tr>
             </table>
             <div class="text-center mt-3">
-            <a class="btn btn-outline-primary" asp-action="PrintSlip" asp-route-refNo="@ViewBag.RefNo">
+            <a class="btn btn-outline-danger" asp-action="PrintSlip" asp-route-refNo="@Model.ReferenceNo">
                  <i class="bi bi-printer"></i> Print Slip (PDF)
                  </a>
             </div>
