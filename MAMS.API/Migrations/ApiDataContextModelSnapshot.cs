@@ -39,10 +39,25 @@ namespace MAMS.API.Migrations
                     b.Property<int>("Availability_Id")
                         .HasColumnType("int");
 
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("DoctorAvailableDetailsId")
                         .HasColumnType("int");
 
                     b.Property<int>("Doctor_Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PatientDetails_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -63,6 +78,9 @@ namespace MAMS.API.Migrations
 
                     b.HasIndex("UserDetailsId");
 
+                    b.HasIndex("PatientDetails_Id", "Doctor_Id", "Appointment_Date")
+                        .IsUnique();
+
                     b.ToTable("Appointments");
                 });
 
@@ -81,7 +99,10 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created_Date")
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DoctorId")
@@ -89,6 +110,12 @@ namespace MAMS.API.Migrations
 
                     b.Property<TimeSpan?>("EndTime")
                         .HasColumnType("time");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<TimeSpan?>("StartTime")
                         .HasColumnType("time");
@@ -198,126 +225,225 @@ namespace MAMS.API.Migrations
                     b.ToTable("DoctorDetails");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTest", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabCategory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("LabCategoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LabTests");
-                });
-
-            modelBuilder.Entity("MAMS.API.Models.LabTestCategory", b =>
-                {
-                    b.Property<int>("LabTestCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabTestCategoryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabCategoryId"));
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("LabTestCategoryId");
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("LabTestCategories");
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("LabCategoryId");
+
+                    b.ToTable("LabCategories");
 
                     b.HasData(
                         new
                         {
-                            LabTestCategoryId = 1,
+                            LabCategoryId = 1,
                             CategoryName = "Blood Tests",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3101),
                             Description = "Tests related to blood components"
                         },
                         new
                         {
-                            LabTestCategoryId = 2,
+                            LabCategoryId = 2,
                             CategoryName = "Urine Tests",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3117),
                             Description = "Urine analysis and infection detection"
                         },
                         new
                         {
-                            LabTestCategoryId = 3,
+                            LabCategoryId = 3,
                             CategoryName = "Diabetes",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3118),
                             Description = "Sugar and insulin related tests"
                         },
                         new
                         {
-                            LabTestCategoryId = 4,
+                            LabCategoryId = 4,
                             CategoryName = "Liver Function",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3119),
                             Description = "Health of liver and enzymes"
+                        },
+                        new
+                        {
+                            LabCategoryId = 5,
+                            CategoryName = "Kidney Function",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3120),
+                            Description = "Urea, creatinine, and kidney health"
+                        },
+                        new
+                        {
+                            LabCategoryId = 6,
+                            CategoryName = "Infectious Diseases",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3120),
+                            Description = "Dengue, COVID-19, Hepatitis, etc."
+                        },
+                        new
+                        {
+                            LabCategoryId = 7,
+                            CategoryName = "Hormones & Endocrine",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3121),
+                            Description = "Thyroid, reproductive hormones"
+                        },
+                        new
+                        {
+                            LabCategoryId = 8,
+                            CategoryName = "Lipid Profile",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3122),
+                            Description = "Cholesterol and triglyceride levels"
+                        },
+                        new
+                        {
+                            LabCategoryId = 9,
+                            CategoryName = "Electrolytes",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3123),
+                            Description = "Sodium, Potassium, Chloride"
+                        },
+                        new
+                        {
+                            LabCategoryId = 10,
+                            CategoryName = "Coagulation",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3123),
+                            Description = "Blood clotting and bleeding tests"
+                        },
+                        new
+                        {
+                            LabCategoryId = 11,
+                            CategoryName = "Tumor Markers",
+                            Created_Date = new DateTime(2025, 7, 12, 14, 31, 11, 982, DateTimeKind.Local).AddTicks(3124),
+                            Description = "Cancer-related markers and screening"
                         });
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTestLabTestCategory", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabResult", b =>
                 {
-                    b.Property<int>("LabTestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LabTestCategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("LabTestId", "LabTestCategoryId");
-
-                    b.HasIndex("LabTestCategoryId");
-
-                    b.ToTable("LabTestLabTestCategories");
-                });
-
-            modelBuilder.Entity("MAMS.API.Models.LabTestResult", b =>
-                {
-                    b.Property<int>("LabTestResultId")
+                    b.Property<int>("LabResultId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabTestResultId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabResultId"));
 
-                    b.Property<int>("LabTestId")
+                    b.Property<DateTime>("BookedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("BookedPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsResultAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LabTypeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ResultDate")
+                    b.Property<DateTime?>("PerformedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ResultValue")
+                    b.Property<string>("ReferenceNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("LabTestResultId");
+                    b.Property<string>("ResultValue")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("LabTestId");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
-                    b.ToTable("LabTestResults");
+                    b.Property<TimeSpan?>("TimeSlot")
+                        .HasColumnType("time");
+
+                    b.HasKey("LabResultId");
+
+                    b.HasIndex("LabTypeId");
+
+                    b.HasIndex("PatientId", "LabTypeId");
+
+                    b.HasIndex("PatientId", "BookedDate", "TimeSlot")
+                        .IsUnique()
+                        .HasFilter("[TimeSlot] IS NOT NULL");
+
+                    b.ToTable("LabResults");
+                });
+
+            modelBuilder.Entity("MAMS.API.Models.LabType", b =>
+                {
+                    b.Property<int>("LabTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LabTypeId"));
+
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IsActive")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LabCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LabName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("LabTypeId");
+
+                    b.HasIndex("LabCategoryId");
+
+                    b.ToTable("LabTypes");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.MedicalRecords", b =>
@@ -331,7 +457,10 @@ namespace MAMS.API.Migrations
                     b.Property<DateTime>("Appointment_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Diagnosis")
@@ -342,6 +471,12 @@ namespace MAMS.API.Migrations
 
                     b.Property<int>("Doctor_PersonalId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Prescription")
                         .HasColumnType("nvarchar(max)");
@@ -375,9 +510,6 @@ namespace MAMS.API.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Appointment_Id")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime2");
 
@@ -408,6 +540,10 @@ namespace MAMS.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("RegisteredUserId")
                         .HasColumnType("int");
 
@@ -416,9 +552,6 @@ namespace MAMS.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Appointment_Id")
-                        .IsUnique();
 
                     b.ToTable("PatientDetails");
                 });
@@ -431,8 +564,20 @@ namespace MAMS.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Specializations_Id"));
 
+                    b.Property<string>("Created_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Created_Date")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Modified_By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified_Date")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Record_Status")
                         .HasColumnType("int");
@@ -497,7 +642,10 @@ namespace MAMS.API.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Appointment_Id")
+                    b.Property<int?>("Appointment_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BookingType")
                         .HasColumnType("int");
 
                     b.Property<string>("Created_By")
@@ -509,11 +657,14 @@ namespace MAMS.API.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Doctor_fee")
+                    b.Property<decimal?>("Doctor_fee")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Hospital_fee")
+                    b.Property<decimal?>("Hospital_fee")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("LabResultId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Modified_By")
                         .HasColumnType("nvarchar(max)");
@@ -521,7 +672,7 @@ namespace MAMS.API.Migrations
                     b.Property<DateTime?>("Modified_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("PatientDetailsId")
+                    b.Property<int>("PatientDetails_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("PaymentMethod")
@@ -530,9 +681,12 @@ namespace MAMS.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Appointment_Id")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Appointment_Id] IS NOT NULL");
 
-                    b.HasIndex("PatientDetailsId");
+                    b.HasIndex("LabResultId");
+
+                    b.HasIndex("PatientDetails_Id");
 
                     b.ToTable("Transactions");
                 });
@@ -658,6 +812,38 @@ namespace MAMS.API.Migrations
                     b.ToView("View_Doctors", (string)null);
                 });
 
+            modelBuilder.Entity("MAMS.API.Models.Views.LabBookingSummaryViewModel", b =>
+                {
+                    b.Property<DateTime>("BookedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("IssuedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LabName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PatientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TimeSlot")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("TotalPaid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_LabBookingSummary", (string)null);
+                });
+
             modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
                     b.HasOne("MAMS.API.Models.DoctorAvailableDetails", null)
@@ -667,6 +853,12 @@ namespace MAMS.API.Migrations
                     b.HasOne("MAMS.API.Models.DoctorDetails", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("Doctor_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MAMS.API.Models.PatientDetails", "PatientDetails")
+                        .WithMany("Appointments")
+                        .HasForeignKey("PatientDetails_Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -675,6 +867,8 @@ namespace MAMS.API.Migrations
                         .HasForeignKey("UserDetailsId");
 
                     b.Navigation("Doctor");
+
+                    b.Navigation("PatientDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -707,34 +901,34 @@ namespace MAMS.API.Migrations
                     b.Navigation("Suser");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTestLabTestCategory", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabResult", b =>
                 {
-                    b.HasOne("MAMS.API.Models.LabTestCategory", "LabTestCategory")
-                        .WithMany("LabTestLabTestCategories")
-                        .HasForeignKey("LabTestCategoryId")
+                    b.HasOne("MAMS.API.Models.LabType", "LabType")
+                        .WithMany("LabResults")
+                        .HasForeignKey("LabTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MAMS.API.Models.LabTest", "LabTest")
-                        .WithMany("LabTestLabTestCategories")
-                        .HasForeignKey("LabTestId")
+                    b.HasOne("MAMS.API.Models.PatientDetails", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("LabTest");
+                    b.Navigation("LabType");
 
-                    b.Navigation("LabTestCategory");
+                    b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTestResult", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabType", b =>
                 {
-                    b.HasOne("MAMS.API.Models.LabTest", "LabTest")
-                        .WithMany("LabTestResults")
-                        .HasForeignKey("LabTestId")
+                    b.HasOne("MAMS.API.Models.LabCategory", "LabCategory")
+                        .WithMany("LabTypes")
+                        .HasForeignKey("LabCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("LabTest");
+                    b.Navigation("LabCategory");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.MedicalRecords", b =>
@@ -748,30 +942,28 @@ namespace MAMS.API.Migrations
                         .HasForeignKey("UserDetailsId");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
-                {
-                    b.HasOne("MAMS.API.Models.Appointments", "Appointments")
-                        .WithOne("PatientDetails")
-                        .HasForeignKey("MAMS.API.Models.PatientDetails", "Appointment_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Appointments");
-                });
-
             modelBuilder.Entity("MAMS.API.Models.Transactions", b =>
                 {
                     b.HasOne("MAMS.API.Models.Appointments", "Appointments")
-                        .WithOne("Transactions")
+                        .WithOne("Transaction")
                         .HasForeignKey("MAMS.API.Models.Transactions", "Appointment_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MAMS.API.Models.LabResult", "LabResult")
+                        .WithMany()
+                        .HasForeignKey("LabResultId");
+
+                    b.HasOne("MAMS.API.Models.PatientDetails", "PatientDetails")
+                        .WithMany("Transactions")
+                        .HasForeignKey("PatientDetails_Id")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MAMS.API.Models.PatientDetails", null)
-                        .WithMany("Transactions")
-                        .HasForeignKey("PatientDetailsId");
-
                     b.Navigation("Appointments");
+
+                    b.Navigation("LabResult");
+
+                    b.Navigation("PatientDetails");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.UserDetails", b =>
@@ -793,10 +985,8 @@ namespace MAMS.API.Migrations
 
             modelBuilder.Entity("MAMS.API.Models.Appointments", b =>
                 {
-                    b.Navigation("PatientDetails")
+                    b.Navigation("Transaction")
                         .IsRequired();
-
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.DoctorAvailableDetails", b =>
@@ -813,20 +1003,20 @@ namespace MAMS.API.Migrations
                     b.Navigation("MedicalRecords");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTest", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabCategory", b =>
                 {
-                    b.Navigation("LabTestLabTestCategories");
-
-                    b.Navigation("LabTestResults");
+                    b.Navigation("LabTypes");
                 });
 
-            modelBuilder.Entity("MAMS.API.Models.LabTestCategory", b =>
+            modelBuilder.Entity("MAMS.API.Models.LabType", b =>
                 {
-                    b.Navigation("LabTestLabTestCategories");
+                    b.Navigation("LabResults");
                 });
 
             modelBuilder.Entity("MAMS.API.Models.PatientDetails", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("Transactions");
                 });
 

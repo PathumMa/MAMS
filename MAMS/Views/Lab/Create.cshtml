@@ -1,0 +1,199 @@
+﻿@using MAMS.Models.ViewModels
+
+@model LabTypeViewModel
+
+@{
+    ViewData["Title"] = "Create Lab";
+}
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>New Specialization</h1>
+                    <a asp-controller="Lab" asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back To List
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Labs</a></li>
+                        <li class="breadcrumb-item active">Create New</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="content">
+        <form asp-controller="Lab" asp-action="CreateNew" method="post" id="CreateNew" novalidate>
+            <div class="card card-success card-outline">
+                <div class="card-header">
+                    <h5 class="m-0">Enter Details:</h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="LabName" class="form-label">Lab:</label>
+                        <input asp-for="LabName" class="form-control" required />
+                        <span asp-validation-for="LabName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description:</label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label asp-for="Price" class="form-label">Price (LKR):</label>
+                            <input asp-for="Price" class="form-control" type="text" id="PriceInput" autocomplete="off" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="col mb-3">
+                            <label asp-for="LabCategoryId" style="color:#d63384" class="form-label">Category:</label>
+                            <select asp-for="LabCategoryId" class="form-select">
+                                <option value="">--Select Lab Category--</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.LabCategoryId">@category.CategoryName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="LabCategoryId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="text-end">
+                        <button type="button" class="btn bg-gradient-success rounded-pill" style="width:150px" onclick="showConfirmationModal()" id="createButton">
+                            <i class="bi bi-plus-circle"></i> &nbsp; Create
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Create this?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptspartial" />
+    }
+    <script>
+        //Function to show the confirmation modal
+        function showConfirmationModal() {
+            $('#confirmationModal').modal('show');
+        }
+
+        // Handle form submission when "Yes" is clicked
+        $('#confirmYes').click(function () {
+            $('#confirmationModal').modal('hide'); // Hide the modal
+            $('form').submit(); // Submit the form
+        });
+
+        // Attach the confirmation dialog to the Create button
+        $(document).ready(function () {
+            $('button[type="submit"]').click(function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                showConfirmationModal(); // Show the confirmation modal
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var createForm = document.getElementById('CreateNew');
+            var createButton = document.getElementById('createButton');
+
+            // Disable the button initially
+            createButton.disabled = true;
+
+            // Add an event listener to check form validity on input
+            createForm.addEventListener('input', function () {
+                createButton.disabled = !createForm.checkValidity();
+            });
+
+            // Add an event listener to handle form submission
+            createForm.addEventListener('submit', function (event) {
+                // Prevent the default form submission
+                event.preventDefault();
+
+                // Check form validity before allowing submission
+                if (createForm.checkValidity()) {
+                    // If the form is valid, you can enable the button and perform any other actions
+                    createButton.disabled = false;
+                    createButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+                    // Optionally, you can trigger your confirmation modal or other actions here
+                    showConfirmationModal();
+                }
+            });
+        });
+
+        //price
+         const priceInput = document.getElementById('PriceInput');
+
+        // Format number with commas (e.g. 1,234.56)
+        function formatWithCommas(value) {
+            const parts = value.split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return parts.join(".");
+        }
+
+        // Clean input - remove commas
+        function unformatNumber(value) {
+            return value.replace(/,/g, '');
+        }
+
+        // Reformat value without moving the cursor to end
+        function formatAndKeepCursor(input) {
+            const oldValue = input.value;
+            const cursorPos = input.selectionStart;
+
+            const rawValue = unformatNumber(oldValue);
+            const decimalIndex = rawValue.indexOf('.');
+            const hasDecimal = decimalIndex > -1;
+
+            const beforeCursorRaw = unformatNumber(oldValue.slice(0, cursorPos));
+            const formatted = formatWithCommas(rawValue);
+
+            input.value = formatted;
+
+            // Calculate new cursor position
+            const newCursorPos = (() => {
+                const before = formatWithCommas(beforeCursorRaw);
+                return before.length;
+            })();
+
+            setTimeout(() => {
+                input.setSelectionRange(newCursorPos, newCursorPos);
+            }, 0);
+        }
+
+        // On input: format and fix cursor
+        priceInput.addEventListener('input', function () {
+            const val = this.value.replace(/[^0-9.]/g, ''); // Only allow numbers and .
+            formatAndKeepCursor(this);
+        });
+
+        // On blur: clean value for posting to model
+        priceInput.closest('form')?.addEventListener('submit', function () {
+            priceInput.value = unformatNumber(priceInput.value);
+        });
+
+    </script>
+}

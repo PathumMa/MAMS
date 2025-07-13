@@ -1,0 +1,172 @@
+﻿@using MAMS.Models.ViewModels
+
+@model LabTypeViewModel
+
+@{
+    ViewData["Title"] = "Edit Lab Types";
+}
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Edit Lab Types</h1>
+                    <a asp-controller="Lab" asp-action="Index" class="btn bg-gradient-secondary rounded-pill">
+                        <i class="bi bi-backspace"></i> &nbsp; Back To List
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Lab Types</a></li>
+                        <li class="breadcrumb-item active">update</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="card card-info card-outline">
+                <div class="card-header">
+                    <h4 class="card-title text-info">Edit Details: </h4>
+                </div>
+                <form method="post" asp-action="Update">
+                    <div class="card-body">
+                        <input asp-for="LabTypeId" hidden />
+                        <div class="mb-3">
+                            <label asp-for="LabName"></label>
+                            <input asp-for="LabName" class="form-control" />
+                            <span asp-validation-for="LabName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description">Description</label>
+                            <textarea asp-for="Description" class="form-control"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label asp-for="Price" class="form-label">Price (LKR):</label>
+                                <input asp-for="Price" class="form-control" type="text" id="PriceInput" autocomplete="off" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                            <div class="col mb-3">
+                                <label asp-for="LabCategoryId" style="color:#d63384" class="form-label">Category:</label>
+                                <select asp-for="LabCategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "LabCategoryId", "CategoryName"))">
+                                    <option value="">--Select Lab Category--</option>
+                                </select>
+                                <span asp-validation-for="LabCategoryId" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status :</label>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input custom-control-input-success" asp-for="IsActive" type="radio" id="customRadio1" value="Active">
+                                        <label for="customRadio1" class="custom-control-label">Active</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="custom-control custom-radio">
+                                        <input class="custom-control-input custom-control-input-danger" asp-for="IsActive" type="radio" id="customRadio2" value="Inactive">
+                                        <label for="customRadio2" class="custom-control-label">Inactive</label>
+                                    </div>
+                                </div>
+                                <div class="col-10"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn bg-gradient-info rounded-pill float-right" style="width:150px">
+                            <i class="bi bi-arrow-clockwise"></i> &nbsp; Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Update/Modify this Lab?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-warning" id="confirmYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptspartial" />
+    }
+    <script>
+        $(document).ready(function () {
+            // Show modal on submit button click, prevent default submit
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                $('#confirmationModal').modal('show');
+            });
+
+            // On "Yes" button click, hide modal and submit form
+            $('#confirmYes').click(function () {
+                $('#confirmationModal').modal('hide');
+                // Unbind submit event to avoid infinite loop and submit form
+                $('form').off('submit').submit();
+            });
+
+            // Price input formatting code (unchanged)
+            const priceInput = document.getElementById('PriceInput');
+
+            function formatWithCommas(value) {
+                const parts = value.split(".");
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                return parts.join(".");
+            }
+
+            function unformatNumber(value) {
+                return value.replace(/,/g, '');
+            }
+
+            function formatAndKeepCursor(input) {
+                const oldValue = input.value;
+                const cursorPos = input.selectionStart;
+                const rawValue = unformatNumber(oldValue);
+                const beforeCursorRaw = unformatNumber(oldValue.slice(0, cursorPos));
+                const formatted = formatWithCommas(rawValue);
+                input.value = formatted;
+
+                const newCursorPos = (() => {
+                    const before = formatWithCommas(beforeCursorRaw);
+                    return before.length;
+                })();
+
+                setTimeout(() => {
+                    input.setSelectionRange(newCursorPos, newCursorPos);
+                }, 0);
+            }
+
+            priceInput.addEventListener('input', function () {
+                const val = this.value.replace(/[^0-9.]/g, '');
+                formatAndKeepCursor(this);
+            });
+
+            priceInput.closest('form')?.addEventListener('submit', function () {
+                priceInput.value = unformatNumber(priceInput.value);
+            });
+        });
+    </script>
+}

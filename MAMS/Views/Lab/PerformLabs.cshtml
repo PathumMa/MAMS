@@ -1,0 +1,136 @@
+﻿@using static MAMS.Services.Enums
+@model MAMS.Models.ViewModels.LabResultViewModel
+
+@{
+    ViewData["Title"] = "Perform Labs";
+}
+
+<div class="container">
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Labs</h1>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a asp-action="Index">Labs</a></li>
+                        <li class="breadcrumb-item active">Perform Labs</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            <!-- Info box for searching appointments -->
+            <div class="info-box shadow">
+                <span class="info-box-icon bg-olive"><i class="bi bi-calendar-check"></i></span>
+                <div class="info-box-content">
+                    <p>View and perform Labs.</p>
+                    <form method="get" asp-action="PerformBookedLabs" class="row g-3">
+                        <div class="col-3">
+                            <label for="ReferenceNo" class="form-label">Ref No:</label>
+                            <input type="text" name="ReferenceNo" class="form-control" required />
+                        </div>
+                        <div class="col-3 align-self-end">
+                            <button type="submit" class="btn btn-primary">Search &nbsp; <i class="bi bi-search"></i></button>
+                            <a asp-controller="Lab" asp-action="PerformLabs" class="btn btn-secondary">Reset &nbsp; <i class="bi bi-arrow-clockwise"></i></a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.info-box -->
+
+            <!-- Perform Form -->
+            @if (Model != null && Model.LabResultId > 0)
+            {
+                <div class="card shadow mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Lab Booking Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" asp-action="UpdateBookedLab">
+                            <input type="hidden" asp-for="LabResultId" />
+                            <input type="hidden" asp-for="LabTypeId" />
+                            <input type="hidden" asp-for="PatientId" />
+                            <input type="hidden" asp-for="BookedDate" />
+                            <input type="hidden" asp-for="ReferenceNo" />
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <strong>
+                                            <span class="text-muted">Patient Name:</span>
+                                            <span class="text-info ml-2">@Model.PatientName</span>
+                                        </strong>
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <strong>
+                                            <span class="text-muted">Lab Test:</span>
+                                            <span class="text-info ml-2">@Model.LabTypeName</span>
+                                        </strong>
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <strong>
+                                            <span class="text-muted">Ref No:</span>
+                                            <span class="text-info ml-2">@Model.ReferenceNo</span>
+                                        </strong>
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <strong>
+                                            <span class="text-muted">Last Updated:</span>
+                                            <span class="text-info ml-2">@Model.Modified_Date</span>
+                                        </strong>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label asp-for="PerformedDate" class="form-label">Performed Date:</label>
+                                    <input asp-for="PerformedDate" type="date" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="ResultValue" class="form-label">Result Values:</label>
+                                    <input asp-for="ResultValue" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="Status" class="form-label">Status</label>
+                                    <select asp-for="Status" class="form-select">
+                                        @foreach (AppoinmentStatus status in Enum.GetValues(typeof(AppoinmentStatus)))
+                                        {
+                                            <option value="@status">@status</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Comments" class="form-label">Comments</label>
+                                <textarea asp-for="Comments" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success rounded-pill">Update Result <i class="bi bi-check-circle"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else if (Context.Request.Query.ContainsKey("referenceNo"))
+            {
+                <div class="alert alert-warning mt-3">No lab result found for the given reference number.</div>
+            }
+        </div>
+    </div>
+
+</div>

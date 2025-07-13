@@ -91,8 +91,6 @@ namespace MAMS.Controllers
                 EndTime = newAvailability.EndTime
             };
 
-
-
             try
             {
 

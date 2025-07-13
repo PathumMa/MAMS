@@ -1,0 +1,189 @@
+﻿@using System.Data
+@using MAMS.Services
+@using MAMS.Models.ViewModels
+@{
+    ViewData["Title"] = "Labs";
+}
+@model IEnumerable<LabTypeViewModel>
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Labs</h1>
+                    <a asp-controller="Lab" asp-action="Create" class="btn bg-gradient-warning rounded-pill">
+                        <i class="bi bi-plus-circle"></i> Create New
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                        <li class="breadcrumb-item active">All Labs</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-info card-outline">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <form method="get" asp-controller="Lab" asp-action="Index" class="d-flex ml-auto">
+                            <div class="input-group input-group-sm" style="width: 250px;">
+                                <input type="text" name="searchString" class="form-control float-left" placeholder="Search by Lab or status" value="@ViewData["CurrentFilter"]">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-bordered table-hover" id="AllLabs">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Lab</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th class="text-center">Price (LKR)</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model == null)
+                                {
+                                    <tr>
+                                        <td colspan="4">
+                                            <div class="alert alert-danger text-center" role="alert">
+                                                Error: Failed to load data. Please try again later or log in again.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    @foreach (var obj in Model)
+                                    {
+                                        <tr>
+                                            <input asp-for="@obj.LabTypeId" hidden />
+                                            <td data-lab_Name="@obj.LabName">@obj.LabName</td>
+                                            <td class="text-start text-break">@obj.Description</td>
+                                            <td>@obj.CategoryName</td>
+                                            <td class="text-end">@obj.Price</td>
+                                            <td class="text-center">
+                                                @if (obj.IsActive == Enums.ActiveStatus.Active)
+                                                {
+                                                    <span class="badge bg-gradient-success">Active</span>
+                                                }
+                                                else if (obj.IsActive == Enums.ActiveStatus.Inactive)
+                                                {
+                                                    <span class="badge bg-gradient-danger">Inactive</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <a asp-controller="Lab" asp-action="Edit" asp-route-id="@obj.LabTypeId" class="btn btn-light" title="Edit">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                    <a href="#" class="delete-button btn btn-light" data-id="@obj.LabTypeId" title="Delete">
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="showDeleteConfirmationModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                Are you sure you want to Delete this Lab?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmYes" data-id="">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle checkbox toggle event
+            $('.status-switch').change(function () {
+                var id = $(this).data('labId'); // make sure your HTML uses data-lab-id
+                var isChecked = $(this).prop('checked');
+                console.log(id);
+                console.log(isChecked);
+                updateRecordStatus(id, isChecked);
+            });
+
+            // Function to update Record_Status asynchronously
+            function updateRecordStatus(id, isChecked) {
+                var apiUrl = '@Url.Action("UpdateLab", "Lab")';
+
+                $.ajax({
+                    url: apiUrl,
+                    type: 'POST', // or 'PUT' depending on your API
+                    data: {
+                        Id: id,
+                        isChecked: isChecked
+                    },
+                    success: function (result) {
+                        // Handle success, if needed
+                    },
+                    error: function (error) {
+                        console.error('Error updating IsActive:', error);
+                        // Handle error, if needed
+                    }
+                });
+            }
+
+            // Function to show the delete confirmation modal
+            function showDeleteConfirmationModal(id) {
+                $('#deleteConfirmationModal').modal('show');
+                $('#confirmYes').data('id', id);
+            }
+
+            // Attach the delete confirmation dialog to the Delete button
+            $('.delete-button').click(function (e) {
+                e.preventDefault(); // Prevent the default link behavior
+                var id = $(this).data('id');
+                showDeleteConfirmationModal(id);
+            });
+
+            // Handle form submission when "Yes" is clicked
+            $('#confirmYes').click(function () {
+                var id = $(this).data('id');
+                $('#deleteConfirmationModal').modal('hide');
+                console.log("Deletion ID:", id);
+                window.location.href = '@Url.Action("Delete", "Lab")' + '?id=' + id;
+            });
+
+            // Initialize DataTable
+            $('#AllLabs').DataTable({
+                responsive: true,
+                autoWidth: false
+            });
+        });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

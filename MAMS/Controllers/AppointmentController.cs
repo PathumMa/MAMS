@@ -51,11 +51,21 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> Search()
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             var (activeSpecializations, errorMessage) = await _specializationService.GetAllSpecializationsAsync();
 
             ViewBag.Specializaions = activeSpecializations
                 .Where(s => s.Record_Status == Enums.ActiveStatus.Active)
                 .ToList();
+
+            if(activeSpecializations == null)
+            {
+                _notfy.Error(errorMessage);
+            }
 
             return View();
         }
@@ -221,6 +231,11 @@ namespace MAMS.Controllers
 
         public async Task<IActionResult> PlaceNewAppointment(BookingViewModel bookingViewModel)
         {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
             try
             {
                 (bool success, string errorMessage) = await _appointmentService.AddAppointmentAsync(bookingViewModel);
@@ -246,6 +261,16 @@ namespace MAMS.Controllers
                 return View("Booking");
             }
         }
+        public async Task<IActionResult> MyAppoinmentList()
+        {
+            if (!IsSessionValid())
+            {
+                return View("TimedOut", "Home");
+            }
+
+            return View();
+        }
+
         public async Task<IActionResult> AppoinmentList(BookingViewModel appointment, DateTime? startDate = null, DateTime? endDate = null)
         {
             if (!IsSessionValid())

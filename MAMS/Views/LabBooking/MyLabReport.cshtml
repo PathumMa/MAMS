@@ -1,0 +1,41 @@
+﻿@using MAMS.Models.ViewModels
+
+@model LabResultViewModel
+@{
+    ViewData["Title"] = "Lab Report";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body">
+            <div class="text-center mb-4">
+                <img src="~/images/mams_logo.png" width="80" />
+                <h4 class="mt-2">MediAccess Management System</h4>
+                <h5 class="text-secondary">Lab Report</h5>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Reference No:</strong> @Model.ReferenceNo</p>
+                    <p><strong>Patient Name:</strong> @Model.PatientName</p>
+                    <p><strong>Lab Test:</strong> @Model.LabTypeName</p>
+                    <p><strong>Booked Date:</strong> @Model.BookedDate.ToString("dd/MM/yyyy")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Performed Date:</strong> @Model.PerformedDate?.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Result Value:</strong> @Model.ResultValue</p>
+                    <p><strong>Comments:</strong> @Model.Comments</p>
+                    <p><strong>Perform Date:</strong> @Model.PerformedDate?.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a asp-action="DownloadLabReport" asp-route-refNo="@Model.ReferenceNo" class="btn btn-primary px-4 rounded-pill">
+                    <i class="fas fa-file-pdf"></i> Download PDF Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,20 +8,38 @@ namespace MAMS.API.Models
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public string User_PersonalId { get; set; }
+
         [Required]
         public int Doctor_Id { get; set; }
+
         [ForeignKey("Doctor_Id")]
         public DoctorDetails Doctor { get; set; }
+
         [Required]
         public int Availability_Id { get; set; }
-        public DateTime Appointment_Date { get; set; }
-        public int Appoinment_number { get; set; }
-        public ActiveStatus Status { get; set; } = ActiveStatus.Active;
 
-        public Transactions? Transactions { get; set; }
+        [Required]
+        public DateTime Appointment_Date { get; set; }
+
+        public int Appoinment_number { get; set; }
+
+        [Required]
+        public int PatientDetails_Id { get; set; }
+
+        [ForeignKey("PatientDetails_Id")]
         public PatientDetails PatientDetails { get; set; }
 
+        public ActiveStatus Status { get; set; } = ActiveStatus.Active;
+        public DateTime? Created_Date { get; set; } = DateTime.Now;
+        public string? Created_By { get; set; }
+        public DateTime? Modified_Date { get; set; }
+        public string? Modified_By { get; set; }
+
+        public Transactions Transaction { get; set; }
     }
+
+
 }

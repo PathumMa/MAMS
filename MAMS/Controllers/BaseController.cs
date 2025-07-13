@@ -1,5 +1,6 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using MAMS.Services;
+using MAMS.Services.Reports;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MAMS.Controllers
@@ -15,6 +16,9 @@ namespace MAMS.Controllers
         protected AvailabilityService _availabilityService;
         protected AppointmentService _appointmentService;
         protected CalanderService _calanderService;
+        protected LabService _labService;
+        protected TransactionService _transactionService;
+        protected ReportService _reportService;
 
         public BaseController(IConfiguration config, INotyfService notfy, IHttpContextAccessor contextAccessor, AppSettings appSettings)
         {
@@ -27,6 +31,9 @@ namespace MAMS.Controllers
             _availabilityService = new AvailabilityService(appSettings.ApiUrl);
             _appointmentService = new AppointmentService(appSettings.ApiUrl);
             _calanderService = new CalanderService(appSettings.ApiUrl);
+            _labService = new LabService(appSettings.ApiUrl);
+            _transactionService = new TransactionService(appSettings.ApiUrl);
+            _reportService = new ReportService(appSettings.ApiUrl);
         }
 
         protected bool IsSessionValid()

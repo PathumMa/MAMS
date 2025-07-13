@@ -85,21 +85,51 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="AppoinmentList">
+                                <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="MyAppoinmentList">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Appointment list</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Lab" asp-action="Index">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Labs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="LabBooking" asp-action="Index">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Lab Booking</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Transactions" asp-action="MyLabBookings">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>My Labs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Lab" asp-action="PerformLabs">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Perform Labs</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Reports</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
                 }
 
-                else if (role == 20) // Doctor
+                else if (role == 30) // Doctor
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Doctor" asp-action="MyAppointments">
-                            <i class="nav-icon fas fa-calendar-check"></i>
-                            <p>My Appointments</p>
+                        <a class="nav-link" asp-area="" asp-controller="Lab" asp-action="PerformLabs">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Perform Labs</p>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -110,18 +140,51 @@
                     </li>
                 }
 
-                else if (role == 30) // Patient
+                else if (role == 20) // Patient
                 {
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Book">
+                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Search">
                             <i class="nav-icon fas fa-notes-medical"></i>
                             <p>Book Appointment</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="MyAppointments">
+                        <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="MyAppoinmentList">
                             <i class="nav-icon fas fa-calendar-alt"></i>
                             <p>My Appointments</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="LabBooking" asp-action="Index">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Book a Lab</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Transactions" asp-action="MyLabBookings">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>My Lab Bookings</p>
+                        </a>
+                    </li>
+                }
+                else if (role == 40)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="LabBooking" asp-action="Index">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Lab Booking</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Lab" asp-action="PerformLabs">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Perform Labs</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Reports" asp-action="Index">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Reports</p>
                         </a>
                     </li>
                 }

@@ -1,0 +1,57 @@
+﻿@using MAMS.Models.ViewModels.Reports
+@model RevenueSummaryViewModel
+
+@{
+    ViewData["Title"] = "Revenue Summary";
+    var selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="container mt-4">
+    <div class="card card-info card-outline">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="mb-2 mb-md-0">Revenue Summary - @selectedDate.ToString("dd/MM/yyyy")</h5>
+            <a asp-controller="Reports" asp-action="Index" class="btn btn-outline-warning rounded-pill">
+                <i class="bi bi-plus-circle"></i> All Reports
+            </a>
+
+            <form method="get" class="d-flex align-items-center gap-2 flex-nowrap">
+                <input type="date" name="date" class="form-control form-control-sm rounded-pill" value="@selectedDate.ToString("yyyy-MM-dd")" />
+                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3 d-flex align-items-center gap-1">
+                    <i class="bi bi-search"></i> <span>Search</span>
+                </button>
+            </form>
+        </div>
+
+        <div class="card-body">
+            @if (Model != null)
+            {
+                <table class="table table-bordered table-striped text-center align-middle">
+                    <tr class="table-primary"><th colspan="2">Summary</th></tr>
+                    <tr><td>Doctor Appointments</td><td>@Model.DoctorAppointments</td></tr>
+                    <tr><td>Doctor Revenue</td><td>Rs. @Model.DoctorRevenue.ToString("N2")</td></tr>
+                    <tr><td>Lab Bookings</td><td>@Model.LabBookings</td></tr>
+                    <tr><td>Lab Revenue</td><td>Rs. @Model.LabRevenue.ToString("N2")</td></tr>
+                    <tr><td>Total Transactions</td><td>@Model.TotalTransactions</td></tr>
+                    <tr><td>Total Revenue</td><td class="fw-bold text-success">Rs. @Model.TotalRevenue.ToString("N2")</td></tr>
+
+                    <tr class="table-primary"><th colspan="2">Payment Breakdown</th></tr>
+                    <tr><td>Cash</td><td>Rs. @Model.CashRevenue.ToString("N2")</td></tr>
+                    <tr><td>Card</td><td>Rs. @Model.CardRevenue.ToString("N2")</td></tr>
+                    <tr><td>Online</td><td>Rs. @Model.OnlineRevenue.ToString("N2")</td></tr>
+                </table>
+
+                <div class="text-end mt-3">
+                    <a asp-action="DownloadRevenueSummaryPdf" asp-route-date="@selectedDate" class="btn btn-success rounded-pill px-4">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Download PDF
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning text-center">
+                    No data found for the selected date.
+                </div>
+            }
+        </div>
+    </div>
+</div>

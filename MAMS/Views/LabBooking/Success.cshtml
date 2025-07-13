@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Mvc;
+@using MAMS.Services
+@using MAMS.Models.ViewModels
+@using static MAMS.Services.Enums
+
+
+@{
+    ViewData["Title"] = "Lab Booking Success";
+    }
+
+@model LabBookingResponseViewModel
+
+<div class="container mt-5">
+    <div class="card shadow rounded border-success">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0"><i class="bi bi-check-circle-fill"></i> Booking Successful</h4>
+        </div>
+        <div class="card-body">
+            <p class="lead text-success">Your lab booking was successful!</p>
+
+            <table class="table table-bordered mt-4">
+                <tr>
+                    <th>Reference Number</th>
+                    <td><strong>@Model.ReferenceNo</strong></td>
+                </tr>
+                <tr>
+                    <th>Booked Date</th>
+                    <td>@Model.BookedDate</td>
+                </tr>
+                <tr>
+                    <th>Time Slot</th>
+                    <td>@Model.Time</td>
+                </tr>
+                <tr>
+                    <th>Lab Test</th>
+                    <td>@Model.LabName</td>
+                </tr>
+                <tr>
+                    <th>Fee</th>
+                    <td>Rs. @Model.Price</td>
+                </tr>
+                <tr>
+                    <th>Patient</th>
+                    <td>@Model.Patient</td>
+                </tr>
+            </table>
+            <div class="text-center mt-3">
+            <a class="btn btn-outline-danger" asp-action="PrintSlip" asp-route-refNo="@Model.ReferenceNo">
+                 <i class="bi bi-printer"></i> Print Slip (PDF)
+                 </a>
+            </div>
+
+            <div class="text-end mt-4">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary rounded-pill">Back to Home</a>
+                <a asp-controller="LabBooking" asp-action="SearchLabs" class="btn btn-outline-secondary rounded-pill">Book Another Test</a>
+            </div>
+        </div>
+    </div>
+</div>

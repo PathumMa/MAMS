@@ -1,0 +1,55 @@
+﻿@using System.Data
+@using MAMS.Services
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="container">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12 d-flex justify-content-between align-items-center">
+                    <h1>Reports</h1>
+                    <a asp-controller="Reports" asp-action="Index" class="btn bg-gradient-warning rounded-pill">
+                        <i class="bi bi-plus-circle"></i> All Reports
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Admin</a></li>
+                        <li class="breadcrumb-item active">All Reports</li>
+                    </ol>
+                </div>
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <div class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-info card-outline">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Download Reports</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row gap-3 justify-content-center align-items-center">
+                            <a asp-controller="Reports" asp-action="LabDailyReport" class="btn bg-gradient-warning rounded-pill px-4 py-2 d-flex align-items-center">
+                                <i class="bi bi-download me-2"></i> Lab Daily Report
+                            </a>
+                            <a asp-controller="Reports" asp-action="LabReportByRange" class="btn bg-gradient-warning rounded-pill px-4 py-2 d-flex align-items-center">
+                                <i class="bi bi-download me-2"></i> Lab Report By Range
+                            </a>
+                            <a asp-controller="Reports" asp-action="DoctorAppointmentSummary" class="btn bg-gradient-warning rounded-pill px-4 py-2 d-flex align-items-center">
+                                <i class="bi bi-download me-2"></i> Doctor Appointment Summary
+                            </a>
+                            <a asp-controller="Reports" asp-action="RevenueSummary" class="btn bg-gradient-warning rounded-pill px-4 py-2 d-flex align-items-center">
+                                <i class="bi bi-download me-2"></i> Daily Revenue Summary
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

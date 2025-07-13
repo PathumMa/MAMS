@@ -1,4 +1,6 @@
-﻿namespace MAMS.Models.ViewModels
+﻿using MAMS.Services;
+
+namespace MAMS.Models.ViewModels
 {
     public class SignUpViewModel
     {
@@ -18,6 +20,7 @@
         public DateTime Birth_Date { get; set; }
         public string Gender { get; set; }
         public string Blood_Type { get; set; }
+        [SriLankanNIC(ErrorMessage = "Please enter a valid NIC (e.g., 931234567V or 200012345678). or Other")]
         public string Personal_Id { get; set; }
         public string PersonalId_Type { get; set; }
         public string? MedicalCouncilRegistrationNumber { get; set; }
