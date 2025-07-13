@@ -34,7 +34,7 @@ namespace MAMS.Services.Reports
 
                         row.RelativeItem().AlignRight().Column(col =>
                         {
-                            col.Item().Text("MAMS - Doctor Appointment Summary")
+                            col.Item().Text("MedEase™ - Doctor Appointment Summary")
                                 .FontSize(16).Bold().FontColor(Colors.Blue.Medium);
                             col.Item().Text($"Date: {_reportDate:dd/MM/yyyy}")
                                 .FontSize(10).FontColor(Colors.Grey.Darken2);

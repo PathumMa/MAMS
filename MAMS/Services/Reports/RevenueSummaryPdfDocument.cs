@@ -48,7 +48,7 @@ namespace MAMS.Reports.Documents
             {
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text("MedEase").Bold().FontSize(16).FontColor(Colors.Blue.Darken2);
+                    col.Item().Text("MedEase™").Bold().FontSize(16).FontColor(Colors.Blue.Darken2);
                     col.Item().Text("Revenue Summary Report").FontSize(14);
                     col.Item().Text($"Date: {_reportDate:dd/MM/yyyy}").FontSize(11);
                     col.Item().PaddingVertical(5).LineHorizontal(1); // Horizontal line

@@ -31,7 +31,7 @@ namespace MAMS.Services.Reports
 
                         row.RelativeItem().Column(col =>
                         {
-                            col.Item().AlignMiddle().Text("MedEase - Lab Receipt").FontSize(18).Bold().FontColor(Colors.Blue.Medium);
+                            col.Item().AlignMiddle().Text("MedEase™ - Lab Receipt").FontSize(18).Bold().FontColor(Colors.Blue.Medium);
                             col.Item().AlignMiddle().Text("Your Trusted Health Partner").FontSize(10).FontColor(Colors.Grey.Medium);
                         });
                     });

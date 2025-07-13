@@ -35,6 +35,19 @@ namespace MAMS.Services.Reports
             return JsonConvert.DeserializeObject<List<LabBookingSummaryViewModel>>(json);
         }
 
+        public async Task<List<LabBookingSummaryViewModel>> GetLabReportByRange(DateTime startDate, DateTime endDate)
+        {
+            var response = await _client.GetAsync(
+                $"Reports/GetLabReportByRange?startdate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}");
+
+            if (!response.IsSuccessStatusCode)
+                return new List<LabBookingSummaryViewModel>();
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<LabBookingSummaryViewModel>>(json);
+        }
+
+
         public async Task<List<DoctorAppointmentSummaryViewModel>> GetDoctorAppointmentSummaryAsync(DateTime date)
         {
             var response = await _client.GetAsync($"Reports/GetDoctorAppointmentSummary/{date:yyyy-MM-dd}");

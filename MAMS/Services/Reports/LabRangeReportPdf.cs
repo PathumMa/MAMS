@@ -5,15 +5,17 @@ using MAMS.Models.ViewModels.Reports;
 
 namespace MAMS.Services.Reports
 {
-    public class LabSummaryReportPdfDocument : IDocument
+    public class LabRangeReportPdfDocument : IDocument
     {
         private readonly List<LabBookingSummaryViewModel> _report;
-        private readonly DateTime _date;
+        private readonly DateTime _startDate;
+        private readonly DateTime _endDate;
 
-        public LabSummaryReportPdfDocument(List<LabBookingSummaryViewModel> report, DateTime date)
+        public LabRangeReportPdfDocument(List<LabBookingSummaryViewModel> report, DateTime startDate, DateTime endDate)
         {
             _report = report;
-            _date = date;
+            _startDate = startDate;
+            _endDate = endDate;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -33,7 +35,7 @@ namespace MAMS.Services.Reports
                         row.RelativeItem().Column(col =>
                         {
                             col.Item().AlignCenter().Text("MedEase™ - Daily Lab Summary Report").FontSize(16).Bold();
-                            col.Item().AlignCenter().Text($"Date: {_date:dd/MM/yyyy}").FontSize(10);
+                            col.Item().AlignCenter().Text($"Date: {_startDate:dd/MM/yyyy}").FontSize(10);
                         });
                     });
 

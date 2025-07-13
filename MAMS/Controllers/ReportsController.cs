@@ -1,4 +1,5 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using MAMS.Models.ViewModels;
 using MAMS.Reports.Documents;
 using MAMS.Services;
 using MAMS.Services.Reports;
@@ -26,6 +27,40 @@ namespace MAMS.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> DownloadLabReport(string refNo)
+        {
+            var (result, errorMessage) = await _labService.GetLabByRefNo(refNo);
+            if (result == null)
+            {
+                _notfy.Error("No Lab report found.");
+                return RedirectToAction("GuestBookings", "LabBooking");
+            }
+                
+
+            var model = new LabResultViewModel
+            {
+                ReferenceNo = result.ReferenceNo,
+                BookedDate = result.BookedDate,
+                TimeSlot = result.TimeSlot,
+                LabTypeName = result.LabTypeName,
+                PatientName = result.PatientName,
+                BookedPrice = result.BookedPrice,
+                ResultValue = result.ResultValue,
+                Comments = result.Comments,
+                Status = result.Status,
+                PerformedDate = result.PerformedDate
+            };
+
+            var stream = new MemoryStream();
+
+            var document = new LabReportPdfGenerator(result); // you’ll create this class
+            document.GeneratePdf(stream);
+
+            stream.Position = 0;
+
+            return File(stream.ToArray(), "application/pdf", $"LAB_Report_{refNo}_{DateTime.Now}.pdf");
         }
 
         public async Task<IActionResult> DownloadReceiptPdf(string refNo)
@@ -127,6 +162,31 @@ namespace MAMS.Controllers
             return File(stream, "application/pdf", $"RevenueSummary_{date:yyyyMMdd}.pdf");
         }
 
+        //Lab Summery by Range
+        public async Task<IActionResult> LabReportByRange(DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate == null)
+                startDate = DateTime.Today;
+            if(endDate == null)
+                endDate = DateTime.Today;
+
+            var reportData = await _reportService.GetLabReportByRange(startDate.Value, endDate.Value);
+            if (reportData == null)
+            {
+                _notfy.Error("No lab bookings found for the selected date.");
+            }
+
+            return View(reportData);
+        }
+        //public async Task<IActionResult> DownloadRangeLabReportPdf(DateTime startDate, DateTime endDate)
+        //{
+        //    var reportData = await _reportService.GetLabReportAsync(DateTime startDate, DateTime endDate);
+
+        //    var document = new LabRangeReportPdfDocument(reportData, DateTime startDate, DateTime endDate);
+        //    var pdfStream = document.GeneratePdf();
+
+        //    return File(pdfStream, "application/pdf", $"LabDailyReport_{startDate:yyyyMMdd}.pdf");
+        //}
 
 
 

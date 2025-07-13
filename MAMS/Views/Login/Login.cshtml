@@ -42,8 +42,17 @@
                             <input asp-for="Password" class="form-control rounded-pill" autocomplete="new-password" type="password" required />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
-                        <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill"><i class="bi bi-arrow-right-circle"></i> &nbsp; Log in </button>
+                        <div class="d-flex justify-content-between">
+                            <button id="loginButton" type="submit" class="btn btn-outline-primary rounded-pill">
+                                <i class="bi bi-arrow-right-circle"></i> &nbsp; Log in
+                            </button>
+                            <a id="BackButton" asp-action="Welcome" asp-controller="Login"
+                               class="btn btn-outline-info rounded-pill">
+                                <i class="bi bi-box-arrow-in-left"></i> &nbsp; Back
+                            </a>
+                        </div>
                     </form>
+                    
                 </div>
                 <div class="container">
                     Are you new here?

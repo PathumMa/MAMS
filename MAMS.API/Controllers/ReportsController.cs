@@ -43,6 +43,27 @@ namespace MAMS.API.Controllers
             }
         }
 
+        [HttpGet("GetLabReportByRange")]
+        public async Task<IActionResult> GetLabReportByDaily(DateTime startdate, DateTime endDate)
+        {
+            try {
+                var result = await _dbContext.LabBookingSummaryView
+                        .Where(x => x.BookedDate.Date >= startdate.Date && x.BookedDate.Date <= endDate.Date)
+                        .ToListAsync();
+
+                if (result == null || !result.Any())
+                {
+                    return NotFound($"No lab bookings found for the between {startdate:yyyy-MM-dd} and {endDate:yyyy-MM-dd}.");
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
         [HttpGet("GetDoctorAppointmentSummary/{date}")]
         public async Task<IActionResult> GetDoctorAppointmentSummary(DateTime date)
         {

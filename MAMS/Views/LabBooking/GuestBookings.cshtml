@@ -18,13 +18,13 @@
                         Quickly retrieve your lab test receipt using your reference number. No login required.
                     </p>
 
-                    <form method="get" action="@Url.Action("DownloadReceipt", "Transactions")">
+                    <form method="get" action="@Url.Action("DownloadLabReport", "Reports")">
                         <div class="form-group text-left">
                             <label for="refNo" class="font-weight-bold">Reference Number</label>
                             <input type="text" class="form-control" id="refNo" name="refNo" placeholder="For Ref, see your reciept (LAB-20xxxxxx-xxxx)" required />
                         </div>
                         <button type="submit" class="btn btn-outline-danger btn-block mt-3">
-                            <i class="fas fa-download mr-1"></i> Download Receipt
+                            <i class="fas fa-download mr-1"></i> Download Report
                         </button>
                     </form>
                     <a href="@Url.Action("Welcome", "Login")" class="btn btn-outline-secondary mt-4">

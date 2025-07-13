@@ -98,7 +98,8 @@ namespace MAMS.Controllers
                 return View("Booking", model);
             }
 
-            try {
+            try
+            {
                 var (success, errorMessage, result) = await _labService.BookLabAsync(model);
 
                 if (!success || result == null)
@@ -167,12 +168,12 @@ namespace MAMS.Controllers
         {
             var (result, errorMessage) = await _labService.GetLabByRefNo(refNo);
 
-            if(result == null)
+            if (result == null)
             {
                 _notfy.Error(errorMessage ?? "Booking not found");
                 return RedirectToAction("Success");
             }
-            
+
             var model = new LabResultViewModel
             {
                 ReferenceNo = result.ReferenceNo,
@@ -192,7 +193,30 @@ namespace MAMS.Controllers
 
             return File(stream.ToArray(), "application/pdf", $"Booking_{refNo}_{DateTime.Now}.pdf");
         }
-        
+
+        public async Task<IActionResult> MyLabReport(string refNo)
+        {
+            var (result, errorMessage) = await _labService.GetLabByRefNo(refNo);
+            if (result == null)
+            {
+                _notfy.Error(errorMessage ?? "Booking not found");
+                return RedirectToAction("MyBookings");
+            }
+            var model = new LabResultViewModel
+            {
+                ReferenceNo = result.ReferenceNo,
+                BookedDate = result.BookedDate,
+                TimeSlot = result.TimeSlot,
+                LabTypeName = result.LabTypeName,
+                PatientName = result.PatientName,
+                BookedPrice = result.BookedPrice,
+                ResultValue = result.ResultValue,
+                Comments = result.Comments,
+                Status = result.Status,
+                PerformedDate = result.PerformedDate
+            };
+            return View(model);
+        }
 
     }
 }

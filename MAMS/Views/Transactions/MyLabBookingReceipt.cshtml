@@ -59,7 +59,10 @@
 
                 <div class="text-center mt-4">
                     <a asp-controller="Transactions" asp-action="DownloadReceipt" asp-route-refNo="@Model.ReferenceNo" class="btn btn-success px-4 rounded-pill">
-                        <i class="fas fa-download me-2"></i>Download PDF Slip
+                        <i class="fas fa-download me-2"></i>Download Slip
+                    </a>
+                    <a asp-controller="Transactions" asp-action="DownloadLabReport" asp-route-refNo="@Model.ReferenceNo" class="btn btn-outline-danger px-4 rounded-pill">
+                        <i class="fas fa-download me-2"></i>Download Lab Report
                     </a>
                 </div>
             </div>
